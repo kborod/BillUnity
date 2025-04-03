@@ -1,0 +1,20 @@
+{
+    "name": "LocalizationSync",
+    "rootNamespace": "",
+    "references": [
+        "GUID:27a7129eb6971aa4baf6ecfa2dbf1306",
+        "GUID:478a2357cc57436488a56e564b08d223",
+        "GUID:fb7b35d27b254a84c972bbe686d4f4d3"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

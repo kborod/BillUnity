@@ -1,0 +1,129 @@
+using Kborod.BilliardCore;
+using Kborod.UI.Screens.Table.BallsMove;
+using Kborod.UI.Screens.Table.BallsRemove;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+namespace Kborod.UI.Screens.Table
+{
+    public class TableView: MonoBehaviour
+    {
+        private const bool SHOW_DEBUG_POINTS = true;
+
+        [SerializeField] private Transform floor;
+        [SerializeField] private Transform shadow;
+        [SerializeField] private Transform table;
+        [SerializeField] private Transform ballsRoot;
+        [Space(10)]
+        [SerializeField] private Transform ballPrefab;
+        [SerializeField] private Transform ballShadowPrefab;
+        [SerializeField] private Transform debugPointPrefab;
+        [Space(10)]
+        [SerializeField] private List<Material> ballsMaterials;
+        [Space(10)]
+        [SerializeField] private BallsRemover ballsRemover;
+        [SerializeField] private BallReplacer ballReplacer;
+
+        private TableParams tableParams;
+        private Engine engine;
+
+        private Dictionary<int, Transform> balls;
+        private Dictionary<int, Transform> ballShadows;
+
+        private void Start()
+        {
+            ballsRemover.BallMoved += UpdateBallPosition;
+            ballReplacer.ballReplaced += UpdateBallPosition;
+        }
+
+        private void OnDestroy()
+        {
+            ballsRemover.BallMoved -= UpdateBallPosition;
+            ballReplacer.ballReplaced -= UpdateBallPosition;
+        }
+
+        public void Setup(TableType type, Engine engine)
+        {
+            tableParams = new TableParams();
+            this.engine = engine;
+
+            CreateTableAndBalls();
+
+            TryShowDebugPoints();
+        }
+
+        private void CreateTableAndBalls()
+        {
+            foreach (Transform child in ballsRoot)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
+
+            balls = new Dictionary<int, Transform>();
+            ballShadows = new Dictionary<int, Transform>();
+            foreach (var b in engine.balls)
+            {
+                var ball = Instantiate(ballPrefab, ballsRoot);
+                ball.GetComponent<MeshRenderer>().material = ballsMaterials[b.Number];
+                balls.Add(b.Number, ball);
+
+                var shadow = Instantiate(ballShadowPrefab, ballsRoot);
+                ballShadows.Add(b.Number, shadow);
+            }
+            UpdateBallsPositions();
+        }
+
+        public void UpdateBallsPositions(float deltaTime = 0)
+        {
+            foreach (var b in engine.balls.Where(b => !b.isRemoved))
+            {
+                UpdateBallPosition(b, deltaTime);
+            }
+        }
+
+        private void UpdateBallPosition(Ball b)
+        {
+            UpdateBallPosition(b, 0);
+        }
+
+        private void UpdateBallPosition(Ball b, float deltaTime)
+        {
+            balls[b.Number].localPosition = new Vector3(
+                    b.v.p0.x * Config.MODEL_COORD_TO_WORLD_KOEF,
+                    b.v.p0.y * Config.MODEL_COORD_TO_WORLD_KOEF,
+                    b.Zcoordinate);
+            balls[b.Number].Rotate(new Vector3(b.vVertSpin.vy, -b.vVertSpin.vx), b.vVertSpin.len * deltaTime * 0.06f, Space.World);
+            balls[b.Number].Rotate(new Vector3(0, 0, 1), -b.sideSpin * deltaTime * 0.12f, Space.World);
+
+            //if (b.bNumber == 0 /*&& b.isRemoved*/)
+            //    Debug.Log($"{b.v.vx} {b.v.vy} --- {b.vVertSpin.vx} {b.vVertSpin.vy}");
+
+
+            ballShadows[b.Number].gameObject.SetActive(!b.isRemoved);
+            ballShadows[b.Number].localPosition = new Vector3(
+                    b.v.p0.x * Config.MODEL_COORD_TO_WORLD_KOEF,
+                    b.v.p0.y * Config.MODEL_COORD_TO_WORLD_KOEF,
+                    Config.BALL_RAD_PX * Config.MODEL_COORD_TO_WORLD_KOEF);
+        }
+
+        private void TryShowDebugPoints()
+        {
+            if (SHOW_DEBUG_POINTS)
+            {
+                var counter = 0;
+                foreach (var wall in engine.realWalls)
+                {
+                    var tablePoint = Instantiate(debugPointPrefab, ballsRoot);
+                    tablePoint.localPosition = wall.p0 * Config.MODEL_COORD_TO_WORLD_KOEF;
+                    tablePoint.name = $"Point {counter}";
+                }
+            }
+        }
+    }
+
+    public enum TableType
+    {
+        Pool
+    }
+}

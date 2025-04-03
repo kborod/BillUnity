@@ -1,0 +1,21 @@
+https://www.youtube.com/watch?v=mqNDd9SK13c
+
+
+https://learn.microsoft.com/ru-ru/dotnet/architecture/microservices/
+
+
+using System;
+public class Program
+{
+	public static void Main()
+	{
+		var f = 0.51f;
+		var f1 = (int)(f * 100);
+		Console.WriteLine(f1.ToString());
+		var i = f / 100;
+		Console.WriteLine(i.ToString());
+		
+		var i2 = i * 100;
+		Console.WriteLine(i2.ToString());
+	}
+}
