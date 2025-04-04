@@ -12,4 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f36c04d7875c8eb49b6b624cbe216548, type: 3}
   m_Name: AudioAssetsSO
   m_EditorClassIdentifier: 
-  _soundClips: []
+  _soundClips:
+  - <Type>k__BackingField: 1
+    <Clips>k__BackingField:
+    - <Clip>k__BackingField: {fileID: 8300000, guid: 34c638d8d99ccfd44a261f13505ab317, type: 3}
+      <Volume>k__BackingField: 1
+      <Tag>k__BackingField: 0

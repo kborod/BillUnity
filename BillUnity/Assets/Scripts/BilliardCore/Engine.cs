@@ -89,7 +89,7 @@ namespace Kborod.BilliardCore
         /**
 		 * Установить координаты шара без проверок
 		 */
-        public void setBallPosition(int ballNum, float posX, float posY)
+        public void SetBallPosition(int ballNum, float posX, float posY)
 		{
 			balls[ballNum].SetPosition(posX, posY);
 		}
@@ -132,7 +132,7 @@ namespace Kborod.BilliardCore
 				if (Config.BALL_DIAM_PX - vc.len >= -0.01)
                     return false;
             }
-			setBallPosition(ballNum, tmpX, tmpY);
+			SetBallPosition(ballNum, tmpX, tmpY);
 			return true;
 		}
 
@@ -140,7 +140,7 @@ namespace Kborod.BilliardCore
         /// Вернуть на стол забитый шар (меняются координаты шара)
         /// </summary>
         /// <param name="ballNum"></param>
-        public void returnPocketedBall(int ballNum)
+        public void ReturnPocketedBall(int ballNum)
 		{
 			// TODO Доработать алгоритм подбора позиции
 			if ((balls[ballNum] as Ball).isRemoved == false)
@@ -172,7 +172,7 @@ namespace Kborod.BilliardCore
         /// <summary>
         /// Установить компоненты скорости шару (произвести удар по шару) (по умолчанию ударяем по битку ball[0]);
         /// </summary>
-        public void makeShot(float vx, float vy, int ballNumber, float spinVx, float spinVy)
+        public void MakeShot(float vx, float vy, int ballNumber, float spinVx, float spinVy)
 		{
 			if (activeBalls.Count > 0 && currShotDuration > 0)
 			{
@@ -217,28 +217,9 @@ namespace Kborod.BilliardCore
 			toLog("SUMM_BEFORE:" + summ);
 		}
 		
-		public string getBallsPosString()
-		{
-			var s = "";
-			for (var i = 0; i <= 15; i++) 
-			{
-				if (i > 0) s += "*";
-				s += balls[i].Number + "_" + ((balls[i].isRemoved)?"1":"0") + "_" 
-					+ balls[i].v.p0.x + "_" + balls[i].v.p0.y;
-			}
-			return s;
-		}
-		
-		
-		
-		
-		
-		
 		private float currDt = 0;			//значение дельта, на которое обновляем модель
 		private float lastDt = 0;			//Значение дельта, оставшееся с предыдущей итерации
 		
-		private float minValueTmp = 0;		//временная переменная для определиня минимального значения интегрирования и соответстующих действий (расчет коллизий и пр)
-		private bool needUpdateCollTimeTmp = false; //надо ли обновить след время столкновения после интегрирования модели
 		
 		/**
 		 * Просчитать состояние модели шаров через deltaTime
@@ -247,47 +228,35 @@ namespace Kborod.BilliardCore
 		 * @param	dt
 		 * дельта времени
 		 */
-		public ShotResult UpdateModel(int deltaTime)
+		public void UpdateModel(int deltaTime, out ShotTickResult tickResult, out ShotResult shotResultOrNull)
 		{
 			if (deltaTime <= 0) { Debug.LogError("ERROR updateModel. deltaTime:" + deltaTime); }
-			
-			currDt = deltaTime + lastDt;
-			//toLog ("-------updateModel-------" + balls[0].v.vx + " " + balls[0].v.vy);
-			
-			//выполнять, пока не будут просчитаны все столкновения за deltatime
-			while (true)
+
+            tickResult = new ShotTickResult();
+            shotResultOrNull = null;
+
+            currDt = deltaTime + lastDt;
+
+            //выполнять, пока не будут просчитаны все столкновения за deltatime
+            while (true)
 			{
 				if (activeBalls.Count == 0) 
 				{					
 					shotCalculateResult.shotDuration = currShotDuration;
 					
 					roundBallsCoord();
-					
-					//для теста
-					var s = "";
-					var summ = 0f;
-					for (var i = 0; i <= 15; i++) 
-					{
-						if (i > 0) s += "*";
-						s += balls[i].Number + "_" + ((balls[i].isRemoved)?"1":"0") + "_" 
-							+ balls[i].v.p0.x + "_" + balls[i].v.p0.y;
-						if (balls[i].isRemoved == false) summ += balls[i].v.p0.x + balls[i].v.p0.y;
-					}
-					toLog("BALLS_AFTER:" + s);
-					toLog("SUMM_AFTER:" + summ);
-					
-					return shotCalculateResult;
+
+					shotResultOrNull = shotCalculateResult;
+
+                    return;
 				}
 				
-				//getTimeToNextColl(true)
-				//toLog("WB updateModel check:" + getTimeToNextColl() + " " + currDt);
-				
-				needUpdateCollTimeTmp = false;
-				minValueTmp = Config.BALLS_INTEGRATE_DELTA;
+				var needUpdateCollTime = false;
+				var minValueTmp = (float) Config.BALLS_INTEGRATE_DELTA;
+
 				if (minValueTmp > currDt) { minValueTmp = currDt; }
 				if (minValueTmp > getTimeToNextColl()) { minValueTmp = getTimeToNextColl(); }
 				if (minValueTmp > timeToVelUpdate) { minValueTmp = timeToVelUpdate; }
-				//toLog ("CurrDt:" + currDt + ";minValue:" + minValueTmp + ";NextColl:" + getTimeToNextColl() + ";VelUpdate" + timeToVelUpdate);
 				
 				if 	(minValueTmp == Config.BALLS_INTEGRATE_DELTA)
 				{
@@ -295,13 +264,13 @@ namespace Kborod.BilliardCore
 					
 					if (minValueTmp == getTimeToNextColl())
 					{
-						calcCollisionObject(collisionObj); 	
-						needUpdateCollTimeTmp = true;
+						ProcessCollisions(); 	
+						needUpdateCollTime = true;
 					}
 					else if (minValueTmp == timeToVelUpdate)		
 					{ 
 						updateBallsVelocities(); 
-						needUpdateCollTimeTmp = true;
+						needUpdateCollTime = true;
 					}
 				}
 				else if (minValueTmp == currDt)
@@ -312,26 +281,24 @@ namespace Kborod.BilliardCore
 				else if (minValueTmp == getTimeToNextColl())
 				{
 					integrateModel(minValueTmp);
-					calcCollisionObject(collisionObj);
+					ProcessCollisions();
 					if (minValueTmp == timeToVelUpdate) { updateBallsVelocities(); }
-					needUpdateCollTimeTmp = true;
+					needUpdateCollTime = true;
 				}
 				else if (minValueTmp == timeToVelUpdate)
 				{
 					integrateModel(minValueTmp);
 					updateBallsVelocities();
-					needUpdateCollTimeTmp = true;
+					needUpdateCollTime = true;
 				}
 				
-				if (needUpdateCollTimeTmp)
+				if (needUpdateCollTime)
 				{
 					updateAllBallsState();
 					updateNextCollisionTime();
 				}
 				
 			}
-			
-			return null;
 		}
 		
 		private float tKoef;
@@ -358,8 +325,7 @@ namespace Kborod.BilliardCore
 		
 		
 		private float timeToNextColl = float.MaxValue;	//время до ближайшего столкновения
-		private CollisionObject collisionObj = new CollisionObject();
-		private float timeToNextCollTmp;
+		private Collisions collisions = new Collisions();
 
 
 
@@ -382,7 +348,7 @@ namespace Kborod.BilliardCore
 		private void updateNextCollisionTime()
 		{
 			//toLog("balls[0]:" + (balls[0] as Ball).needUpdateState + "," + (balls[0] as Ball).v.p0.x + "," + (balls[0] as Ball).v.p0.y);
-			collisionObj.clearFull();
+			collisions.Clear();
 			timeToNextColl = float.MaxValue;
 			
 			for (var i = 0; i < activeBalls.Count; i++)
@@ -394,9 +360,9 @@ namespace Kborod.BilliardCore
 				
 				for (var k = 0; k < balls.Count; k++)
 				{
-					if ((balls[k] as Ball).isRemoved == true) continue;
+					if (balls[k].isRemoved == true) continue;
 					
-					if ( (activeBalls[i] as Ball).Number == k || (balls[k] as Ball).isSleep == false)
+					if (activeBalls[i].Number == k || balls[k].isSleep == false)
 					{
 						continue;
 					}
@@ -428,14 +394,14 @@ namespace Kborod.BilliardCore
 		private void check2BallsCollisionTime(Ball b1, Ball b2)
 		{
 			//trace ("check " + b1Tmp.bNumber + " " + b2Tmp.bNumber);
-			timeToNextCollTmp = getTimeToNextBallsCollision(b1, b2);
+			var timeToNextCollTmp = getTimeToNextBallsCollision(b1, b2);
 			
 			//проверяем, если время до столкновения меньше текущего, то обновляем.
 			if (timeToNextCollTmp < float.MaxValue && timeToNextCollTmp <= timeToNextColl) 
 			{ 
 				//trace ("AddCollision:" + timeToNextCollTmp + " " 
 				timeToNextColl = timeToNextCollTmp;
-				collisionObj.process2BallsCollision(b1, b2, timeToNextColl);
+				collisions.process2BallsCollision(b1, b2, timeToNextColl);
 			}
 		}
 		
@@ -533,14 +499,14 @@ namespace Kborod.BilliardCore
 		{
 			for (var i = 0; i < walls.Count; i++) 
 			{
-				timeToNextCollTmp = getTimeToBallWithWallCollision(b, walls[i]);
+				var timeToNextCollTmp = getTimeToBallWithWallCollision(b, walls[i]);
 			
 				//проверяем, если время до столкновения меньше текущего, то обновляем.
 				if (timeToNextCollTmp < float.MaxValue && timeToNextCollTmp <= timeToNextColl) 
 				{ 
 					//trace ("AddCollision:" + timeToNextCollTmp + " " 
 					timeToNextColl = timeToNextCollTmp;
-					collisionObj.processBallWithWallCollision(b, walls[i], timeToNextColl);
+					collisions.processBallWithWallCollision(b, walls[i], timeToNextColl);
 				}
 			}
 		}
@@ -607,14 +573,14 @@ namespace Kborod.BilliardCore
 		{
 			for (var i = 0; i < angles.Count; i++) 
 			{
-				timeToNextCollTmp = getTimeToNextBallAngleCollision(b, angles[i]);
+				var timeToNextCollTmp = getTimeToNextBallAngleCollision(b, angles[i]);
 			
 				//проверяем, если время до столкновения меньше текущего, то обновляем.
 				if (timeToNextCollTmp < float.MaxValue && timeToNextCollTmp <= timeToNextColl) 
 				{ 
 					//trace ("AddCollision:" + timeToNextCollTmp + " " 
 					timeToNextColl = timeToNextCollTmp;
-					collisionObj.processBallWithAngleCollision(b, angles[i], timeToNextColl);
+					collisions.processBallWithAngleCollision(b, angles[i], timeToNextColl);
 				}
 			}
 		}
@@ -703,14 +669,14 @@ namespace Kborod.BilliardCore
 		{
 			for (var i = 0; i < pockets.Count; i++) 
 			{
-				timeToNextCollTmp = getTimeToNextBallPocketCollision(b, pockets[i]);
+				var timeToNextCollTmp = getTimeToNextBallPocketCollision(b, pockets[i]);
 			
 				//проверяем, если время до столкновения меньше текущего, то обновляем.
 				if (timeToNextCollTmp < float.MaxValue && timeToNextCollTmp <= timeToNextColl) 
 				{ 
 					//trace ("AddCollision:" + timeToNextCollTmp + " " 
 					timeToNextColl = timeToNextCollTmp;
-					collisionObj.processBallWithPocketCollision(b, pockets[i], timeToNextColl);
+					collisions.processBallWithPocketCollision(b, pockets[i], timeToNextColl);
 				}
 			}
 		}
@@ -794,51 +760,32 @@ namespace Kborod.BilliardCore
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 				
-		private void calcCollisionObject(CollisionObject collObj)
+		private void ProcessCollisions()
 		{
-			if (collisionObj.ballsCollisionCount == 0 && collisionObj.ballWallCollisionCount == 0 && collisionObj.bAngleColl == null && collisionObj.bPocketColl == null)
+			if (collisions.BallsCollisions.Count == 0 && collisions.BallWallCollisions.Count == 0 && collisions.BallAngleCollisions.Count == 0 && collisions.BallPocketCollisions.Count == 0)
 			{
 				toLog("calcCollisionObject ERROR: collisionCount == 0");
 			}
-			if (collisionObj.ballsCollisionCount > 0) 
+
+			foreach (var pair in collisions.BallsCollisions)
 			{
-				applyCollisionToBalls(collisionObj.b1coll1, collisionObj.b2coll1);
-			}
-			
-			if (collisionObj.ballsCollisionCount > 1) 
+				applyCollisionToBalls(pair[0], pair[1]);
+            }
+
+			foreach (var pair in collisions.BallWallCollisions)
 			{
-				applyCollisionToBalls(collisionObj.b1coll2, collisionObj.b2coll2);
-			}
-			
-			if (collisionObj.ballsCollisionCount > 2) 
+                applyBallWallCollision(pair.Key, pair.Value);
+            }
+
+			foreach (var pair in collisions.BallAngleCollisions)
 			{
-				applyCollisionToBalls(collisionObj.b1coll3, collisionObj.b2coll3);
-			}
-			
-			if (collisionObj.ballWallCollisionCount > 0) 
+                applyBallAngleCollision(pair.Key, pair.Value);
+            }
+
+			foreach (var pair in collisions.BallPocketCollisions)
 			{
-				applyBallWallCollision(collisionObj.bWallColl1, collisionObj.wWallColl1);
-			}
-			
-			if (collisionObj.ballWallCollisionCount > 1) 
-			{
-				applyBallWallCollision(collisionObj.bWallColl2, collisionObj.wWallColl2);
-			}
-			
-			if (collisionObj.ballWallCollisionCount > 2) 
-			{
-				applyBallWallCollision(collisionObj.bWallColl3, collisionObj.wWallColl3);
-			}
-			
-			if (collisionObj.bAngleColl != null)
-			{
-				applyBallAngleCollision(collisionObj.bAngleColl, collisionObj.aAngleColl);
-			}
-			
-			if (collisionObj.bPocketColl != null)
-			{
-				applyBallPocketCollision(collisionObj.bPocketColl, collisionObj.pPocketColl);
-			}
+                applyBallPocketCollision(pair.Key, pair.Value);
+            }
 		}
 		
 		/**

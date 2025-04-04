@@ -49,12 +49,12 @@ namespace Kborod.MatchManagement
         {
             ChangeState(MatchState.Animation);
 
-            Engine.makeShot(direction.x, direction.y, ballNumber, spinX, spinY);
+            Engine.MakeShot(direction.x, direction.y, ballNumber, spinX, spinY);
 
             while (true)
             {
                 var deltaMS = (int)(Time.deltaTime * 1000);
-                var shotResultOrNull = Engine.UpdateModel(deltaMS);
+                Engine.UpdateModel(deltaMS, out var tickResult, out var shotResultOrNull);
                 processHandler?.Invoke(deltaMS);
                 if (shotResultOrNull != null) 
                 {
@@ -64,7 +64,7 @@ namespace Kborod.MatchManagement
                     CurrTurnSettings = rules.GetTurnSettings(Engine, BallType.None, rulesResult.FoulOrNull != null);
                     UnityEngine.Debug.Log(JsonConvert.SerializeObject(CurrTurnSettings));
 
-                    rulesResult.ReturnedBalls.ForEach(ball => { Engine.returnPocketedBall(ball); });
+                    rulesResult.ReturnedBalls.ForEach(ball => { Engine.ReturnPocketedBall(ball); });
 
                     var shotData = new ShotResultData() { ShotResult = shotResultOrNull, ReturnedPocketedBalls = rulesResult.ReturnedBalls };
                     completeHandler?.Invoke(shotData);
