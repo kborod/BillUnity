@@ -556,7 +556,7 @@ Transform:
   m_GameObject: {fileID: 206339365}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.42, z: 0}
+  m_LocalPosition: {x: 0, y: -0.38, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -584,23 +584,6 @@ MonoBehaviour:
   ballPrefab: {fileID: 3872667674976426004, guid: 53b172977d0b07948aa31bf392bf9bd6, type: 3}
   ballShadowPrefab: {fileID: 6672213741029122050, guid: 5de2f21768ad5e14bb644764812bc2b9, type: 3}
   debugPointPrefab: {fileID: 8639485123075833848, guid: a6271c219b102644ca176846a3b9751f, type: 3}
-  ballsMaterials:
-  - {fileID: 2100000, guid: 18b2be6d5d9ba89488587050fa686fdd, type: 2}
-  - {fileID: 2100000, guid: 43923e58121684d43afb458a1fd4398e, type: 2}
-  - {fileID: 2100000, guid: 77f227d4156ceab4d882ae0fc422f493, type: 2}
-  - {fileID: 2100000, guid: 66c4f3995fd76274ba0a3c76af768535, type: 2}
-  - {fileID: 2100000, guid: 89cc73690a81f7b43a31dc55ebad208e, type: 2}
-  - {fileID: 2100000, guid: 1de57d4071913b248a4a020a453d5f70, type: 2}
-  - {fileID: 2100000, guid: 1271ca3fb70671544949670b7729b7db, type: 2}
-  - {fileID: 2100000, guid: 982b1c906708a4c47b2c7232ea38b97d, type: 2}
-  - {fileID: 2100000, guid: 7a7c4ca9561928b4c8dc817aff345895, type: 2}
-  - {fileID: 2100000, guid: 4f974dfea06bdfa43867a4717814b70d, type: 2}
-  - {fileID: 2100000, guid: 76cf8cb52b28f1a429005b77b2922ddb, type: 2}
-  - {fileID: 2100000, guid: 3f2e68d5e78346f4bb75f3fe75aa1073, type: 2}
-  - {fileID: 2100000, guid: 34be098decad58041ad273864d207f22, type: 2}
-  - {fileID: 2100000, guid: 87e763e05af353a4eb54f346680dd155, type: 2}
-  - {fileID: 2100000, guid: e9e27aa04fedfc6449fe85cdd5c2f84a, type: 2}
-  - {fileID: 2100000, guid: 467974cd6c2577c4782e99950ebcc96e, type: 2}
   ballsRemover: {fileID: 1150447356}
   ballReplacer: {fileID: 1552083658}
 --- !u!1 &239257147
@@ -1473,7 +1456,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 83162aedfbe4c2f4a88b7d052daa1c19, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.49411765}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1695,7 +1678,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 4
+  orthographic size: 3.65
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -5227,7 +5210,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 716f50ee58298bb4fa39bcd65527a7b4, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.8301887, g: 0.8301887, b: 0.8301887, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5741,10 +5724,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ball3d
       objectReference: {fileID: 0}
-    - target: {fileID: 6801113376140918900, guid: 53b172977d0b07948aa31bf392bf9bd6, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 43923e58121684d43afb458a1fd4398e, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

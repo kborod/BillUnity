@@ -6,7 +6,7 @@ namespace Kborod.UI.Screens
 {
     public class CueOverlay : MonoBehaviour
     {
-        public Action<Vector2> HitReady;
+        public Action<Vector2, float> HitReady;
 
         [SerializeField] private Transform cueHolder;
         [SerializeField] private Transform cue;
@@ -118,7 +118,7 @@ namespace Kborod.UI.Screens
 
         private void PowerSelectedHandler(float power)
         {
-            HitReady?.Invoke(currDirection * 300 * power);
+            HitReady?.Invoke(currDirection * 300, power);
         }
 
         private void UpdateAimLines()

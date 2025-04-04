@@ -26,8 +26,13 @@ namespace Kborod.Services.Sound
 
         public void PlaySound(SoundType soundType)
         {
+            PlaySound(soundType, 1);
+        }
+
+        public void PlaySound(SoundType soundType, float volumeKoef)
+        {
             var player = _audioSourcesProvider.GetSoundPlayer();
-            PlaySoundWithPlayer(soundType, player);
+            PlaySoundWithPlayer(soundType, player, volumeKoef);
         }
 
         public void PlaySound3d(SoundType soundType, Vector3 worldPosition, Transform parent = null)
@@ -43,7 +48,7 @@ namespace Kborod.Services.Sound
             return player;
         }
 
-        private void PlaySoundWithPlayer(SoundType soundsType, AudioSource player)
+        private void PlaySoundWithPlayer(SoundType soundsType, AudioSource player, float volumeKoef0_1 = 1)
         {
             var clip = _audioAssets.GetClip(soundsType);
             if (clip.Clip == null)
@@ -52,7 +57,7 @@ namespace Kborod.Services.Sound
                 return;
 
             player.clip = clip.Clip;
-            SetPlayerVolume(player, clip);
+            SetPlayerVolume(player, clip, volumeKoef0_1);
             player.Play();
 
             _playerToClipVolume[player] = clip;
@@ -91,9 +96,9 @@ namespace Kborod.Services.Sound
                 SetPlayerVolume(pair.Key, pair.Value);
         }
 
-        private void SetPlayerVolume(AudioSource player, ClipData clipData)
+        private void SetPlayerVolume(AudioSource player, ClipData clipData, float volumeKoef0_1 = 1)
         {
-            player.volume = clipData.Volume * GetVolumeByTag(clipData.Tag);
+            player.volume = clipData.Volume * GetVolumeByTag(clipData.Tag) * volumeKoef0_1;
 
             if (clipData.Tag == SoundTag.background)
             {

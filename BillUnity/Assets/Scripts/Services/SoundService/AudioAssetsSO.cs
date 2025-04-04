@@ -45,6 +45,22 @@ namespace Kborod.Services.Sound
     {
         None = 0,
         MelodyBG = 1,
+
+        BallVsBall0 = 100,
+        BallVsBall1 = 101,
+        BallVsBall2 = 102,
+        BallVsBall3 = 103,
+        BallVsBall4 = 104,
+
+        BallVsWall1 = 110,
+        BallVsWall2 = 111,
+
+        BallPocketed1 = 121,
+        BallPocketed2 = 122,
+
+        BallShot1 = 131,
+        BallShot2 = 132,
+        BallShot3 = 133,
     }
 
     public enum SoundTag

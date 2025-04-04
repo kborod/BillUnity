@@ -45,7 +45,7 @@ namespace Kborod.MatchManagement
             ChangeState(MatchState.PrepeareTurn);
         }
 
-        public async void MakeShot(int ballNumber, Vector2 direction, float spinX, float spinY, Action<float> processHandler, Action<ShotResultData> completeHandler)
+        public async void MakeShot(int ballNumber, Vector2 direction, float spinX, float spinY, Action<ShotTickResult> processHandler, Action<ShotResultData> completeHandler)
         {
             ChangeState(MatchState.Animation);
 
@@ -54,28 +54,30 @@ namespace Kborod.MatchManagement
             while (true)
             {
                 var deltaMS = (int)(Time.deltaTime * 1000);
-                Engine.UpdateModel(deltaMS, out var tickResult, out var shotResultOrNull);
-                processHandler?.Invoke(deltaMS);
-                if (shotResultOrNull != null) 
+                if (deltaMS > 0)
                 {
-                    var rulesResult = rules.ProcessShot(shotResultOrNull, Engine, TurningPlayer.BallType);
-                    UnityEngine.Debug.Log(JsonConvert.SerializeObject(rulesResult));
+                    Engine.UpdateModel(deltaMS, out var tickResult, out var shotResultOrNull);
+                    processHandler?.Invoke(tickResult);
+                    if (shotResultOrNull != null)
+                    {
+                        var rulesResult = rules.ProcessShot(shotResultOrNull, Engine, TurningPlayer.BallType);
+                        UnityEngine.Debug.Log(JsonConvert.SerializeObject(rulesResult));
 
-                    CurrTurnSettings = rules.GetTurnSettings(Engine, BallType.None, rulesResult.FoulOrNull != null);
-                    UnityEngine.Debug.Log(JsonConvert.SerializeObject(CurrTurnSettings));
+                        CurrTurnSettings = rules.GetTurnSettings(Engine, BallType.None, rulesResult.FoulOrNull != null);
+                        UnityEngine.Debug.Log(JsonConvert.SerializeObject(CurrTurnSettings));
 
-                    rulesResult.ReturnedBalls.ForEach(ball => { Engine.ReturnPocketedBall(ball); });
+                        rulesResult.ReturnedBalls.ForEach(ball => { Engine.ReturnPocketedBall(ball); });
 
-                    var shotData = new ShotResultData() { ShotResult = shotResultOrNull, ReturnedPocketedBalls = rulesResult.ReturnedBalls };
-                    completeHandler?.Invoke(shotData);
+                        var shotData = new ShotResultData() { ShotResult = shotResultOrNull, ReturnedPocketedBalls = rulesResult.ReturnedBalls };
+                        completeHandler?.Invoke(shotData);
 
-                    TrySelectBallTypes(rulesResult);
-                    TrySwitchTurningPlayer(rulesResult);
+                        TrySelectBallTypes(rulesResult);
+                        TrySwitchTurningPlayer(rulesResult);
 
-                    ChangeState(MatchState.PrepeareTurn);
-                    break;
+                        ChangeState(MatchState.PrepeareTurn);
+                        break;
+                    }
                 }
-
                 await UniTask.NextFrame();
             }
         }

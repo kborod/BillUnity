@@ -4,12 +4,13 @@ using Kborod.UI.Screens.Table.BallsRemove;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Zenject;
 
 namespace Kborod.UI.Screens.Table
 {
     public class TableView: MonoBehaviour
     {
-        private const bool SHOW_DEBUG_POINTS = true;
+        private const bool SHOW_DEBUG_POINTS = false;
 
         [SerializeField] private Transform floor;
         [SerializeField] private Transform shadow;
@@ -20,10 +21,10 @@ namespace Kborod.UI.Screens.Table
         [SerializeField] private Transform ballShadowPrefab;
         [SerializeField] private Transform debugPointPrefab;
         [Space(10)]
-        [SerializeField] private List<Material> ballsMaterials;
-        [Space(10)]
         [SerializeField] private BallsRemover ballsRemover;
         [SerializeField] private BallReplacer ballReplacer;
+
+        [Inject] private BallsSO _ballsSO;
 
         private TableParams tableParams;
         private Engine engine;
@@ -65,7 +66,7 @@ namespace Kborod.UI.Screens.Table
             foreach (var b in engine.balls)
             {
                 var ball = Instantiate(ballPrefab, ballsRoot);
-                ball.GetComponent<MeshRenderer>().material = ballsMaterials[b.Number];
+                ball.GetComponent<MeshRenderer>().material.mainTexture = _ballsSO.GetPoolBall(b.Number).Texture; //ballsMaterials[b.Number];
                 balls.Add(b.Number, ball);
 
                 var shadow = Instantiate(ballShadowPrefab, ballsRoot);

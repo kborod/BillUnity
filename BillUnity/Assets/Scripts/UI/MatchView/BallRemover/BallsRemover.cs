@@ -202,8 +202,6 @@ namespace Kborod.UI.Screens.Table.BallsRemove
                 }
             }
             updateCoroutine = null;
-
-            Debug.Log("CoroutineFinished");
         }
     }
 }

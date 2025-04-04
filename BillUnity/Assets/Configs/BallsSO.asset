@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cba27421694ae0a40ad62e2fab9601ee, type: 3}
+  m_Name: BallsSO
+  m_EditorClassIdentifier: 
+  _poolBalls:
+  - <BallNumber>k__BackingField: 0
+    <Texture>k__BackingField: {fileID: 2800000, guid: e19fab348e7a2674fbb114a6b732c234, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: a6eb3d371ffc86b4f90977c98b383df1, type: 3}
+  - <BallNumber>k__BackingField: 1
+    <Texture>k__BackingField: {fileID: 2800000, guid: 252269a3933cc6b4dbb845ebab8ecae5, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: a6eb3d371ffc86b4f90977c98b383df1, type: 3}
+  - <BallNumber>k__BackingField: 2
+    <Texture>k__BackingField: {fileID: 2800000, guid: 719bfba29aaffd64ca74626c50c37015, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: 69e8da0147c8f9748a336f33e608feca, type: 3}
+  - <BallNumber>k__BackingField: 3
+    <Texture>k__BackingField: {fileID: 2800000, guid: 150f1cf5a418aca42bad8d04fe74aa7c, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: 313a55abbc90b654fa58c14c1df73d56, type: 3}
+  - <BallNumber>k__BackingField: 4
+    <Texture>k__BackingField: {fileID: 2800000, guid: b5e61295dcfb7304f97c430a7db6f2eb, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: 154870a66f94601478a4ecddabcabd35, type: 3}
+  - <BallNumber>k__BackingField: 5
+    <Texture>k__BackingField: {fileID: 2800000, guid: 21da3d03bbf5a7b40b8b2bdddc38c046, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: 4a55b4ca038dfec4eb3cec928b7f2342, type: 3}
+  - <BallNumber>k__BackingField: 6
+    <Texture>k__BackingField: {fileID: 2800000, guid: 29c59101ab03baf41862f0caa8877530, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: 9518e54220ec86d45a5987fd1b6d34dd, type: 3}
+  - <BallNumber>k__BackingField: 7
+    <Texture>k__BackingField: {fileID: 2800000, guid: f8fc74343793c8b45a80ed38e76f7582, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: 6463a24e4ebef104f810dcab547f9be0, type: 3}
+  - <BallNumber>k__BackingField: 8
+    <Texture>k__BackingField: {fileID: 2800000, guid: ecf1eba42ced0934c89ab645e216a803, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: 65d3e931cf513844db58a403332d92b0, type: 3}
+  - <BallNumber>k__BackingField: 9
+    <Texture>k__BackingField: {fileID: 2800000, guid: 23fcba43fbd6ba249be8d927d70f0ffe, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: f4885b71ef7855849903dbcdb3a6b43e, type: 3}
+  - <BallNumber>k__BackingField: 10
+    <Texture>k__BackingField: {fileID: 2800000, guid: 21e0d6dcf2e085a44871acae93dd161c, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: 8a8567147efcd6147a2fb284dde8eb2c, type: 3}
+  - <BallNumber>k__BackingField: 11
+    <Texture>k__BackingField: {fileID: 2800000, guid: 525932d7e5bf4a44daeca5b1f7f34dd0, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: c856626b4b1787b4f892a20902094eb4, type: 3}
+  - <BallNumber>k__BackingField: 12
+    <Texture>k__BackingField: {fileID: 2800000, guid: 97b747bbce9bac5449837d51162cb4d1, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: 896afa97bedfd9544979d80ef2181813, type: 3}
+  - <BallNumber>k__BackingField: 13
+    <Texture>k__BackingField: {fileID: 2800000, guid: d70f05d8897556e42a80ad0f8d2ec02e, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: 72f763fd7d2864a4dac54f04f0b09326, type: 3}
+  - <BallNumber>k__BackingField: 14
+    <Texture>k__BackingField: {fileID: 2800000, guid: b13758c11e7d35b42b5fd131b74ccc5c, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: ddb3308e20928d94690b9aa7051b2634, type: 3}
+  - <BallNumber>k__BackingField: 15
+    <Texture>k__BackingField: {fileID: 2800000, guid: 60ef413d7f1cda74e9f5e5c9e1e036d2, type: 3}
+    <Icon>k__BackingField: {fileID: 21300000, guid: db7d142f1332d0247a679bb56fbe89cc, type: 3}
