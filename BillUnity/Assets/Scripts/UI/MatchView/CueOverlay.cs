@@ -11,7 +11,7 @@ namespace Kborod.UI.Screens
         [SerializeField] private Transform cueHolder;
         [SerializeField] private Transform cue;
         [SerializeField] private MouseInput mouseInput;
-        [SerializeField] private ShotPowerSlider powersSlider;
+        [SerializeField] private ShotPowerPanel powersSlider;
         [SerializeField] private AimLines aimLines;
         [SerializeField] private Camera tableCamera;
         [SerializeField] private Transform ballsRoot;
@@ -34,7 +34,7 @@ namespace Kborod.UI.Screens
             mouseInput.MouseMove += MouseMoveHandler;
             mouseInput.MouseUp += MouseUpHandler;
 
-            powersSlider.onValueChanged.AddListener(PowerChangedHandler);
+            powersSlider.PowerChanged += PowerChangedHandler;
             powersSlider.PowerSelected += PowerSelectedHandler;
         }
 
@@ -44,7 +44,7 @@ namespace Kborod.UI.Screens
             mouseInput.MouseMove -= MouseMoveHandler;
             mouseInput.MouseUp -= MouseUpHandler;
 
-            powersSlider.onValueChanged.RemoveAllListeners();
+            powersSlider.PowerChanged -= PowerChangedHandler;
             powersSlider.PowerSelected -= PowerSelectedHandler;
         }
 
