@@ -46,10 +46,16 @@ namespace Kborod.Services.UIScreenManager
             StartTween_AutoDeathTimer();
         }
 
-        public void Init(string text, bool isError, IconType iconType)
+        public void Init(string text, OverlayMessageType messageType, IconType iconType)
         {
             _text.text = text;
-            _background.color = isError ? _errorBgColor : _defaultBgColor;
+            _background.color = messageType switch
+            {
+                OverlayMessageType.Normal => _defaultBgColor,
+                OverlayMessageType.Error => _errorBgColor,
+                _ => throw new NotImplementedException(),
+            };
+
             _icon.gameObject.SetActive(iconType != IconType.None);
             if (iconType != IconType.None)
             {
@@ -133,7 +139,7 @@ namespace Kborod.Services.UIScreenManager
         private void StartTween_Appear()
         {
             _appearTweener.Kill();
-            //_appearTweener = _canvasGroup.DOFade(1, _appearTime);
+            _appearTweener = _canvasGroup.DOFade(1, _appearTime);
         }
 
         private void StartTween_AutoDeathTimer()
@@ -149,7 +155,7 @@ namespace Kborod.Services.UIScreenManager
         {
             _positionTweener.Kill();
 
-            //_positionTweener = RT.DOAnchorPos(finalPos, time);
+            _positionTweener = RT.DOAnchorPos(finalPos, time);
             _positionTweener.OnStart(() =>
             {
                 _background.raycastTarget = false;
@@ -172,7 +178,7 @@ namespace Kborod.Services.UIScreenManager
 
             _alphaDeathTweener.Kill();
 
-            //_alphaDeathTweener = _canvasGroup.DOFade(0, time);
+            _alphaDeathTweener = _canvasGroup.DOFade(0, time);
             _alphaDeathTweener.OnStart(() =>
             {
                 _background.raycastTarget = false;
@@ -183,6 +189,12 @@ namespace Kborod.Services.UIScreenManager
             });
         }
         #endregion
+    }
+
+    public enum OverlayMessageType
+    {
+        Normal,
+        Error
     }
 }
 

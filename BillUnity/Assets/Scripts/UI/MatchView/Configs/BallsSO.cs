@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using System.Linq;
+using Kborod.MatchManagement;
 
 namespace Kborod.UI.Screens.Table
 {
@@ -10,6 +11,16 @@ namespace Kborod.UI.Screens.Table
     {
         [SerializeField]
         private List<BallData> _poolBalls;
+
+        public BallData GetBall(int ballNumber, GameType gameType)
+        {
+            var result = gameType switch
+            {
+                GameType.PoolEight => GetPoolBall(ballNumber),
+                _ => throw new NotImplementedException()
+            };
+            return result;
+        }
 
         public BallData GetPoolBall(int ballNumber)
         {

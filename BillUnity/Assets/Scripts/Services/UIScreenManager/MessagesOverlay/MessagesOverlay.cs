@@ -22,10 +22,10 @@ namespace Kborod.Services.UIScreenManager
         [Inject] private LocalizationService _localization;
 
 
-        public void Add(string text, bool isError = false, IconType iconType = IconType.None)
+        public void Add(string text, OverlayMessageType messageType = OverlayMessageType.Normal, IconType iconType = IconType.None)
         {
             var item = _diContainer.InstantiatePrefabForComponent<MessageItem>(_prefabItem, _itemsRoot);
-            item.Init(text, isError, iconType);
+            item.Init(text, messageType, iconType);
             item.RT.anchoredPosition = GetNextAvailablePosition(_items);
             item.OnDestroy += (arg) =>
             {
@@ -46,8 +46,8 @@ namespace Kborod.Services.UIScreenManager
             UpdateItemsPositions();
         }
 
-        public void AddByLocalizeKey(string key, bool isError = false, IconType iconType = IconType.None) =>
-            Add(_localization.GetTranslationById(key), isError, iconType);
+        public void AddByLocalizeKey(string key, OverlayMessageType messageType = OverlayMessageType.Normal, IconType iconType = IconType.None) =>
+            Add(_localization.GetTranslationById(key), messageType, iconType);
 
         private Vector2 GetNextAvailablePosition(List<MessageItem> items)
         {

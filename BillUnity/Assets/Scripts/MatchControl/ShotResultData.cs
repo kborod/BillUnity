@@ -7,6 +7,8 @@ namespace Kborod.MatchManagement
     {
         public ShotResult ShotResult;
 
-		public List<int> ReturnedPocketedBalls;
+        public FoulType Foul = FoulType.None;
+
+        public List<int> ReturnedPocketedBalls;
 	}
 }

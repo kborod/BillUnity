@@ -1,14 +1,10 @@
+using Kborod.MatchManagement;
 using System.Collections.Generic;
 
 namespace Kborod.BilliardCore
 {
     public class ShotResult
     {
-        /// <summary>
-		/// Строка с текстом ошибки (возникшей при расчете). Если пустая, то ошибки при ударе нет
-		/// </summary>
-        public string error = "";
-
         /// <summary>
         /// Номер шара, с которым произошло первое касание
         /// </summary>

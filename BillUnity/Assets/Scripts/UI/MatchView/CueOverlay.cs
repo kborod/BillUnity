@@ -1,6 +1,8 @@
 using Kborod.BilliardCore;
+using Kborod.MatchManagement;
 using System;
 using UnityEngine;
+using Zenject;
 
 namespace Kborod.UI.Screens
 {
@@ -19,12 +21,13 @@ namespace Kborod.UI.Screens
         private const float CUE_MIN_X = -0.35f;
         private const float CUE_MAX_X = -1.2f;
 
-        private Engine engine;
+        [Inject] private IEngineForUI _engine;
+
         private int ballNumber;
 
         private Ball bTmp;
 
-        private Vector2 ballPosition => ballsRoot.TransformPoint(engine.balls[ballNumber].v.p0 * Config.MODEL_COORD_TO_WORLD_KOEF);
+        private Vector2 ballPosition => ballsRoot.TransformPoint(_engine.Balls[ballNumber].v.p0 * Config.MODEL_COORD_TO_WORLD_KOEF);
         private Vector2 currDirection => cueHolder.right.normalized;
         private Vector2 lastCursorScreenPosition;
 
@@ -48,23 +51,22 @@ namespace Kborod.UI.Screens
             powersSlider.PowerSelected -= PowerSelectedHandler;
         }
 
-        public void Show(Engine engine, int ballNumber = 0, bool resetDirection = true)
+        public void Show(int ballNumber = 0, bool resetDirection = true)
         {
-            this.engine = engine;
             this.ballNumber = ballNumber;
 
             var ballPosition = this.ballPosition;
 
             bTmp = new Ball(ballNumber);
-            bTmp.v.p0.x = engine.balls[ballNumber].v.p0.x;
-            bTmp.v.p0.y = engine.balls[ballNumber].v.p0.y;
+            bTmp.v.p0.x = _engine.Balls[ballNumber].v.p0.x;
+            bTmp.v.p0.y = _engine.Balls[ballNumber].v.p0.y;
 
             cueHolder.transform.localPosition = ballPosition;
 
             if (resetDirection)
                 cueHolder.rotation = Quaternion.Euler(0, 0, 0);
 
-            cue.transform.localPosition = new Vector2(CUE_MIN_X, 0);
+            cue.transform.localPosition = new Vector3(CUE_MIN_X, 0, -0.2f);
 
             UpdateAimLines();
 
@@ -113,7 +115,7 @@ namespace Kborod.UI.Screens
 
         private void PowerChangedHandler(float power)
         {
-            cue.localPosition = new Vector2(Mathf.Lerp(CUE_MIN_X, CUE_MAX_X, power), 0);
+            cue.localPosition = new Vector3(Mathf.Lerp(CUE_MIN_X, CUE_MAX_X, power), 0, -0.2f);
         }
 
         private void PowerSelectedHandler(float power)
@@ -127,7 +129,7 @@ namespace Kborod.UI.Screens
             bTmp.v.vy = currDirection.y;
             bTmp.v.updatePointsFromComponents();
             bTmp.v.makeVector();
-            var aimData = engine.getAimObject(bTmp);
+            var aimData = _engine.GetAimObject(bTmp);
             aimLines.Show(aimData, ballsRoot);
         }
     }

@@ -1,6 +1,8 @@
 using Kborod.BilliardCore;
+using Kborod.MatchManagement;
 using Kborod.UI.Screens.Table.BallsMove;
 using Kborod.UI.Screens.Table.BallsRemove;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -25,9 +27,10 @@ namespace Kborod.UI.Screens.Table
         [SerializeField] private BallReplacer ballReplacer;
 
         [Inject] private BallsSO _ballsSO;
+        [Inject] private EnginePlayer _enginePlayer;
+        [Inject] private IEngineForUI _engineForUI;
 
-        private TableParams tableParams;
-        private Engine engine;
+        //private TableParams tableParams = new TableParams();
 
         private Dictionary<int, Transform> balls;
         private Dictionary<int, Transform> ballShadows;
@@ -36,22 +39,21 @@ namespace Kborod.UI.Screens.Table
         {
             ballsRemover.BallMoved += UpdateBallPosition;
             ballReplacer.ballReplaced += UpdateBallPosition;
+
+            _enginePlayer.ShotTickCompleted += ShotTickHandler;
+            _enginePlayer.ShotCompleted += ShotCompleteHandler;
+
+            CreateTableAndBalls();
+            TryShowDebugPoints();
         }
 
         private void OnDestroy()
         {
             ballsRemover.BallMoved -= UpdateBallPosition;
             ballReplacer.ballReplaced -= UpdateBallPosition;
-        }
 
-        public void Setup(TableType type, Engine engine)
-        {
-            tableParams = new TableParams();
-            this.engine = engine;
-
-            CreateTableAndBalls();
-
-            TryShowDebugPoints();
+            _enginePlayer.ShotTickCompleted -= ShotTickHandler;
+            _enginePlayer.ShotCompleted -= ShotCompleteHandler;
         }
 
         private void CreateTableAndBalls()
@@ -63,10 +65,10 @@ namespace Kborod.UI.Screens.Table
 
             balls = new Dictionary<int, Transform>();
             ballShadows = new Dictionary<int, Transform>();
-            foreach (var b in engine.balls)
+            foreach (var b in _engineForUI.Balls)
             {
                 var ball = Instantiate(ballPrefab, ballsRoot);
-                ball.GetComponent<MeshRenderer>().material.mainTexture = _ballsSO.GetPoolBall(b.Number).Texture; //ballsMaterials[b.Number];
+                ball.GetComponent<MeshRenderer>().material.mainTexture = _ballsSO.GetPoolBall(b.Number).Texture;
                 balls.Add(b.Number, ball);
 
                 var shadow = Instantiate(ballShadowPrefab, ballsRoot);
@@ -75,9 +77,19 @@ namespace Kborod.UI.Screens.Table
             UpdateBallsPositions();
         }
 
-        public void UpdateBallsPositions(float deltaTime = 0)
+        private void ShotTickHandler(ShotTickResult result)
         {
-            foreach (var b in engine.balls.Where(b => !b.isRemoved))
+            UpdateBallsPositions(result.DeltaTimeMS);
+        }
+
+        private void ShotCompleteHandler(ShotResult result)
+        {
+            UpdateBallsPositions();
+        }
+
+        private void UpdateBallsPositions(float deltaTime = 0)
+        {
+            foreach (var b in _engineForUI.Balls.Where(b => !b.isRemoved))
             {
                 UpdateBallPosition(b, deltaTime);
             }
@@ -113,7 +125,7 @@ namespace Kborod.UI.Screens.Table
             if (SHOW_DEBUG_POINTS)
             {
                 var counter = 0;
-                foreach (var wall in engine.realWalls)
+                foreach (var wall in _engineForUI.RealWalls)
                 {
                     var tablePoint = Instantiate(debugPointPrefab, ballsRoot);
                     tablePoint.localPosition = wall.p0 * Config.MODEL_COORD_TO_WORLD_KOEF;

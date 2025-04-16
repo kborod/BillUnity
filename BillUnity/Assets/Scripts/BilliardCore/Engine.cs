@@ -1,4 +1,5 @@
 using Kborod.BilliardCore;
+using Kborod.UI.Screens.Table;
 using PlasticGui;
 using System;
 using System.Collections.Generic;
@@ -7,20 +8,17 @@ using UnityEngine;
 
 namespace Kborod.BilliardCore
 {
-
-
     // TODO Оптимизация расчета времени следующего столкновения - 4 вектора бортов. Шары сначала с ними проверять.
     // В зависимости от u1 и u2 определять, надо ли проверять с угловыми бортами и лузами. В большинстве случаев будет достаточно проверки шара с этими 4-я векторами
 
-    public class Engine
+    public class Engine : IEngineForUI
     {
-		public static Engine GCLink;
-		
-		private ShotResult shotCalculateResult;
-		
-		public List<Ball> balls = new List<Ball>();
-		
-		public List<MyVector> realWalls = new List<MyVector>(); 	//реальные координаты стен 
+        public TableType TableType => TableType.Pool;
+
+        private ShotResult shotCalculateResult;
+
+		public List<Ball> Balls { get; private set; } = new List<Ball>();
+		public List<MyVector> RealWalls { get; private set; } = new List<MyVector>(); 	//реальные координаты стен 
 		private List<MyVector> walls = new List<MyVector>();		//стены, смещенные на радиус шара
 		private List<Angle> angles = new List<Angle>(); 		//углы (шары с центром в углах)
 		private List<Pocket> pockets = new List<Pocket>();		//Лузы
@@ -32,10 +30,8 @@ namespace Kborod.BilliardCore
 
 		
 		
-		public Engine() 
-		{	
-			GCLink = this;
-			
+		public Engine()
+		{ 
 			createWalls();
 			
 			createPockets();
@@ -49,7 +45,7 @@ namespace Kborod.BilliardCore
 			var deltaY = -275;// -262.275;
 
             List<Vector2[]> coords = new List<Vector2[]>();
-			foreach (var item in realWalls)
+			foreach (var item in RealWalls)
 			{
 				coords.Add(new Vector2[] { new Vector2(item.p0.x, item.p0.y), new Vector2(item.p1.x, item.p1.y) });
 			}
@@ -91,7 +87,7 @@ namespace Kborod.BilliardCore
 		 */
         public void SetBallPosition(int ballNum, float posX, float posY)
 		{
-			balls[ballNum].SetPosition(posX, posY);
+			Balls[ballNum].SetPosition(posX, posY);
 		}
 
 
@@ -119,7 +115,7 @@ namespace Kborod.BilliardCore
 			if (posY > Config.topBorderY - Config.BALL_RAD_PX) tmpY = Config.topBorderY - Config.BALL_RAD_PX - 0.01f;
 			if (posY < Config.bottomBorderY + Config.BALL_RAD_PX) tmpY = Config.bottomBorderY + Config.BALL_RAD_PX + 0.01f;
 
-			foreach (var ball in balls)
+			foreach (var ball in Balls)
 			{
 				if (ball.Number == ballNum || ball.isRemoved == true) continue;
 				vc.p0.x = tmpX;
@@ -143,12 +139,12 @@ namespace Kborod.BilliardCore
         public void ReturnPocketedBall(int ballNum)
 		{
 			// TODO Доработать алгоритм подбора позиции
-			if ((balls[ballNum] as Ball).isRemoved == false)
+			if ((Balls[ballNum] as Ball).isRemoved == false)
 			{
 				Debug.LogError("ERROR returnPocketedBall(). ball.isRemoved = false. ballNum:" + ballNum);
 				return;
 			}
-			var ball = balls[ballNum] as Ball;
+			var ball = Balls[ballNum] as Ball;
 
             ball.StopBall();
 			ball.ResetParams();
@@ -185,7 +181,7 @@ namespace Kborod.BilliardCore
 				shotCalculateResult = new ShotResult();
 			}
 			
-			if (balls.Count < ballNumber || balls[ballNumber] == null)
+			if (Balls.Count < ballNumber || Balls[ballNumber] == null)
 			{
                 Debug.LogError("ERROR makeShot():" + ballNumber + " undefined");
 				return;
@@ -194,9 +190,9 @@ namespace Kborod.BilliardCore
 			{
 				this.cueBallNum = ballNumber;
 				
-				balls[ballNumber].MakeShot(vx, vy, spinVx, spinVy);
+				Balls[ballNumber].MakeShot(vx, vy, spinVx, spinVy);
 				
-				addActiveBall(balls[ballNumber]);
+				addActiveBall(Balls[ballNumber]);
 				
 				UpdateNextCollisionTime();
 			}
@@ -293,9 +289,9 @@ namespace Kborod.BilliardCore
 		{
 			tKoef = deltaTime / Config.SPEED_UPDATE_DELTA;
 			
-			for (var i = 0; i < balls.Count; i++) 
+			for (var i = 0; i < Balls.Count; i++) 
 			{
-				balls[i].Integrate(tKoef);
+				Balls[i].Integrate(tKoef);
 			}
 			
 			currDt -= deltaTime;
@@ -323,16 +319,16 @@ namespace Kborod.BilliardCore
 					check2BallsCollisionTime(activeBalls[i], activeBalls[j]);
 				}
 				
-				for (var k = 0; k < balls.Count; k++)
+				for (var k = 0; k < Balls.Count; k++)
 				{
-					if (balls[k].isRemoved == true) continue;
+					if (Balls[k].isRemoved == true) continue;
 					
-					if (activeBalls[i].Number == k || balls[k].isSleep == false)
+					if (activeBalls[i].Number == k || Balls[k].isSleep == false)
 					{
 						continue;
 					}
 					
-					check2BallsCollisionTime(activeBalls[i], balls[k]);
+					check2BallsCollisionTime(activeBalls[i], Balls[k]);
 				}
 				
 				
@@ -991,7 +987,7 @@ namespace Kborod.BilliardCore
 		
 		private void UpdateAllBallsState()
 		{
-			foreach (var b in balls) 
+			foreach (var b in Balls) 
 			{
 				if (b.NeedUpdateState == false) continue;
 				if (b.isRemoved)
@@ -1102,7 +1098,7 @@ namespace Kborod.BilliardCore
 		 * @param 	Копия шара битка (номер такой же), с новым направлением движения (направление прицела)
 		 * @return Объект для отображения прицельной линии
 		 */
-		public AimObject getAimObject(Ball b)
+		public AimObject GetAimObject(Ball b)
 		{
 			aimObjectResult.aimBallX0 = b.v.p0.x;
 			aimObjectResult.aimBallY0 = b.v.p0.y;
@@ -1113,15 +1109,15 @@ namespace Kborod.BilliardCore
 			
 			float aimTimeToCollTmp;
 			
-			for (var i = 0; i < balls.Count; i++) 
+			for (var i = 0; i < Balls.Count; i++) 
 			{
-				if (b.Number != (balls[i] as Ball).Number && (balls[i] as Ball).isRemoved == false)
+				if (b.Number != (Balls[i] as Ball).Number && (Balls[i] as Ball).isRemoved == false)
 				{
-					aimTimeToCollTmp = getTimeToNextBallsCollision(b, balls[i]);
+					aimTimeToCollTmp = getTimeToNextBallsCollision(b, Balls[i]);
 					if (aimTimeToColl > aimTimeToCollTmp)
 					{
 						aimTimeToColl = aimTimeToCollTmp;
-						aimCollBall = balls[i];
+						aimCollBall = Balls[i];
 						aimCollWall = null;
 						aimCollAngle = null;
 						aimCollPocket = null;
@@ -1237,8 +1233,8 @@ namespace Kborod.BilliardCore
 		 */
 		public float getBallX(int bNum = 0)
 		{
-			if (balls[bNum] == null) { toLog("ERROR:GameCore.getBallX() balls[bNum] == null, bnum:" + bNum); return 0; }
-			return balls[bNum].v.p0.x;
+			if (Balls[bNum] == null) { toLog("ERROR:GameCore.getBallX() balls[bNum] == null, bnum:" + bNum); return 0; }
+			return Balls[bNum].v.p0.x;
 		}
 		/**
 		 * Координата Y шара
@@ -1247,8 +1243,8 @@ namespace Kborod.BilliardCore
 		 */
 		public float getBallY(int bNum = 0)
 		{
-			if (balls[bNum] == null) { toLog("ERROR:GameCore.getBallY() balls[bNum] == null, bnum:" + bNum); return 0; }
-			return balls[bNum].v.p0.y;
+			if (Balls[bNum] == null) { toLog("ERROR:GameCore.getBallY() balls[bNum] == null, bnum:" + bNum); return 0; }
+			return Balls[bNum].v.p0.y;
 		}
 		
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1266,7 +1262,7 @@ namespace Kborod.BilliardCore
 				v.setP1(coord[1].x, coord[1].y);
 				v.updateComponentsFromPoints();
 				v.makeVector();
-				realWalls.Add(v);
+				RealWalls.Add(v);
 			}
 			
 			calcWallsAndAngles();
@@ -1279,15 +1275,15 @@ namespace Kborod.BilliardCore
         {
             walls.Clear();
 
-            for (var i = 0; i < realWalls.Count; i++) 
+            for (var i = 0; i < RealWalls.Count; i++) 
 			{
-				walls.Add(getDisplacedWall(realWalls[i]));
+				walls.Add(getDisplacedWall(RealWalls[i]));
 				
 				if (i > 0)
 				{
 					cutIntersections(walls[i-1], walls[i]);
 				}
-				if (i == realWalls.Count - 1)
+				if (i == RealWalls.Count - 1)
 				{
 					cutIntersections(walls[i], walls[0]);
 				}
@@ -1366,15 +1362,15 @@ namespace Kborod.BilliardCore
 		//Добавить шары-углы относительно стен
 		private void addWallAngles()
 		{
-			for (var i = 0; i < realWalls.Count; i++) 
+			for (var i = 0; i < RealWalls.Count; i++) 
 			{
 				if (i > 0)
 				{
-					checkTwoWallsToAddAngle(realWalls[i-1], realWalls[i]);
+					checkTwoWallsToAddAngle(RealWalls[i-1], RealWalls[i]);
 				}
-				if (i == realWalls.Count - 1)
+				if (i == RealWalls.Count - 1)
 				{
-					checkTwoWallsToAddAngle(realWalls[i], realWalls[0]);
+					checkTwoWallsToAddAngle(RealWalls[i], RealWalls[0]);
 				}
 			}
 		}
@@ -1417,34 +1413,34 @@ namespace Kborod.BilliardCore
 		/**
 		 * Установить шары в начальные позиции
 		 */
-		public void prepeareNewGame(int posNum) 
+		public void PrepeareNewGame(int posNum) 
 		{
-			balls.Clear();
+			Balls.Clear();
 			for (var i = 0; i <= 15 ; i++) 
 			{
-				balls.Add(new Ball(i));
+				Balls.Add(new Ball(i));
 			}
 
-			(balls[0] as Ball).SetPosition(Config.cueBallPosX, Config.cueBallPosY);
+			(Balls[0] as Ball).SetPosition(Config.cueBallPosX, Config.cueBallPosY);
 			var x0 = 158f + (posNum - 5);
 			var y0 = 0f + (posNum - 5);
 
-			(balls[9] as Ball).SetPosition(x0, y0);
+			(Balls[9] as Ball).SetPosition(x0, y0);
 			var step = Mathf.Sqrt(Config.BALL_DIAM_PX_SQUARED - Config.BALL_RAD_PX_SQUARED) + 0.1f + (0.5f * posNum / 10f);
-			(balls[12] as Ball).SetPosition(x0 + step, y0 - Config.BALL_RAD_PX);
-			(balls[7] as Ball).SetPosition(x0 + step, y0 + Config.BALL_RAD_PX);
-			(balls[1] as Ball).SetPosition(x0 + 2 * step, y0 - 2 * Config.BALL_RAD_PX);
-			(balls[8] as Ball).SetPosition(x0 + 2 * step, y0);
-			(balls[15] as Ball).SetPosition(x0 + 2 * step, y0 + 2 * Config.BALL_RAD_PX);
-			(balls[14] as Ball).SetPosition(x0 + 3 * step, y0 - 3 * Config.BALL_RAD_PX);
-			(balls[3] as Ball).SetPosition(x0 + 3 * step, y0 - 1 * Config.BALL_RAD_PX);
-			(balls[10] as Ball).SetPosition(x0 + 3 * step, y0 + 1 * Config.BALL_RAD_PX);
-			(balls[6] as Ball).SetPosition(x0 + 3 * step, y0 + 3 * Config.BALL_RAD_PX);
-			(balls[5] as Ball).SetPosition(x0 + 4 * step, y0 - 4 * Config.BALL_RAD_PX);
-			(balls[4] as Ball).SetPosition(x0 + 4 * step, y0 - 2 * Config.BALL_RAD_PX);
-			(balls[13] as Ball).SetPosition(x0 + 4 * step, y0);
-			(balls[2] as Ball).SetPosition(x0 + 4 * step, y0 + 2 * Config.BALL_RAD_PX);
-			(balls[11] as Ball).SetPosition(x0 + 4 * step, y0 + 4 * Config.BALL_RAD_PX);
+			(Balls[12] as Ball).SetPosition(x0 + step, y0 - Config.BALL_RAD_PX);
+			(Balls[7] as Ball).SetPosition(x0 + step, y0 + Config.BALL_RAD_PX);
+			(Balls[1] as Ball).SetPosition(x0 + 2 * step, y0 - 2 * Config.BALL_RAD_PX);
+			(Balls[8] as Ball).SetPosition(x0 + 2 * step, y0);
+			(Balls[15] as Ball).SetPosition(x0 + 2 * step, y0 + 2 * Config.BALL_RAD_PX);
+			(Balls[14] as Ball).SetPosition(x0 + 3 * step, y0 - 3 * Config.BALL_RAD_PX);
+			(Balls[3] as Ball).SetPosition(x0 + 3 * step, y0 - 1 * Config.BALL_RAD_PX);
+			(Balls[10] as Ball).SetPosition(x0 + 3 * step, y0 + 1 * Config.BALL_RAD_PX);
+			(Balls[6] as Ball).SetPosition(x0 + 3 * step, y0 + 3 * Config.BALL_RAD_PX);
+			(Balls[5] as Ball).SetPosition(x0 + 4 * step, y0 - 4 * Config.BALL_RAD_PX);
+			(Balls[4] as Ball).SetPosition(x0 + 4 * step, y0 - 2 * Config.BALL_RAD_PX);
+			(Balls[13] as Ball).SetPosition(x0 + 4 * step, y0);
+			(Balls[2] as Ball).SetPosition(x0 + 4 * step, y0 + 2 * Config.BALL_RAD_PX);
+			(Balls[11] as Ball).SetPosition(x0 + 4 * step, y0 + 4 * Config.BALL_RAD_PX);
 		}
 		
 		
@@ -1454,10 +1450,10 @@ namespace Kborod.BilliardCore
 
 		private void roundBallsCoord()
 		{
-			for (var i = 0; i < balls.Count; i++) 
+			for (var i = 0; i < Balls.Count; i++) 
 			{
-				(balls[i] as Ball).v.p0.x = (balls[i] as Ball).v.p1.x = (int)((balls[i] as Ball).v.p0.x * Config.COORD_ROUND_TO) / (float) Config.COORD_ROUND_TO;
-				(balls[i] as Ball).v.p0.y = (balls[i] as Ball).v.p1.y = (int)((balls[i] as Ball).v.p0.y * Config.COORD_ROUND_TO) / (float) Config.COORD_ROUND_TO;
+				(Balls[i] as Ball).v.p0.x = (Balls[i] as Ball).v.p1.x = (int)((Balls[i] as Ball).v.p0.x * Config.COORD_ROUND_TO) / (float) Config.COORD_ROUND_TO;
+				(Balls[i] as Ball).v.p0.y = (Balls[i] as Ball).v.p1.y = (int)((Balls[i] as Ball).v.p0.y * Config.COORD_ROUND_TO) / (float) Config.COORD_ROUND_TO;
 			}
 		}
 		
@@ -1483,7 +1479,7 @@ namespace Kborod.BilliardCore
 			{
 				
 				var ballParam = a[i].Split("_");
-				var b = balls[int.Parse(ballParam[0])];
+				var b = Balls[int.Parse(ballParam[0])];
 				b.ResetParams();
 				b.isRemoved = (ballParam[1] == "1")? true : false;
 				b.SetPosition(float.Parse(ballParam[2]), float.Parse(ballParam[3]));

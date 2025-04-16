@@ -1,10 +1,9 @@
-﻿using Cysharp.Threading.Tasks;
-using Kborod.BilliardCore;
+﻿using Kborod.BilliardCore;
 using Kborod.MatchManagement.PoolEight;
 using System;
 using System.Collections.Generic;
-using Unity.Plastic.Newtonsoft.Json;
 using UnityEngine;
+using Zenject;
 
 namespace Kborod.MatchManagement
 {
@@ -12,12 +11,11 @@ namespace Kborod.MatchManagement
     {
         public event Action<MatchState> StateChanged;
 
+        public event Action<ShotResultData> ShotCompleted;
         public event Action TurningPlayerChanged;
         public event Action BallTypesSelected;
 
         public MatchState State { get; private set; }
-
-        public Engine Engine { get; protected set; }
 
         public PoolEightPlayer TurningPlayer { get; protected set; }
 
@@ -25,61 +23,57 @@ namespace Kborod.MatchManagement
 
         public bool CanIManageTurningPlayer => true;
 
-        private PoolEightPlayer player1;
-        private PoolEightPlayer player2;
+        public PoolEightRules PoolEightRules;
 
-        private PoolEightRules rules;
+        [Inject] private Engine _engine;
+        [Inject] private EnginePlayer _enginePlayer;
 
-        public Match(PoolEightPlayer player1, PoolEightPlayer player2)
+        private PoolEightPlayer _player1;
+        private PoolEightPlayer _player2;
+
+        public void StartNew(PoolEightPlayer player1, PoolEightPlayer player2)
         {
-            this.player1 = player1;
-            this.player2 = player2;
+            this._player1 = player1;
+            this._player2 = player2;
 
             TurningPlayer = player1;
 
-            Engine = new Engine();
-            Engine.prepeareNewGame(2);
-            rules = new PoolEightRules();
-            CurrTurnSettings = rules.GetFirstTurnSettings(Engine, BallType.None);
+            _engine.PrepeareNewGame(2);
+
+            _enginePlayer.ShotCompleted += ShotCompletedHandler;
+
+            PoolEightRules = new PoolEightRules();
+            CurrTurnSettings = PoolEightRules.GetFirstTurnSettings(_engine.Balls, BallType.None);
 
             ChangeState(MatchState.PrepeareTurn);
         }
 
-        public async void MakeShot(int ballNumber, Vector2 direction, float spinX, float spinY, Action<ShotTickResult> processHandler, Action<ShotResultData> completeHandler)
+
+        public void MakeShot(int ballNumber, Vector2 direction, float spinX, float spinY)
         {
             ChangeState(MatchState.Animation);
 
-            Engine.MakeShot(direction.x, direction.y, ballNumber, spinX, spinY);
+            _enginePlayer.MakeShot(ballNumber, direction, spinX, spinY);
+        }
 
-            while (true)
-            {
-                var deltaMS = (int)(Time.deltaTime * 1000);
-                if (deltaMS > 0)
-                {
-                    Engine.UpdateModel(deltaMS, out var tickResult, out var shotResultOrNull);
-                    processHandler?.Invoke(tickResult);
-                    if (shotResultOrNull != null)
-                    {
-                        var rulesResult = rules.ProcessShot(shotResultOrNull, Engine, TurningPlayer.BallType);
-                        UnityEngine.Debug.Log(JsonConvert.SerializeObject(rulesResult));
+        private void ShotCompletedHandler(ShotResult shotResult)
+        {
+            var rulesResult = PoolEightRules.ProcessShot(shotResult, _engine.Balls, TurningPlayer.BallType);
+            //UnityEngine.Debug.Log(JsonConvert.SerializeObject(rulesResult, Formatting.Indented));
 
-                        CurrTurnSettings = rules.GetTurnSettings(Engine, BallType.None, rulesResult.FoulOrNull != null);
-                        UnityEngine.Debug.Log(JsonConvert.SerializeObject(CurrTurnSettings));
+            CurrTurnSettings = PoolEightRules.GetTurnSettings(_engine.Balls, BallType.None, rulesResult.Foul != FoulType.None);
+            //UnityEngine.Debug.Log(JsonConvert.SerializeObject(CurrTurnSettings, Formatting.Indented));
 
-                        rulesResult.ReturnedBalls.ForEach(ball => { Engine.ReturnPocketedBall(ball); });
+            rulesResult.ReturnedBalls.ForEach(ball => { _engine.ReturnPocketedBall(ball); });
 
-                        var shotData = new ShotResultData() { ShotResult = shotResultOrNull, ReturnedPocketedBalls = rulesResult.ReturnedBalls };
-                        completeHandler?.Invoke(shotData);
+            TrySelectBallTypes(rulesResult);
 
-                        TrySelectBallTypes(rulesResult);
-                        TrySwitchTurningPlayer(rulesResult);
+            var shotData = new ShotResultData() { ShotResult = shotResult, Foul = rulesResult.Foul, ReturnedPocketedBalls = rulesResult.ReturnedBalls };
+            ShotCompleted?.Invoke(shotData);
 
-                        ChangeState(MatchState.PrepeareTurn);
-                        break;
-                    }
-                }
-                await UniTask.NextFrame();
-            }
+            TrySwitchTurningPlayer(rulesResult);
+
+            ChangeState(MatchState.PrepeareTurn);
         }
 
         public TurnSettings GetCurrTurnSettings()
@@ -106,9 +100,9 @@ namespace Kborod.MatchManagement
 
         private void TrySelectBallTypes(RulesShotResult rulesResult)
         {
-            if (TurningPlayer.BallType != BallType.None || rulesResult.BallTypeSelectedOrNull == null)
+            if (TurningPlayer.BallType != BallType.None || rulesResult.BallTypeSelected == BallType.None)
                 return;
-            TurningPlayer.BallType = rulesResult.BallTypeSelectedOrNull.Value;
+            TurningPlayer.BallType = rulesResult.BallTypeSelected;
             GetOpponentOf(TurningPlayer).BallType = TurningPlayer.BallType == BallType.Striped ? BallType.Solid : BallType.Striped;
 
             BallTypesSelected?.Invoke();
@@ -116,10 +110,10 @@ namespace Kborod.MatchManagement
 
         private PoolEightPlayer GetOpponentOf(PoolEightPlayer player)
         {
-            if (player1 == player && player2 != null)
-                return player2;
+            if (_player1 == player && _player2 != null)
+                return _player2;
             else
-                return player1;
+                return _player1;
         }
     }
 

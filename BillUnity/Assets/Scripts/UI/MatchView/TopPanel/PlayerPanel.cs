@@ -10,9 +10,9 @@ namespace Kborod.UI.Screens.Table.TopPanel
         [SerializeField] private CanvasGroup canvasGroup;
 
         Match match;
-        PoolEightPlayer player;
+        Player player;
 
-        public void Setup(Match match, PoolEightPlayer player)
+        public void Setup(Match match, Player player)
         {
             this.match = match;
             this.player = player;

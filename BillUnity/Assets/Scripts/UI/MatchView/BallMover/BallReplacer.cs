@@ -1,7 +1,7 @@
 using Kborod.BilliardCore;
 using System;
 using UnityEngine;
-using UnityEngine.UI;
+using Zenject;
 
 namespace Kborod.UI.Screens.Table.BallsMove
 {
@@ -15,9 +15,9 @@ namespace Kborod.UI.Screens.Table.BallsMove
         [SerializeField] private RectTransform panel;
         [SerializeField] private Camera tableCamera;
         [SerializeField] private Transform ballsRoot;
-        
 
-        private Engine engine;
+        [Inject] private IEngineForUI _engine;
+
         private int ballNum;
         private bool onlyKitchen;
 
@@ -50,20 +50,19 @@ namespace Kborod.UI.Screens.Table.BallsMove
             Vector2 worldPoint = tableCamera.ScreenToWorldPoint(pointerWorldPosition);
             Vector2 modelPoint = ballsRoot.InverseTransformPoint(worldPoint) / Config.MODEL_COORD_TO_WORLD_KOEF;
 
-            var moved = engine.ReplaceBall(ballNum, modelPoint.x, modelPoint.y, onlyKitchen);
+            var moved = _engine.ReplaceBall(ballNum, modelPoint.x, modelPoint.y, onlyKitchen);
             if (moved)
             {
-                ballReplaced?.Invoke(engine.balls[ballNum]);
+                ballReplaced?.Invoke(_engine.Balls[ballNum]);
                 RefreshIcon();
             }
         }
 
-        public void Show(Engine engine, bool onlyKitchen, int ballNum = 0)
+        public void Show(bool onlyKitchen, int ballNum = 0)
         {
             gameObject.SetActive(true);
             icon.Show();
 
-            this.engine = engine;
             this.ballNum = ballNum;
             this.onlyKitchen = onlyKitchen;
 
@@ -78,7 +77,7 @@ namespace Kborod.UI.Screens.Table.BallsMove
 
         private void RefreshIcon()
         {
-            var worldBallPosition = ballsRoot.TransformPoint(engine.balls[ballNum].v.p0 * Config.MODEL_COORD_TO_WORLD_KOEF);
+            var worldBallPosition = ballsRoot.TransformPoint(_engine.Balls[ballNum].v.p0 * Config.MODEL_COORD_TO_WORLD_KOEF);
             icon.transform.position = tableCamera.WorldToScreenPoint(worldBallPosition);
         }
 

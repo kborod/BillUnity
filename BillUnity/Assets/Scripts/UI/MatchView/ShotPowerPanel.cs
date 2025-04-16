@@ -35,8 +35,6 @@ namespace Kborod.UI.Screens
             handleAreaEvents.BeginDrag += PointerDownHandler;
             handleAreaEvents.Drag += PointerMoveHandler;
             handleAreaEvents.EndDrag += PointerUpHandler;
-
-            Debug.Log(_areaHeight);
         }
 
         private void PointerUpHandler(PointerEventData data)
@@ -54,7 +52,7 @@ namespace Kborod.UI.Screens
             var delta = (data.position.y - _lastY) * _resolutionKoeff * _moveKoeff;
             _lastY = data.position.y;
             _handleY = Mathf.Clamp(_handleY + delta, -_areaHeight, 0);
-            Debug.Log($"Move: {data.position.y} -- {_handleY} -- {_lastY} -- {delta} -- {_resolutionKoeff}");
+            //Debug.Log($"Move: {data.position.y} -- {_handleY} -- {_lastY} -- {delta} -- {_resolutionKoeff}");
             RefreshByHandleY();
             PowerChanged?.Invoke(_currPower);
         }
@@ -62,7 +60,7 @@ namespace Kborod.UI.Screens
         private void PointerDownHandler(PointerEventData data)
         {
             _lastY = data.position.y;
-            Debug.Log($"Down: {data.position.y} {_handleY} {_lastY}");
+            //Debug.Log($"Down: {data.position.y} {_handleY} {_lastY}");
         }
 
         private void ResetPanel()

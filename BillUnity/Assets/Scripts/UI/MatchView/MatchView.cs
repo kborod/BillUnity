@@ -1,5 +1,6 @@
 ﻿using Kborod.BilliardCore;
 using Kborod.MatchManagement;
+using Kborod.Services.Localization;
 using Kborod.Services.Sound;
 using Kborod.Services.UIScreenManager;
 using Kborod.UI.Screens.SpinUI;
@@ -30,13 +31,38 @@ namespace Kborod.UI.Screens
         [Space(10)]
         [SerializeField] private PlayerPanel userPanelLeft;
         [SerializeField] private PlayerPanel userPanelRight;
+        [Space(10)]
+        [SerializeField] private PoolEightPocketedBallsPanel pocketedPanelLeft;
+        [SerializeField] private PoolEightPocketedBallsPanel pocketedPanelRight;
+        [Space(10)]
+        [SerializeField] private MessagesOverlay matchMessages;
 
-        [Inject] SoundService _soundService;
+        [Inject] private SoundService _soundService;
+        [Inject] private LocalizationService _localizationService;
+        //[Inject] ScreensHelper _screensHelper;
 
 
-        private Match match;
-        private Engine engine => match.Engine;
+        [Inject] private Match _match;
+        [Inject] private EnginePlayer _enginePlayer;
+        [Inject] private IEngineForUI _engineForUI;
+
         private MatchSound _matchSound;
+        private void Awake()
+        {
+            var p1 = new PoolEightPlayer("1", "Player1");
+            var p2 = new PoolEightPlayer("2", "Player2");
+
+            _match.StartNew(p1, p2);
+            _match.StateChanged += StateChangedHandler;
+            _match.ShotCompleted += AnimationCompleteHandler;
+            _enginePlayer.ShotTickCompleted += AnimationTickHandler;
+
+            userPanelLeft?.Setup(_match, p1);
+            userPanelRight?.Setup(_match, p2);
+
+            pocketedPanelLeft?.Setup(_match, p1);
+            pocketedPanelRight?.Setup(_match, p2);
+        }
 
         private void Start()
         {
@@ -46,7 +72,8 @@ namespace Kborod.UI.Screens
 
             _matchSound = new MatchSound(_soundService);
 
-            Init();
+            if (_match.State == MatchState.PrepeareTurn)
+                StateChangedHandler(_match.State);
         }
 
         private void MoverPointerDownHandler()
@@ -56,36 +83,19 @@ namespace Kborod.UI.Screens
 
         private void MoverPointerUpHandler()
         {
-            cueOverlay.Show(engine, resetDirection: false);
-        }
-
-        private void Init()
-        {
-            var p1 = new PoolEightPlayer("1", "Player1");
-            var p2 = new PoolEightPlayer("2", "Player2");
-
-            match = new Match(p1, p2);
-            match.StateChanged += StateChangedHandler;
-
-            tableView.Setup(TableType.Pool, engine);
-
-            userPanelLeft.Setup(match, p1);
-            userPanelRight.Setup(match, p2);
-
-            if (match.State == MatchState.PrepeareTurn)
-                StateChangedHandler(match.State);
+            cueOverlay.Show(resetDirection: false);
         }
 
         private void StateChangedHandler(MatchState state)
         {
-            if (state == MatchState.PrepeareTurn && match.CanIManageTurningPlayer)
+            if (state == MatchState.PrepeareTurn && _match.CanIManageTurningPlayer)
             {
-                var turnSettings = match.CurrTurnSettings;
+                var turnSettings = _match.CurrTurnSettings;
 
                 if (turnSettings.CanMoveBall.HasValue)
-                    ballReplacer.Show(engine, turnSettings.MoveOnlyInKitchen, turnSettings.CanMoveBall.Value);
+                    ballReplacer.Show(turnSettings.MoveOnlyInKitchen, turnSettings.CanMoveBall.Value);
 
-                cueOverlay.Show(engine);
+                cueOverlay.Show();
             }
             else if (state == MatchState.Animation)
             {
@@ -95,23 +105,22 @@ namespace Kborod.UI.Screens
 
         private void CueHitReadyHandler(Vector2 direction, float power)
         {
-            match.MakeShot(0, direction * power, spinPanel.SpinX, spinPanel.SpinY, AnimationTickHandler, AnimationCompleteHandler);
-
             cueOverlay.Hide();
             ballReplacer.Hide();
             spinPanel.Clear();
 
             _matchSound.PlayShot(power);
+
+            _match.MakeShot(0, direction * power, spinPanel.SpinX, spinPanel.SpinY);
         }
 
         private void AnimationTickHandler(ShotTickResult tickResult)
         {
             MovePocketedBallsToRemover();
-            tableView.UpdateBallsPositions(tickResult.DeltaTimeMS);
 
             void MovePocketedBallsToRemover()
             {
-                foreach (var b in engine.balls.Where(b => b.needMoveToBallRemover))
+                foreach (var b in _engineForUI.Balls.Where(b => b.needMoveToBallRemover))
                 {
                     ballsRemover.AddBall(b, ballsRoot, false);
                     b.needMoveToBallRemover = false;
@@ -125,7 +134,11 @@ namespace Kborod.UI.Screens
             if (result.ReturnedPocketedBalls.Count > 0)
             {
                 result.ReturnedPocketedBalls.ForEach(b => ballsRemover.RemoveBall(b));
-                tableView.UpdateBallsPositions();
+            }
+
+            if (result.Foul != FoulType.None)
+            {
+                matchMessages.AddByLocalizeKey(_localizationService.GetIdOfEnum(result.Foul), OverlayMessageType.Error);
             }
         }
     }
