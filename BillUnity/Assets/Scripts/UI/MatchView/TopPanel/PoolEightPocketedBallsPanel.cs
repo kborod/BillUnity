@@ -9,28 +9,37 @@ namespace Kborod.UI.Screens.Table.TopPanel
     {
         [SerializeField] private BallIconItem ballPrefab;
         [SerializeField] private Transform ballsRoot;
+        [SerializeField] private bool isPlayer1;
 
         [Inject] DiContainer _diContainer;
+        [Inject] private MatchBase _match;
 
-        Match _match;
-        PoolEightPlayer _player;
+        private MatchPoolEight _matchPollEight;
+        private PoolEightPlayer _player;
 
-        private Queue<BallIconItem> _ballIcons = new Queue<BallIconItem>();
+        private List<BallIconItem> _ballIcons = new List<BallIconItem>(7);
+
+        private void Start()
+        {
+            if (_match is not MatchPoolEight)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            _matchPollEight = (MatchPoolEight)_match;
+            _player = (PoolEightPlayer)(isPlayer1 ? _match.Player1 : _match.Player2);
+
+            _matchPollEight.BallTypesSelected += BallTypeSelectedHandler;
+            _matchPollEight.ShotCompleted += ShotCompletedHandler;
+
+            CreateIcons();
+        }
 
         private void OnDestroy()
         {
-            if (_match != null)
-                _match.ShotCompleted -= ShotCompletedHandler;
-        }
-
-        public void Setup(Match match, PoolEightPlayer player)
-        {
-            _match = match;
-            _player = player;
-
-            _match.ShotCompleted += ShotCompletedHandler;
-
-            CreateIcons();
+            if (_matchPollEight != null)
+                _matchPollEight.ShotCompleted -= ShotCompletedHandler;
         }
 
         private void CreateIcons()
@@ -40,29 +49,35 @@ namespace Kborod.UI.Screens.Table.TopPanel
                 Destroy(child.gameObject);
             }
 
-            for (int i = 0; i < _player.MaxPocketedBallsCount; i++)
+            for (int i = 0; i < 7; i++)
             {
-                _ballIcons.Enqueue(_diContainer.InstantiatePrefabForComponent<BallIconItem>(ballPrefab, ballsRoot));
+                _ballIcons.Add(_diContainer.InstantiatePrefabForComponent<BallIconItem>(ballPrefab, ballsRoot));
+            }
+        }
+
+        private void BallTypeSelectedHandler()
+        {
+            for (int i = 0; i < 7; i++)
+            {
+                _ballIcons[i].SetBall(_player.BallType == PoolBallType.Solid ? i + 1 : i + 9, GameType.PoolEight, 0.25f);
             }
         }
 
         private void ShotCompletedHandler(ShotResultData data)
         {
-            foreach (var pocketedBall in data.ShotResult.pocketedBalls)
+            foreach (var pocketedBall in data.ShotResult.PocketedBalls)
             {
                 if (data.ReturnedPocketedBalls.Contains(pocketedBall))
                     continue;
 
-                if (_match.PoolEightRules.GetBallType(pocketedBall) == _player.BallType)
+                if (pocketedBall.GetPoolBallType() == _player.BallType)
                     BallPocketedHandler(pocketedBall);
             } 
         }
 
         private void BallPocketedHandler(int ballNumber)
         {
-            if (_ballIcons.Count <= 0)
-                return;
-            _ballIcons.Dequeue().SetBall(ballNumber, GameType.PoolEight);
+            _ballIcons[ballNumber.GetPoolBallType() == PoolBallType.Solid ? ballNumber - 1 : ballNumber - 9].SetTransparency0_1(1);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Kborod.Services.DI
             //Container.Bind<Engine>().FromNew().AsSingle();
             Container.Bind(typeof(Engine), typeof(IEngineForUI)).To<Engine>().AsSingle();
             Container.Bind<EnginePlayer>().FromNew().AsSingle();
-            Container.Bind<Match>().FromNew().AsSingle();
+            Container.Bind<MatchBase>().To<MatchPoolEight>().AsSingle();
         }
     }
 }

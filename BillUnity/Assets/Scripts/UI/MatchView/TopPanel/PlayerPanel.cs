@@ -1,32 +1,42 @@
 using Kborod.MatchManagement;
 using TMPro;
 using UnityEngine;
+using Zenject;
 
 namespace Kborod.UI.Screens.Table.TopPanel
 {
     public class PlayerPanel : MonoBehaviour
     {
         [SerializeField] private TMP_Text userName;
-        [SerializeField] private CanvasGroup canvasGroup;
+        [SerializeField] private GameObject turnOverlay;
+        [SerializeField] private bool isPlayer1;
 
-        Match match;
-        Player player;
+        [Inject] private MatchBase _match; 
+        
+        private Player _player => isPlayer1 ? _match.Player1 : _match.Player2;
 
-        public void Setup(Match match, Player player)
+
+        private void Start()
         {
-            this.match = match;
-            this.player = player;
+            _match.TurningPlayerChanged += RefreshTurn;
 
-            userName.text = player.Name;
-
-            match.TurningPlayerChanged += RefreshByTurn;
-
-            RefreshByTurn();
+            RefreshName();
+            RefreshTurn();
         }
 
-        private void RefreshByTurn()
+        private void OnDestroy()
         {
-            canvasGroup.alpha = match.TurningPlayer != player ? 0.3f : 1f;
+            _match.TurningPlayerChanged -= RefreshTurn;
+        }
+
+        private void RefreshName()
+        {
+            userName.text = _player.Name;
+        }
+
+        private void RefreshTurn()
+        {
+            turnOverlay.SetActive(_match.TurningPlayer != _player);
         }
     }
 }

@@ -1,6 +1,8 @@
 using Kborod.BilliardCore;
 using Kborod.MatchManagement;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -23,11 +25,12 @@ namespace Kborod.UI.Screens
 
         [Inject] private IEngineForUI _engine;
 
-        private int ballNumber;
+        private int _cueBall;
+        private List<int> _ballsAvailableToAim;
 
         private Ball bTmp;
 
-        private Vector2 ballPosition => ballsRoot.TransformPoint(_engine.Balls[ballNumber].v.p0 * Config.MODEL_COORD_TO_WORLD_KOEF);
+        private Vector2 ballPosition => ballsRoot.TransformPoint(_engine.Balls[_cueBall].v.p0 * Config.MODEL_COORD_TO_WORLD_KOEF);
         private Vector2 currDirection => cueHolder.right.normalized;
         private Vector2 lastCursorScreenPosition;
 
@@ -51,22 +54,23 @@ namespace Kborod.UI.Screens
             powersSlider.PowerSelected -= PowerSelectedHandler;
         }
 
-        public void Show(int ballNumber = 0, bool resetDirection = true)
+        public void Show(int cueBall, List<int> ballsAvailableToAim, bool resetDirection = true)
         {
-            this.ballNumber = ballNumber;
+            _cueBall = cueBall;
+            _ballsAvailableToAim = ballsAvailableToAim;
 
             var ballPosition = this.ballPosition;
 
-            bTmp = new Ball(ballNumber);
-            bTmp.v.p0.x = _engine.Balls[ballNumber].v.p0.x;
-            bTmp.v.p0.y = _engine.Balls[ballNumber].v.p0.y;
+            bTmp = new Ball(cueBall);
+            bTmp.v.p0.x = _engine.Balls[cueBall].v.p0.x;
+            bTmp.v.p0.y = _engine.Balls[cueBall].v.p0.y;
 
             cueHolder.transform.localPosition = ballPosition;
 
             if (resetDirection)
                 cueHolder.rotation = Quaternion.Euler(0, 0, 0);
 
-            cue.transform.localPosition = new Vector3(CUE_MIN_X, 0, -0.2f);
+            cue.transform.localPosition = new Vector3(CUE_MIN_X, 0, -1.5f);
 
             UpdateAimLines();
 
@@ -130,7 +134,8 @@ namespace Kborod.UI.Screens
             bTmp.v.updatePointsFromComponents();
             bTmp.v.makeVector();
             var aimData = _engine.GetAimObject(bTmp);
-            aimLines.Show(aimData, ballsRoot);
+            var isBlockedAim = aimData.FirstCollBallNum >= 0 && _ballsAvailableToAim.Contains(aimData.FirstCollBallNum) == false;
+            aimLines.Show(aimData, ballsRoot, isBlockedAim);
         }
     }
 }

@@ -224,7 +224,7 @@ namespace Kborod.BilliardCore
 			{
 				if (activeBalls.Count == 0) 
 				{					
-					shotCalculateResult.shotDuration = currShotDuration;
+					shotCalculateResult.ShotDuration = currShotDuration;
 					roundBallsCoord();
 					shotResultOrNull = shotCalculateResult;
                     return;
@@ -749,8 +749,8 @@ namespace Kborod.BilliardCore
 		 */
 		private void applyCollisionToBalls(Ball b1, Ball b2, ref ShotTickResult shotTickResult)
 		{
-			shotCalculateResult.ballsCollisionCount++;
-			shotCalculateResult.firstCollisionBallNum ??= (b1.Number == cueBallNum) ? b2.Number : b1.Number;
+			shotCalculateResult.BallsCollisionCount++;
+			shotCalculateResult.FirstCollisionBallNum ??= (b1.Number == cueBallNum) ? b2.Number : b1.Number;
 			
 			//vector between center points of ball
 			vc.p0 = b1.v.p0;
@@ -799,8 +799,8 @@ namespace Kborod.BilliardCore
 		 */
 		private void applyBallWallCollision(Ball b, MyVector w, ref ShotTickResult shotTickResult)
 		{
-			if (shotCalculateResult.ballsCollisionCount > 0) shotCalculateResult.wallsCollisionAfterBallsCollisionCount++;
-			shotCalculateResult.wallsCollisionCount++;
+			if (shotCalculateResult.BallsCollisionCount > 0) shotCalculateResult.WallsCollisionAfterBallsCollisionCount++;
+			shotCalculateResult.WallsCollisionCount++;
 
             BallWallIntersectResult ir = getBallWallIntersectionInfo(b.v.p0.x, b.v.p0.y, b.v.p1.x, b.v.p1.y, w.p0.x, w.p0.y, w.p1.x, w.p1.y);
 			
@@ -863,8 +863,8 @@ namespace Kborod.BilliardCore
 		 */
 		private void applyBallAngleCollision(Ball b, Angle a, ref ShotTickResult shotTickResult)
 		{
-			if (shotCalculateResult.ballsCollisionCount > 0) shotCalculateResult.wallsCollisionAfterBallsCollisionCount++;
-			shotCalculateResult.wallsCollisionCount++;
+			if (shotCalculateResult.BallsCollisionCount > 0) shotCalculateResult.WallsCollisionAfterBallsCollisionCount++;
+			shotCalculateResult.WallsCollisionCount++;
 			
 			//vector between center points of ball
 			vc.p0 = b.v.p0;
@@ -952,8 +952,8 @@ namespace Kborod.BilliardCore
 			}
 			else
 			{
-				shotCalculateResult.pocketedBalls.Add(b.Number);
-				shotCalculateResult.pocketedBallsPockets.Add(p.pocketNum);
+				shotCalculateResult.PocketedBalls.Add(b.Number);
+				shotCalculateResult.PocketedBallsPockets.Add(p.pocketNum);
 				
 				//TODO Добавить анимацию удаления шара
 				b.isRemoved = true;
@@ -1100,8 +1100,8 @@ namespace Kborod.BilliardCore
 		 */
 		public AimObject GetAimObject(Ball b)
 		{
-			aimObjectResult.aimBallX0 = b.v.p0.x;
-			aimObjectResult.aimBallY0 = b.v.p0.y;
+			aimObjectResult.AimBallX0 = b.v.p0.x;
+			aimObjectResult.AimBallY0 = b.v.p0.y;
 			aimTimeToColl = float.MaxValue;
 			/*trace ("-------getAimObj--------");
 			trace ("bp0x:" + b.v.p0.x + " bp0y:" + b.v.p0.y );
@@ -1178,14 +1178,14 @@ namespace Kborod.BilliardCore
 			}
 			//trace ("aimTimeToColl4: " + aimTimeToColl);
 			
-			aimObjectResult.aimBallX = b.v.p0.x + b.v.vx * aimTimeToColl / Config.SPEED_UPDATE_DELTA;
-			aimObjectResult.aimBallY = b.v.p0.y + b.v.vy * aimTimeToColl / Config.SPEED_UPDATE_DELTA;
-			aimObjectResult.firstCollBallNum = (aimCollBall != null) ? aimCollBall.Number : -1;
+			aimObjectResult.AimBallX = b.v.p0.x + b.v.vx * aimTimeToColl / Config.SPEED_UPDATE_DELTA;
+			aimObjectResult.AimBallY = b.v.p0.y + b.v.vy * aimTimeToColl / Config.SPEED_UPDATE_DELTA;
+			aimObjectResult.FirstCollBallNum = (aimCollBall != null) ? aimCollBall.Number : -1;
 			
 			if (aimCollBall != null)
 			{
-				bAimTmp.v.p0.x = aimObjectResult.aimBallX;
-				bAimTmp.v.p0.y = aimObjectResult.aimBallY;
+				bAimTmp.v.p0.x = aimObjectResult.AimBallX;
+				bAimTmp.v.p0.y = aimObjectResult.AimBallY;
 				bAimTmp.v.vx = b.v.dx;
 				bAimTmp.v.vy = b.v.dy;
 				bAimTmp.v.updatePointsFromComponents();
@@ -1199,12 +1199,12 @@ namespace Kborod.BilliardCore
 				//trace (newv2Balls.vx1, newv2Balls.vy1);
 				//trace ("   " + newv2Balls.vx2 + " " + newv2Balls.vy2);
 				
-				aimObjectResult.aimBallBounceVx = newv2Balls.vx1;
-				aimObjectResult.aimBallBounceVy = newv2Balls.vy1;
-				aimObjectResult.collBallBounceVx = newv2Balls.vx2;
-				aimObjectResult.collBallBounceVy = newv2Balls.vy2;
-				aimObjectResult.collBallX0 = aimCollBall.v.p0.x;
-				aimObjectResult.collBallY0 = aimCollBall.v.p0.y;
+				aimObjectResult.AimBallBounceVx = newv2Balls.vx1;
+				aimObjectResult.AimBallBounceVy = newv2Balls.vy1;
+				aimObjectResult.CollBallBounceVx = newv2Balls.vx2;
+				aimObjectResult.CollBallBounceVy = newv2Balls.vy2;
+				aimObjectResult.CollBallX0 = aimCollBall.v.p0.x;
+				aimObjectResult.CollBallY0 = aimCollBall.v.p0.y;
 				//b1.v.vx = newv2Balls.vx1;
 				//b1.v.vy = newv2Balls.vy1;
 				//b2.v.vx = newv2Balls.vx2;

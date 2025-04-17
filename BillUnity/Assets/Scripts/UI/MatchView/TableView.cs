@@ -27,7 +27,7 @@ namespace Kborod.UI.Screens.Table
         [SerializeField] private BallReplacer ballReplacer;
 
         [Inject] private BallsSO _ballsSO;
-        [Inject] private EnginePlayer _enginePlayer;
+        [Inject] private MatchBase _match;
         [Inject] private IEngineForUI _engineForUI;
 
         //private TableParams tableParams = new TableParams();
@@ -40,8 +40,8 @@ namespace Kborod.UI.Screens.Table
             ballsRemover.BallMoved += UpdateBallPosition;
             ballReplacer.ballReplaced += UpdateBallPosition;
 
-            _enginePlayer.ShotTickCompleted += ShotTickHandler;
-            _enginePlayer.ShotCompleted += ShotCompleteHandler;
+            _match.ShotTickCompleted += ShotTickHandler;
+            _match.ShotCompleted += ShotCompleteHandler;
 
             CreateTableAndBalls();
             TryShowDebugPoints();
@@ -52,8 +52,8 @@ namespace Kborod.UI.Screens.Table
             ballsRemover.BallMoved -= UpdateBallPosition;
             ballReplacer.ballReplaced -= UpdateBallPosition;
 
-            _enginePlayer.ShotTickCompleted -= ShotTickHandler;
-            _enginePlayer.ShotCompleted -= ShotCompleteHandler;
+            _match.ShotTickCompleted -= ShotTickHandler;
+            _match.ShotCompleted -= ShotCompleteHandler;
         }
 
         private void CreateTableAndBalls()
@@ -82,7 +82,7 @@ namespace Kborod.UI.Screens.Table
             UpdateBallsPositions(result.DeltaTimeMS);
         }
 
-        private void ShotCompleteHandler(ShotResult result)
+        private void ShotCompleteHandler(ShotResultData result)
         {
             UpdateBallsPositions();
         }

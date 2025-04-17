@@ -8,3 +8,4 @@
 ,FoulType.P8_NoCollision,Фол - не было касаний шаров,Foul - there were no touches of the balls
 ,FoulType.P8_FirstCollision,Фол - первое касание с чужим шаром,Foul - the first touch with someone else's ball
 ,FoulType.P8_EightPocketed,Фол - забит черный шар,Foul - score a black ball
+,FoulType.P8_CueBallPocketed,Фол - забит биток,Foul - the cue ball is scored

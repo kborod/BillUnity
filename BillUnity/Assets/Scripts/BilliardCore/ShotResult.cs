@@ -1,4 +1,3 @@
-using Kborod.MatchManagement;
 using System.Collections.Generic;
 
 namespace Kborod.BilliardCore
@@ -8,42 +7,42 @@ namespace Kborod.BilliardCore
         /// <summary>
         /// Номер шара, с которым произошло первое касание
         /// </summary>
-        public int? firstCollisionBallNum = null;
+        public int? FirstCollisionBallNum = null;
 
         /// <summary>
         /// Список забитых шаров в порядке забивания
         /// </summary>
-        public List<int> pocketedBalls = new List<int>();
+        public List<int> PocketedBalls = new List<int>();
 
         /// <summary>
         /// Список луз, в которые забиты шары, параллельно pocketedBalls
         /// </summary>
-        public List<int> pocketedBallsPockets = new List<int>();
+        public List<int> PocketedBallsPockets = new List<int>();
 
         /// <summary>
         /// Количество столкновений между шарами
         /// </summary>
-        public int ballsCollisionCount = 0;
+        public int BallsCollisionCount = 0;
 
         /// <summary>
         /// Всего количество столкновений с бортами
         /// </summary>
-        public int wallsCollisionCount = 0;
+        public int WallsCollisionCount = 0;
         
         /// <summary>
         /// Количество столкновений с бортами после первого соударения с шаром
         /// </summary>
-        public int wallsCollisionAfterBallsCollisionCount = 0;
+        public int WallsCollisionAfterBallsCollisionCount = 0;
 
         /// <summary>
         /// Продолжительность удара
         /// </summary>
-        public float shotDuration;
+        public float ShotDuration;
 		
-		public string toString()
+		public override string ToString()
 		{
-			return "ShotCalcResult:duration:" + shotDuration + ";firstCollisionBallNum:" + firstCollisionBallNum + ";wallsCollisionCount:" + wallsCollisionCount 
-				+ ";pocketedBalls:" + pocketedBalls + ";pocketedBallsPockets:" + pocketedBallsPockets;
+			return "ShotCalcResult:duration:" + ShotDuration + ";firstCollisionBallNum:" + FirstCollisionBallNum + ";wallsCollisionCount:" + WallsCollisionCount 
+				+ ";pocketedBalls:" + PocketedBalls + ";pocketedBallsPockets:" + PocketedBallsPockets;
 		}
 }
 }

@@ -12,46 +12,23 @@ namespace Kborod.MatchManagement.PoolEight
         private ReadOnlyCollection<int> AllAimBalls = new ReadOnlyCollection<int>(new List<int>() { 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15 });
         private ReadOnlyCollection<int> EightBalls = new ReadOnlyCollection<int>(new List<int>() { 8 });
 
-        public BallType GetBallType(int bNumber)
-        {
-            if (SolidBalls.Contains(bNumber))
-                return BallType.Solid;
-            else if (StripedBalls.Contains(bNumber))
-                return BallType.Striped;
-            else
-                return BallType.None;
-        }
-
-        public ReadOnlyCollection<int> GetBallsByType(BallType ballType)
-        {
-            return ballType switch
-            {
-                BallType.Solid => SolidBalls,
-                BallType.Striped => StripedBalls,
-                BallType.None => null,
-                _ => throw new System.NotImplementedException(),
-            };
-        }
-
-        public RulesShotResult ProcessShot(ShotResult shotResult, List<Ball> balls, BallType playerBallType) 
+        public RulesShotResult ProcessShot(ShotResult shotResult, List<Ball> balls, PoolBallType playerBallType) 
         {
             var result = new RulesShotResult();
             result.ReturnedBalls = GetReturnedBallsAfterShot(shotResult);
 
-            var foulOrNull = GetFoulInShotOrNull(shotResult, balls, playerBallType);
-            var isTurnTransition = foulOrNull != FoulType.None || shotResult.pocketedBalls.Count == 0;
-            var ballTypeSelectedOrNull = GetSelectedBallTypeInShotOrNull(shotResult, playerBallType);
+            var foul = GetFoulInShot(shotResult, balls, playerBallType);
+            var ballTypeSelected = GetSelectedBallTypeInShot(shotResult, playerBallType);
 
-
-            result.TurnTransition = isTurnTransition;
-            result.Foul = foulOrNull;
-            result.BallTypeSelected = ballTypeSelectedOrNull;
-            result.UserWin = foulOrNull != FoulType.None && shotResult.pocketedBalls.Contains(8) && IsAllBallsPocketed(balls, playerBallType);
+            result.TurnTransition = IsTurnTransition(shotResult, foul, ballTypeSelected != PoolBallType.None, playerBallType);
+            result.Foul = foul;
+            result.BallTypeSelected = ballTypeSelected;
+            result.UserWin = foul != FoulType.None && shotResult.PocketedBalls.Contains(8) && IsAllBallsPocketed(balls, playerBallType);
 
             return result;
         }
 
-        public TurnSettings GetFirstTurnSettings(List<Ball> balls, BallType playerBallType)
+        public TurnSettings GetFirstTurnSettings(List<Ball> balls, PoolBallType playerBallType)
         {
             var result = GetTurnSettings(balls, playerBallType);
             result.CanMoveBall = 0;
@@ -59,7 +36,7 @@ namespace Kborod.MatchManagement.PoolEight
             return result;
         }
 
-        public TurnSettings GetTurnSettings(List<Ball> balls, BallType playerBallType, bool afterFoul)
+        public TurnSettings GetTurnSettings(List<Ball> balls, PoolBallType playerBallType, bool afterFoul)
         {
             var result = GetTurnSettings(balls, playerBallType);
             result.CanMoveBall = afterFoul ? 0 : null;
@@ -67,11 +44,22 @@ namespace Kborod.MatchManagement.PoolEight
             return result;
         }
 
-        private TurnSettings GetTurnSettings(List<Ball> balls, BallType playerBallType)
+        private ReadOnlyCollection<int> GetBallsByType(PoolBallType ballType)
+        {
+            return ballType switch
+            {
+                PoolBallType.Solid => SolidBalls,
+                PoolBallType.Striped => StripedBalls,
+                PoolBallType.None => null,
+                _ => throw new System.NotImplementedException(),
+            };
+        }
+
+        private TurnSettings GetTurnSettings(List<Ball> balls, PoolBallType playerBallType)
         {
             var result = new TurnSettings
             {
-                BallsAvailableToSelectAsCueball = new List<int>(0),
+                BallsAvailableToSelectAsCueball = new List<int>() { 0 },
                 BallsAvailableToAim = GetBallsAvailableToAim(balls, playerBallType).ToList()
             };
             return result;
@@ -81,36 +69,57 @@ namespace Kborod.MatchManagement.PoolEight
         private List<int> GetReturnedBallsAfterShot(ShotResult shotResult)
         {
             var returnedBalls = new List<int>();
-            if (shotResult.pocketedBalls.Contains(0))
+            if (shotResult.PocketedBalls.Contains(0))
                 returnedBalls.Add(0);
             return returnedBalls;
         }        
 
-        private FoulType GetFoulInShotOrNull(ShotResult shotResult, List<Ball> balls, BallType playerBallType)
+        private FoulType GetFoulInShot(ShotResult shotResult, List<Ball> balls, PoolBallType playerBallType)
         {
             if (IsFatalFoul())
                 return FoulType.P8_EightPocketed;
-            if (shotResult.firstCollisionBallNum == null)
+            if (shotResult.FirstCollisionBallNum == null)
                 return FoulType.P8_NoCollision;
-            else if (playerBallType != BallType.None && GetBallType(shotResult.firstCollisionBallNum.Value) != playerBallType)
+            else if (playerBallType != PoolBallType.None && shotResult.FirstCollisionBallNum.Value.GetPoolBallType() != playerBallType)
                 return FoulType.P8_FirstCollision;
+            else if (shotResult.PocketedBalls.Contains(0))
+                return FoulType.P8_CueBallPocketed;
 
             return FoulType.None;
 
             bool IsFatalFoul()
             {
-                return shotResult.pocketedBalls.Contains(8) && !IsAllBallsPocketed(balls, playerBallType);
+                return shotResult.PocketedBalls.Contains(8) && !IsAllBallsPocketed(balls, playerBallType);
             }
         }
 
-        private BallType GetSelectedBallTypeInShotOrNull(ShotResult shotResult, BallType playerBallType)
+        private bool IsTurnTransition(ShotResult shotResult, FoulType foul, bool ballTypeSelected, PoolBallType playerBallType)
         {
-            return (playerBallType == BallType.None && shotResult.pocketedBalls.Count > 0) ? GetBallType(shotResult.pocketedBalls[0]) : BallType.None;
+            if (foul != FoulType.None)
+                return true;
+            if (shotResult.PocketedBalls.Count == 0)
+                return true;
+            if (ballTypeSelected)
+                return false;
+            if (playerBallType != PoolBallType.None)
+            {
+                foreach (var pocketedBall in shotResult.PocketedBalls)
+                {
+                    if (pocketedBall.GetPoolBallType() == playerBallType)
+                        return false;
+                }
+            }
+            return true;
         }
 
-        private ReadOnlyCollection<int> GetBallsAvailableToAim(List<Ball> balls, BallType playerBallType)
+        private PoolBallType GetSelectedBallTypeInShot(ShotResult shotResult, PoolBallType playerBallType)
         {
-            if (playerBallType == BallType.None)
+            return (playerBallType == PoolBallType.None && shotResult.PocketedBalls.Count > 0) ? shotResult.PocketedBalls[0].GetPoolBallType() : PoolBallType.None;
+        }
+
+        private ReadOnlyCollection<int> GetBallsAvailableToAim(List<Ball> balls, PoolBallType playerBallType)
+        {
+            if (playerBallType == PoolBallType.None)
                 return AllAimBalls;
             if (IsAllBallsPocketed(balls, playerBallType))
                 return EightBalls;
@@ -118,7 +127,7 @@ namespace Kborod.MatchManagement.PoolEight
             return GetBallsByType(playerBallType);
         }
 
-        private bool IsAllBallsPocketed(List<Ball> balls, BallType ballType)
+        private bool IsAllBallsPocketed(List<Ball> balls, PoolBallType ballType)
         {
             foreach (var bNumber in GetBallsByType(ballType))
             {
@@ -134,7 +143,7 @@ namespace Kborod.MatchManagement.PoolEight
         public List<int> ReturnedBalls;
         public bool TurnTransition;
         public FoulType Foul;
-        public BallType BallTypeSelected;
+        public PoolBallType BallTypeSelected;
         public bool UserWin;
     }
 }

@@ -1,4 +1,5 @@
-﻿using Kborod.BilliardCore;
+﻿using Cysharp.Threading.Tasks;
+using Kborod.BilliardCore;
 using Kborod.MatchManagement;
 using Kborod.Services.Localization;
 using Kborod.Services.Sound;
@@ -7,7 +8,7 @@ using Kborod.UI.Screens.SpinUI;
 using Kborod.UI.Screens.Table;
 using Kborod.UI.Screens.Table.BallsMove;
 using Kborod.UI.Screens.Table.BallsRemove;
-using Kborod.UI.Screens.Table.TopPanel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -29,12 +30,6 @@ namespace Kborod.UI.Screens
         [SerializeField] private BallsRemover ballsRemover;
         [SerializeField] private SpinPanel spinPanel;
         [Space(10)]
-        [SerializeField] private PlayerPanel userPanelLeft;
-        [SerializeField] private PlayerPanel userPanelRight;
-        [Space(10)]
-        [SerializeField] private PoolEightPocketedBallsPanel pocketedPanelLeft;
-        [SerializeField] private PoolEightPocketedBallsPanel pocketedPanelRight;
-        [Space(10)]
         [SerializeField] private MessagesOverlay matchMessages;
 
         [Inject] private SoundService _soundService;
@@ -42,26 +37,27 @@ namespace Kborod.UI.Screens
         //[Inject] ScreensHelper _screensHelper;
 
 
-        [Inject] private Match _match;
-        [Inject] private EnginePlayer _enginePlayer;
+        [Inject] private MatchBase _match;
         [Inject] private IEngineForUI _engineForUI;
 
         private MatchSound _matchSound;
+
+        private int _selectedCueBallNum;
+
         private void Awake()
         {
             var p1 = new PoolEightPlayer("1", "Player1");
             var p2 = new PoolEightPlayer("2", "Player2");
 
-            _match.StartNew(p1, p2);
+            if (_match is not MatchPoolEight)
+            {
+                throw new Exception("NotImplemented");
+            }
+            (_match as MatchPoolEight).StartNew(p1, p2);
+
             _match.StateChanged += StateChangedHandler;
             _match.ShotCompleted += AnimationCompleteHandler;
-            _enginePlayer.ShotTickCompleted += AnimationTickHandler;
-
-            userPanelLeft?.Setup(_match, p1);
-            userPanelRight?.Setup(_match, p2);
-
-            pocketedPanelLeft?.Setup(_match, p1);
-            pocketedPanelRight?.Setup(_match, p2);
+            _match.ShotTickCompleted += AnimationTickHandler;
         }
 
         private void Start()
@@ -83,19 +79,21 @@ namespace Kborod.UI.Screens
 
         private void MoverPointerUpHandler()
         {
-            cueOverlay.Show(resetDirection: false);
+            cueOverlay.Show(_selectedCueBallNum, _match.CurrTurnSettings.BallsAvailableToAim, resetDirection: false);
         }
 
-        private void StateChangedHandler(MatchState state)
+        private async void StateChangedHandler(MatchState state)
         {
             if (state == MatchState.PrepeareTurn && _match.CanIManageTurningPlayer)
             {
                 var turnSettings = _match.CurrTurnSettings;
 
+                await SelectCueBall();
+
                 if (turnSettings.CanMoveBall.HasValue)
                     ballReplacer.Show(turnSettings.MoveOnlyInKitchen, turnSettings.CanMoveBall.Value);
 
-                cueOverlay.Show();
+                cueOverlay.Show(_selectedCueBallNum, _match.CurrTurnSettings.BallsAvailableToAim);
             }
             else if (state == MatchState.Animation)
             {
@@ -103,15 +101,33 @@ namespace Kborod.UI.Screens
             }
         }
 
+        private async UniTask SelectCueBall()
+        {
+            if (_match.CurrTurnSettings.BallsAvailableToSelectAsCueball.Count == 1)
+            {
+                _selectedCueBallNum = _match.CurrTurnSettings.BallsAvailableToSelectAsCueball[0];
+            }
+            else if (_match.CurrTurnSettings.BallsAvailableToSelectAsCueball.Count > 1)
+            {
+                await UniTask.NextFrame();
+                throw new NotImplementedException();
+            }
+            else
+            {
+                throw new Exception("No balls for select as cueball");
+            }
+        }
+
         private void CueHitReadyHandler(Vector2 direction, float power)
         {
-            cueOverlay.Hide();
-            ballReplacer.Hide();
-            spinPanel.Clear();
-
             _matchSound.PlayShot(power);
 
-            _match.MakeShot(0, direction * power, spinPanel.SpinX, spinPanel.SpinY);
+            cueOverlay.Hide();
+            ballReplacer.Hide();
+
+            _match.MakeShot(_selectedCueBallNum, direction * power, spinPanel.SpinX, spinPanel.SpinY);
+
+            spinPanel.Clear();
         }
 
         private void AnimationTickHandler(ShotTickResult tickResult)

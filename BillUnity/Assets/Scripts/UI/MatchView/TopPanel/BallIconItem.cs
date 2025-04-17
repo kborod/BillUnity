@@ -1,4 +1,5 @@
 using Kborod.MatchManagement;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -16,10 +17,16 @@ namespace Kborod.UI.Screens.Table.TopPanel
             icon.gameObject.SetActive(false);
         }
 
-        public void SetBall(int ballNum, GameType gameType)
+        public void SetBall(int ballNum, GameType gameType, float transparency = 1f)
         {
             icon.gameObject.SetActive(true);
             icon.sprite = _ballsSO.GetBall(ballNum, gameType).Icon;
+            SetTransparency0_1(transparency);
+        }
+
+        public void SetTransparency0_1(float value)
+        {
+            icon.color = new Color(1, 1, 1, value);
         }
     }
 }

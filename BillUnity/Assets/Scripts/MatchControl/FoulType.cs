@@ -6,5 +6,6 @@ namespace Kborod.MatchManagement
         P8_NoCollision,
         P8_FirstCollision,
         P8_EightPocketed,
+        P8_CueBallPocketed,
 	}
 }
