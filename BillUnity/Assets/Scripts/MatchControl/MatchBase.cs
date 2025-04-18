@@ -9,6 +9,7 @@ namespace Kborod.MatchManagement
     {
         public event Action<MatchState> StateChanged;
 
+        public event Action<float> CueBallHittedWithPower;
         public event Action<ShotTickResult> ShotTickCompleted;
         public event Action<ShotResultData> ShotCompleted;
         public event Action TurningPlayerChanged;
@@ -26,7 +27,7 @@ namespace Kborod.MatchManagement
         [Inject] protected EnginePlayer _enginePlayer { get; }
 
 
-        public abstract void MakeShot(int ballNumber, Vector2 direction, float spinX, float spinY, int? pocket = null);
+        public abstract void MakeShot(int ballNumber, Vector2 direction, float power, float spinX, float spinY, int? pocket = null);
 
 
         protected void ChangeState(MatchState state)
@@ -35,6 +36,11 @@ namespace Kborod.MatchManagement
                 throw new Exception($"Already in this state ({state})");
             State = state;
             StateChanged?.Invoke(state);
+        }
+
+        protected void InvokeCueBallHittedWithPower(float power)
+        {
+            CueBallHittedWithPower?.Invoke(power);
         }
 
         protected void InvokeShotTick(ShotTickResult tickResult)

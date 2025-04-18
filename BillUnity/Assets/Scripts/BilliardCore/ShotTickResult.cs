@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Kborod.BilliardCore
 {
     public struct ShotTickResult
@@ -21,6 +23,8 @@ namespace Kborod.BilliardCore
 		 */
         public float MaxPocketedPower { get; private set; }
 
+		public List<Ball> PocketedBallsOrNull { get; private set; }
+
         public void SetDeltaTime(int deltaTimeMS)
         {
             DeltaTimeMS = deltaTimeMS;
@@ -42,6 +46,12 @@ namespace Kborod.BilliardCore
 		{
 			if (MaxPocketedPower < power)
                 MaxPocketedPower = power;
+		}
+
+		public void AddPocketedBall(Ball ball)
+		{
+			PocketedBallsOrNull ??= new List<Ball>();
+			PocketedBallsOrNull.Add(ball);
 		}
     }
 }

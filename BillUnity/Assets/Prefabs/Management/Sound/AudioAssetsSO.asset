@@ -73,3 +73,8 @@ MonoBehaviour:
     - <Clip>k__BackingField: {fileID: 8300000, guid: 486ce4046886ad645a857bb17c339c46, type: 3}
       <Volume>k__BackingField: 1
       <Tag>k__BackingField: 1
+  - <Type>k__BackingField: 500
+    <Clips>k__BackingField:
+    - <Clip>k__BackingField: {fileID: 8300000, guid: c6a0bb87c3f724544976e76af0979eb7, type: 3}
+      <Volume>k__BackingField: 1
+      <Tag>k__BackingField: 1

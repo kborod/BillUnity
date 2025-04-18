@@ -1,18 +1,47 @@
 using Kborod.BilliardCore;
+using Kborod.MatchManagement;
 using Kborod.Services.Sound;
+using UnityEngine;
+using Zenject;
 
 namespace Kborod.UI.Screens.Table
 {
-    public class MatchSound
+    public class MatchSound: MonoBehaviour
     {
-		private SoundService _soundService;
+        [Inject] private MatchBase _match;
+        [Inject] private SoundService _soundService;
 
-        public MatchSound(SoundService soundService)
+
+        private void Start()
         {
-            _soundService = soundService;
+            _match.CueBallHittedWithPower += PlayCueBallHitted;
+            _match.ShotTickCompleted += PlayPartyTickSounds;
+            _match.TurningPlayerChanged += PlaySwapTurn;
         }
 
-        public void PlayPartyTickSounds(ShotTickResult tickResult)
+        private void OnDestroy()
+        {
+            _match.CueBallHittedWithPower -= PlayCueBallHitted;
+            _match.ShotTickCompleted -= PlayPartyTickSounds;
+            _match.TurningPlayerChanged -= PlaySwapTurn;
+        }
+
+        private void PlaySwapTurn()
+        {
+            _soundService.PlaySound(SoundType.SwapTurn);
+        }
+
+        private void PlayCueBallHitted(float power)
+        {
+            if (power < 0.3)
+                _soundService.PlaySound(SoundType.BallShot3, 0.5f + 0.5f * (power * 3.33f));
+            else if (power < 0.5)
+                _soundService.PlaySound(SoundType.BallShot2, 0.7f + 0.3f * ((power - 0.3f) * 5));
+            else
+                _soundService.PlaySound(SoundType.BallShot1, 0.8f + 0.2f * ((power - 0.5f) * 2f));
+        }
+
+        private void PlayPartyTickSounds(ShotTickResult tickResult)
 		{
 
 			if (tickResult.MaxBallsCollPower > 0)
@@ -23,16 +52,6 @@ namespace Kborod.UI.Screens.Table
 
 			if (tickResult.MaxPocketedPower > 0)
 				PlayBallPocketed(tickResult.MaxPocketedPower);
-		}
-		
-		public void PlayShot(float power)
-		{
-			if (power < 0.3)
-                _soundService.PlaySound(SoundType.BallShot3, 0.5f + 0.5f * (power * 3.33f));
-			else if (power < 0.5)
-                _soundService.PlaySound(SoundType.BallShot2, 0.7f + 0.3f * ((power - 0.3f) * 5));
-            else
-                _soundService.PlaySound(SoundType.BallShot1, 0.8f + 0.2f * ((power - 0.5f) * 2f));
 		}
 
         private void PlayBallVsBall(float power)

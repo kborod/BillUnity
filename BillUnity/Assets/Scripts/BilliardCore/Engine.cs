@@ -960,12 +960,11 @@ namespace Kborod.BilliardCore
 				
 				//TODO Добавить анимацию удаления шара
 				b.isRemoved = true;
-				//b.stopBall();
-				b.needMoveToBallRemover = true;
 				b.pocketRemoveTo = p;
 				b.removeDeltaTime = currDt;
 
 				shotTickResult.TryChangeMaxPocketedPower(b.v.len / Config.MAX_SHOT_POWER);
+				shotTickResult.AddPocketedBall(b);
 			}
 			
 			b.NeedUpdateState = true;

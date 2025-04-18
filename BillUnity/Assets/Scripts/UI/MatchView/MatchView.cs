@@ -40,8 +40,6 @@ namespace Kborod.UI.Screens
         [Inject] private MatchBase _match;
         [Inject] private IEngineForUI _engineForUI;
 
-        private MatchSound _matchSound;
-
         private int _selectedCueBallNum;
 
         private void Awake()
@@ -67,8 +65,6 @@ namespace Kborod.UI.Screens
 
         private void Start()
         {
-            _matchSound = new MatchSound(_soundService);
-
             if (_match.State == MatchState.PrepeareTurn)
                 StateChangedHandler(_match.State);
         }
@@ -133,29 +129,17 @@ namespace Kborod.UI.Screens
 
         private void CueHitReadyHandler(Vector2 direction, float power)
         {
-            _matchSound.PlayShot(power);
-
             cueOverlay.Hide();
             ballReplacer.Hide();
 
-            _match.MakeShot(_selectedCueBallNum, direction * power, spinPanel.SpinX, spinPanel.SpinY);
+            _match.MakeShot(_selectedCueBallNum, direction, power, spinPanel.SpinX, spinPanel.SpinY);
 
             spinPanel.Clear();
         }
 
         private void AnimationTickHandler(ShotTickResult tickResult)
         {
-            MovePocketedBallsToRemover();
-
-            void MovePocketedBallsToRemover()
-            {
-                foreach (var b in _engineForUI.Balls.Where(b => b.needMoveToBallRemover))
-                {
-                    ballsRemover.AddBall(b, ballsRoot, false);
-                    b.needMoveToBallRemover = false;
-                }
-            }
-            _matchSound.PlayPartyTickSounds(tickResult);
+            tickResult.PocketedBallsOrNull?.ForEach(b => ballsRemover.AddBall(b, ballsRoot, false));
         }
 
         private void AnimationCompleteHandler(ShotResultData result)

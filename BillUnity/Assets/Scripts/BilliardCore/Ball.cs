@@ -42,10 +42,6 @@ namespace Kborod.BilliardCore
 
         //ШАР ЗАБИТ:
         /// <summary>
-        /// Признак - шар только что забит в лузу и его надо передать в BallRemover для анимирования удаления.
-        /// </summary>
-        public bool needMoveToBallRemover = false;
-        /// <summary>
         /// Луза, в которую забит шар. 
         /// </summary>
         public Pocket pocketRemoveTo = null;
@@ -269,7 +265,6 @@ namespace Kborod.BilliardCore
 		{
 			NeedUpdateState = false;
 			isSleep = true;
-			needMoveToBallRemover = false;
 			pocketRemoveTo = null;
 			isRemoved = false;
 			MoveToUpperLayer();

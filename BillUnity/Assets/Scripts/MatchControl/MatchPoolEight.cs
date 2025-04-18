@@ -2,7 +2,6 @@
 using Kborod.MatchManagement.PoolEight;
 using System;
 using UnityEngine;
-using Zenject;
 
 namespace Kborod.MatchManagement
 {
@@ -46,11 +45,13 @@ namespace Kborod.MatchManagement
             _enginePlayer.ShotCompleted -= ShotCompletedHandler;
         }
 
-        public override void MakeShot(int ballNumber, Vector2 direction, float spinX, float spinY, int? pocket = null)
+        public override void MakeShot(int ballNumber, Vector2 direction, float power, float spinX, float spinY, int? pocket = null)
         {
             ChangeState(MatchState.Animation);
 
-            _enginePlayer.MakeShot(ballNumber, direction, spinX, spinY);
+            _enginePlayer.MakeShot(ballNumber, direction * power, spinX, spinY);
+
+            InvokeCueBallHittedWithPower(power);
         }
 
         private void ShotTickCompletedHandler(ShotTickResult tickResult)
