@@ -4869,6 +4869,7 @@ GameObject:
   - component: {fileID: 2046087532}
   - component: {fileID: 2046087531}
   - component: {fileID: 2046087533}
+  - component: {fileID: 2046087534}
   m_Layer: 0
   m_Name: MatchControl
   m_TagString: Untagged
@@ -4914,7 +4915,6 @@ MonoBehaviour:
   ballReplacer: {fileID: 1552083658}
   ballsRemover: {fileID: 1150447356}
   spinPanel: {fileID: 950371501}
-  matchMessages: {fileID: 145149317}
 --- !u!4 &2046087532
 Transform:
   m_ObjectHideFlags: 0
@@ -4942,6 +4942,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3930ec4e5a354a546a19c972d2bb4318, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2046087534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046087530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 557ccdbdf09128b44bd1c8b98a5d9af2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  matchMessages: {fileID: 145149317}
 --- !u!1 &2072295965
 GameObject:
   m_ObjectHideFlags: 0

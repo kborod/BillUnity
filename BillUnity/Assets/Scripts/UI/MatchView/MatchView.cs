@@ -29,16 +29,8 @@ namespace Kborod.UI.Screens
         [SerializeField] private BallReplacer ballReplacer;
         [SerializeField] private BallsRemover ballsRemover;
         [SerializeField] private SpinPanel spinPanel;
-        [Space(10)]
-        [SerializeField] private MessagesOverlay matchMessages;
-
-        [Inject] private SoundService _soundService;
-        [Inject] private LocalizationService _localizationService;
-        //[Inject] ScreensHelper _screensHelper;
-
 
         [Inject] private MatchBase _match;
-        [Inject] private IEngineForUI _engineForUI;
 
         private int _selectedCueBallNum;
 
@@ -53,7 +45,7 @@ namespace Kborod.UI.Screens
             }
             (_match as MatchPoolEight).StartNew(p1, p2);
 
-            (_match as MatchPoolEight).BallTypesSelected += P8_BallTypeSelectedHandler;
+            
             _match.StateChanged += StateChangedHandler;
             _match.ShotCompleted += AnimationCompleteHandler;
             _match.ShotTickCompleted += AnimationTickHandler;
@@ -71,7 +63,6 @@ namespace Kborod.UI.Screens
 
         private void OnDestroy()
         {
-            (_match as MatchPoolEight).BallTypesSelected -= P8_BallTypeSelectedHandler;
             _match.StateChanged -= StateChangedHandler;
             _match.ShotCompleted -= AnimationCompleteHandler;
             _match.ShotTickCompleted -= AnimationTickHandler;
@@ -148,17 +139,6 @@ namespace Kborod.UI.Screens
             {
                 result.ReturnedPocketedBalls.ForEach(b => ballsRemover.RemoveBall(b));
             }
-
-            if (result.Foul != FoulType.None)
-            {
-                matchMessages.AddByLocalizeKey(_localizationService.GetIdOfEnum(result.Foul), OverlayMessageType.Error);
-            }
-        }
-
-        private void P8_BallTypeSelectedHandler()
-        {
-            var ballType = (_match.TurningPlayer as PoolEightPlayer).BallType;
-            matchMessages.AddByLocalizeKey(ballType == PoolBallType.Solid ? "MatchMsg.P8_SolidBallsSelected" : "MatchMsg.P8_StrippedBallsSelected", OverlayMessageType.Normal);
         }
     }
 }
