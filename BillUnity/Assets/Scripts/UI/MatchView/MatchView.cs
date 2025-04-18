@@ -1,16 +1,11 @@
 ﻿using Cysharp.Threading.Tasks;
 using Kborod.BilliardCore;
 using Kborod.MatchManagement;
-using Kborod.Services.Localization;
-using Kborod.Services.Sound;
 using Kborod.Services.UIScreenManager;
 using Kborod.UI.Screens.SpinUI;
-using Kborod.UI.Screens.Table;
 using Kborod.UI.Screens.Table.BallsMove;
 using Kborod.UI.Screens.Table.BallsRemove;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -18,27 +13,14 @@ namespace Kborod.UI.Screens
 {
     public class MatchView : UIScreenBase
     {
-        [SerializeField] private Transform ballPrefab;
-        [SerializeField] private Transform ballShadowPrefab;
-        [SerializeField] private Transform tablePrefab;
         [SerializeField] private Transform ballsRoot;
-        [SerializeField] private List<Material> materials;
         [SerializeField] private CueOverlay cueOverlay;
-        [SerializeField] private TableView tableView;
         [Space(10)]
         [SerializeField] private BallReplacer ballReplacer;
         [SerializeField] private BallsRemover ballsRemover;
         [SerializeField] private SpinPanel spinPanel;
-        [Space(10)]
-        [SerializeField] private MessagesOverlay matchMessages;
-
-        [Inject] private SoundService _soundService;
-        [Inject] private LocalizationService _localizationService;
-        //[Inject] ScreensHelper _screensHelper;
-
 
         [Inject] private MatchBase _match;
-        [Inject] private IEngineForUI _engineForUI;
 
         private int _selectedCueBallNum;
 
@@ -53,7 +35,7 @@ namespace Kborod.UI.Screens
             }
             (_match as MatchPoolEight).StartNew(p1, p2);
 
-            (_match as MatchPoolEight).BallTypesSelected += P8_BallTypeSelectedHandler;
+            
             _match.StateChanged += StateChangedHandler;
             _match.ShotCompleted += AnimationCompleteHandler;
             _match.ShotTickCompleted += AnimationTickHandler;
@@ -71,7 +53,6 @@ namespace Kborod.UI.Screens
 
         private void OnDestroy()
         {
-            (_match as MatchPoolEight).BallTypesSelected -= P8_BallTypeSelectedHandler;
             _match.StateChanged -= StateChangedHandler;
             _match.ShotCompleted -= AnimationCompleteHandler;
             _match.ShotTickCompleted -= AnimationTickHandler;
@@ -148,17 +129,6 @@ namespace Kborod.UI.Screens
             {
                 result.ReturnedPocketedBalls.ForEach(b => ballsRemover.RemoveBall(b));
             }
-
-            if (result.Foul != FoulType.None)
-            {
-                matchMessages.AddByLocalizeKey(_localizationService.GetIdOfEnum(result.Foul), OverlayMessageType.Error);
-            }
-        }
-
-        private void P8_BallTypeSelectedHandler()
-        {
-            var ballType = (_match.TurningPlayer as PoolEightPlayer).BallType;
-            matchMessages.AddByLocalizeKey(ballType == PoolBallType.Solid ? "MatchMsg.P8_SolidBallsSelected" : "MatchMsg.P8_StrippedBallsSelected", OverlayMessageType.Normal);
         }
     }
 }
