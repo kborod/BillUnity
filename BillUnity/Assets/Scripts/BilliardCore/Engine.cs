@@ -28,7 +28,7 @@ namespace Kborod.BilliardCore
 		
 		private int cueBallNum = -1;
 
-		
+		private int MatchShotsCount = 0;		//Всего ударов в матче
 		
 		public Engine()
 		{ 
@@ -196,6 +196,8 @@ namespace Kborod.BilliardCore
 				
 				UpdateNextCollisionTime();
 			}
+
+			MatchShotsCount++;
 		}
 		
 		private float currDt = 0;			//значение дельта, на которое обновляем модель
@@ -225,6 +227,7 @@ namespace Kborod.BilliardCore
 				if (activeBalls.Count == 0) 
 				{					
 					shotCalculateResult.ShotDuration = currShotDuration;
+					shotCalculateResult.MatchShotsCount = MatchShotsCount;
 					roundBallsCoord();
 					shotResultOrNull = shotCalculateResult;
                     return;
@@ -1415,6 +1418,8 @@ namespace Kborod.BilliardCore
 		 */
 		public void PrepeareNewGame(int posNum) 
 		{
+			MatchShotsCount = 0;
+
 			Balls.Clear();
 			for (var i = 0; i <= 15 ; i++) 
 			{

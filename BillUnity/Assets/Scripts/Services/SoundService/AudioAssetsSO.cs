@@ -61,6 +61,8 @@ namespace Kborod.Services.Sound
         BallShot1 = 131,
         BallShot2 = 132,
         BallShot3 = 133,
+
+        SwapTurn = 500,
     }
 
     public enum SoundTag

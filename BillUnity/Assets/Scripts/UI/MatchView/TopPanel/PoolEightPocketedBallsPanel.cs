@@ -1,3 +1,4 @@
+using Kborod.BilliardCore;
 using Kborod.MatchManagement;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace Kborod.UI.Screens.Table.TopPanel
 
         [Inject] DiContainer _diContainer;
         [Inject] private MatchBase _match;
+        [Inject] private IEngineForUI _engineForUI;
 
         private MatchPoolEight _matchPollEight;
         private PoolEightPlayer _player;
@@ -39,7 +41,10 @@ namespace Kborod.UI.Screens.Table.TopPanel
         private void OnDestroy()
         {
             if (_matchPollEight != null)
+            {
+                _matchPollEight.BallTypesSelected -= BallTypeSelectedHandler; 
                 _matchPollEight.ShotCompleted -= ShotCompletedHandler;
+            }   
         }
 
         private void CreateIcons()
@@ -59,7 +64,10 @@ namespace Kborod.UI.Screens.Table.TopPanel
         {
             for (int i = 0; i < 7; i++)
             {
-                _ballIcons[i].SetBall(_player.BallType == PoolBallType.Solid ? i + 1 : i + 9, GameType.PoolEight, 0.25f);
+                var ballNum = _player.BallType == PoolBallType.Solid ? i + 1 : i + 9;
+                _ballIcons[i].SetBall(ballNum, GameType.PoolEight, 0.25f);
+                if (_engineForUI.Balls[ballNum].isRemoved)
+                    _ballIcons[i].SetTransparency0_1(1);
             }
         }
 

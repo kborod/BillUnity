@@ -40,6 +40,12 @@ namespace Kborod.MatchManagement
             ChangeState(MatchState.PrepeareTurn);
         }
 
+        public void Dispose()
+        {
+            _enginePlayer.ShotTickCompleted -= ShotTickCompletedHandler;
+            _enginePlayer.ShotCompleted -= ShotCompletedHandler;
+        }
+
         public override void MakeShot(int ballNumber, Vector2 direction, float spinX, float spinY, int? pocket = null)
         {
             ChangeState(MatchState.Animation);

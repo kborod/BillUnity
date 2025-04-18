@@ -4,11 +4,10 @@ using Kborod.BilliardCore;
 
 namespace Kborod.Services.DI
 {
-    public class GameSceneInstaller : MonoInstaller
+    public class MatchSceneInstaller : MonoInstaller
     {
         public override void InstallBindings()
         {
-            //Container.Bind<Engine>().FromNew().AsSingle();
             Container.Bind(typeof(Engine), typeof(IEngineForUI)).To<Engine>().AsSingle();
             Container.Bind<EnginePlayer>().FromNew().AsSingle();
             Container.Bind<MatchBase>().To<MatchPoolEight>().AsSingle();

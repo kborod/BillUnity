@@ -78,12 +78,14 @@ namespace Kborod.MatchManagement.PoolEight
         {
             if (IsFatalFoul())
                 return FoulType.P8_EightPocketed;
-            if (shotResult.FirstCollisionBallNum == null)
-                return FoulType.P8_NoCollision;
-            else if (playerBallType != PoolBallType.None && shotResult.FirstCollisionBallNum.Value.GetPoolBallType() != playerBallType)
-                return FoulType.P8_FirstCollision;
             else if (shotResult.PocketedBalls.Contains(0))
                 return FoulType.P8_CueBallPocketed;
+            if (shotResult.FirstCollisionBallNum == null)
+                return FoulType.P8_NoCollision;
+            if (shotResult.PocketedBalls.Count == 0 && shotResult.WallsCollisionCount == 0)
+                return FoulType.P8_WallsCollisionsRequired;
+            else if (playerBallType != PoolBallType.None && shotResult.FirstCollisionBallNum.Value.GetPoolBallType() != playerBallType)
+                return FoulType.P8_FirstCollision;
 
             return FoulType.None;
 
@@ -101,6 +103,8 @@ namespace Kborod.MatchManagement.PoolEight
                 return true;
             if (ballTypeSelected)
                 return false;
+            if (shotResult.IsFirstShot && shotResult.PocketedBalls.Count > 0)
+                return false;
             if (playerBallType != PoolBallType.None)
             {
                 foreach (var pocketedBall in shotResult.PocketedBalls)
@@ -114,7 +118,19 @@ namespace Kborod.MatchManagement.PoolEight
 
         private PoolBallType GetSelectedBallTypeInShot(ShotResult shotResult, PoolBallType playerBallType)
         {
-            return (playerBallType == PoolBallType.None && shotResult.PocketedBalls.Count > 0) ? shotResult.PocketedBalls[0].GetPoolBallType() : PoolBallType.None;
+            if (shotResult.IsFirstShot)
+            {
+                return PoolBallType.None;
+            }   
+
+            if (playerBallType == PoolBallType.None &&
+                shotResult.PocketedBalls.Count > 0 &&
+                shotResult.PocketedBalls.Contains(0) == false)
+            {
+                return shotResult.PocketedBalls[0].GetPoolBallType();
+            }
+
+            return PoolBallType.None;
         }
 
         private ReadOnlyCollection<int> GetBallsAvailableToAim(List<Ball> balls, PoolBallType playerBallType)

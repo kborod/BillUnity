@@ -5,7 +5,15 @@
 ,,,
 ,EmptyString,,
 ,,,
+,MatchMsg.P8_StrippedBallsSelected,Ваши шары полосатые!,Your balls are striped!
+,MatchMsg.P8_SolidBallsSelected,Ваши шары сплошные!,Your balls are solid!
+,,,
+,,,
+,,,
 ,FoulType.P8_NoCollision,Фол - не было касаний шаров,Foul - there were no touches of the balls
 ,FoulType.P8_FirstCollision,Фол - первое касание с чужим шаром,Foul - the first touch with someone else's ball
 ,FoulType.P8_EightPocketed,Фол - забит черный шар,Foul - score a black ball
 ,FoulType.P8_CueBallPocketed,Фол - забит биток,Foul - the cue ball is scored
+,FoulType.P8_WallsCollisionsRequired,Фол - после столкновения шаров должно быть касание с бортом!,"Foul - after the balls collide, there must be a touch with the board!"
+,,,
+,Match.WinMessage,Победа!,Victory!

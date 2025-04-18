@@ -39,7 +39,6 @@ namespace Kborod.UI.Screens.Table
         {
             ballsRemover.BallMoved += UpdateBallPosition;
             ballReplacer.ballReplaced += UpdateBallPosition;
-
             _match.ShotTickCompleted += ShotTickHandler;
             _match.ShotCompleted += ShotCompleteHandler;
 
@@ -51,7 +50,6 @@ namespace Kborod.UI.Screens.Table
         {
             ballsRemover.BallMoved -= UpdateBallPosition;
             ballReplacer.ballReplaced -= UpdateBallPosition;
-
             _match.ShotTickCompleted -= ShotTickHandler;
             _match.ShotCompleted -= ShotCompleteHandler;
         }

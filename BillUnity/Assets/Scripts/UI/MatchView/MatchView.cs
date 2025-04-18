@@ -55,21 +55,34 @@ namespace Kborod.UI.Screens
             }
             (_match as MatchPoolEight).StartNew(p1, p2);
 
+            (_match as MatchPoolEight).BallTypesSelected += P8_BallTypeSelectedHandler;
             _match.StateChanged += StateChangedHandler;
             _match.ShotCompleted += AnimationCompleteHandler;
             _match.ShotTickCompleted += AnimationTickHandler;
+
+            cueOverlay.HitReady += CueHitReadyHandler;
+            ballReplacer.PointerDownEvent += MoverPointerDownHandler;
+            ballReplacer.PointerUpEvent += MoverPointerUpHandler;
         }
 
         private void Start()
         {
-            cueOverlay.HitReady += CueHitReadyHandler;
-            ballReplacer.PointerDownEvent += MoverPointerDownHandler;
-            ballReplacer.PointerUpEvent += MoverPointerUpHandler;
-
             _matchSound = new MatchSound(_soundService);
 
             if (_match.State == MatchState.PrepeareTurn)
                 StateChangedHandler(_match.State);
+        }
+
+        private void OnDestroy()
+        {
+            (_match as MatchPoolEight).BallTypesSelected -= P8_BallTypeSelectedHandler;
+            _match.StateChanged -= StateChangedHandler;
+            _match.ShotCompleted -= AnimationCompleteHandler;
+            _match.ShotTickCompleted -= AnimationTickHandler;
+
+            cueOverlay.HitReady -= CueHitReadyHandler;
+            ballReplacer.PointerDownEvent -= MoverPointerDownHandler;
+            ballReplacer.PointerUpEvent -= MoverPointerUpHandler;
         }
 
         private void MoverPointerDownHandler()
@@ -156,6 +169,12 @@ namespace Kborod.UI.Screens
             {
                 matchMessages.AddByLocalizeKey(_localizationService.GetIdOfEnum(result.Foul), OverlayMessageType.Error);
             }
+        }
+
+        private void P8_BallTypeSelectedHandler()
+        {
+            var ballType = (_match.TurningPlayer as PoolEightPlayer).BallType;
+            matchMessages.AddByLocalizeKey(ballType == PoolBallType.Solid ? "MatchMsg.P8_SolidBallsSelected" : "MatchMsg.P8_StrippedBallsSelected", OverlayMessageType.Normal);
         }
     }
 }
