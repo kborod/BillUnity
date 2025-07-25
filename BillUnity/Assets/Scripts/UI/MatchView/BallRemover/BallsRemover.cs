@@ -1,10 +1,12 @@
 ﻿using Kborod.BilliardCore;
+using Kborod.MatchManagement;
 using PathCreation;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Zenject;
 
 namespace Kborod.UI.Screens.Table.BallsRemove
 {
@@ -15,8 +17,9 @@ namespace Kborod.UI.Screens.Table.BallsRemove
         private const float BallSpeed = 15;
 
         [SerializeField] private PathCreator pathCreator;
+        [SerializeField] private Transform ballsRoot;
 
-        private Transform ballsRoot;
+        [Inject] MatchBase _match;
 
         private float maxPathDistance => pathCreator.path.length - ballsOnPathCount * Config.BALL_DIAM_PX * Config.MODEL_COORD_TO_WORLD_KOEF;
 
@@ -27,10 +30,35 @@ namespace Kborod.UI.Screens.Table.BallsRemove
 
         private IEnumerator updateCoroutine;
 
+        private void Start()
+        {
+            _match.ShotTickCompleted += ShotTickCompletedHandler;
+            _match.ShotCompleted += ShotCompletedHandler;
+        }
+
+        private void OnDestroy()
+        {
+            _match.ShotTickCompleted -= ShotTickCompletedHandler;
+            _match.ShotCompleted -= ShotCompletedHandler;
+        }
+
+        private void ShotTickCompletedHandler(ShotTickResult tickResult)
+        {
+            tickResult.PocketedBallsOrNull?.ForEach(b => AddBall(b, ballsRoot, false));
+        }
+
+        private void ShotCompletedHandler(ShotResultData result)
+        {
+            if (result.ReturnedPocketedBalls.Count > 0)
+            {
+                result.ReturnedPocketedBalls.ForEach(b => RemoveBall(b));
+            }
+        }
+
         /// <summary>
         /// Добавляем забитый шар в ремувер
         /// </summary>
-        public void AddBall(Ball b, Transform ballsRoot, bool  withoutAnim = false)
+        private void AddBall(Ball b, Transform ballsRoot, bool  withoutAnim = false)
 		{
 			var removedBall = new RemovedBall(b);
             this.ballsRoot = ballsRoot;
@@ -52,12 +80,12 @@ namespace Kborod.UI.Screens.Table.BallsRemove
         /// <summary>
         /// Удалить шар из ремувера
         /// </summary>
-        public void RemoveBall(int ballNumber)
+        private void RemoveBall(int ballNumber)
 		{
             removedBalls.RemoveAll(rb => rb.ball.Number == ballNumber);
 		}
 
-        public void Clear()
+        private void Clear()
 		{
             foreach(var rb in removedBalls)
                 rb.ball.StopBall();

@@ -41,6 +41,7 @@ namespace Kborod.UI.Screens.Table
             ballReplacer.ballReplaced += UpdateBallPosition;
             _match.ShotTickCompleted += ShotTickHandler;
             _match.ShotCompleted += ShotCompleteHandler;
+            _match.AimInfoReceived += AimInfoReceivedHandler;
 
             CreateTableAndBalls();
             TryShowDebugPoints();
@@ -52,6 +53,7 @@ namespace Kborod.UI.Screens.Table
             ballReplacer.ballReplaced -= UpdateBallPosition;
             _match.ShotTickCompleted -= ShotTickHandler;
             _match.ShotCompleted -= ShotCompleteHandler;
+            _match.AimInfoReceived -= AimInfoReceivedHandler;
         }
 
         private void CreateTableAndBalls()
@@ -83,6 +85,15 @@ namespace Kborod.UI.Screens.Table
         private void ShotCompleteHandler(ShotResultData result)
         {
             UpdateBallsPositions();
+        }
+
+        private void AimInfoReceivedHandler(AimInfo info)
+        {
+            if (info.IsBallMovingNow)
+            {
+                var ball = _engineForUI.Balls[info.CueBall.Value];
+                UpdateBallPosition(ball);
+            }
         }
 
         private void UpdateBallsPositions(float deltaTime = 0)

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Kborod.UI.Screens
 {
-    public class AimLines : MonoBehaviour
+    public class AimLinesDrawer : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer collisionIcon;
         [SerializeField] private Sprite collisionSpriteNormal;
@@ -15,12 +15,13 @@ namespace Kborod.UI.Screens
         [SerializeField] private LineRenderer lineFromCollisionShadow;
         [SerializeField] private LineRenderer lineFromAimBall;
         [SerializeField] private LineRenderer lineFromAimBallShadow;
+        [SerializeField] private Transform ballsRoot;
 
         private const float LINES_Z = -0.25f;
         private const float LINES_SHADOWS_Z = -0.24f;
         private float bounceLinesLength = 0.7f;
 
-        public void Show(AimObject aimData, Transform ballsRoot, bool isBlocked)
+        public void Show(AimObject aimData, bool isBlocked)
         {
             gameObject.SetActive(true);
             collisionPosition.localPosition = ballsRoot.TransformPoint(new Vector2(aimData.AimBallX, aimData.AimBallY) * Config.MODEL_COORD_TO_WORLD_KOEF);

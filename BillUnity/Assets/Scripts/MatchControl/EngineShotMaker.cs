@@ -6,16 +6,16 @@ using Zenject;
 
 namespace Kborod.MatchManagement
 {
-    public class EnginePlayer
+    public class EngineShotMaker
     {
         public event Action<ShotTickResult> ShotTickCompleted;
         public event Action<ShotResult> ShotCompleted;
 
         [Inject] private Engine Engine;
 
-        public async void MakeShot(int ballNumber, Vector2 direction, float spinX, float spinY)
+        public async void MakeShot(int ballNumber, float directionX, float directionY, float spinX, float spinY)
         {
-            Engine.MakeShot(direction.x, direction.y, ballNumber, spinX, spinY);
+            Engine.MakeShot(directionX, directionY, ballNumber, spinX, spinY);
 
             while (true)
             {

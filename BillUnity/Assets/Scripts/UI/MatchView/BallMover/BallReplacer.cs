@@ -1,4 +1,5 @@
 using Kborod.BilliardCore;
+using Kborod.MatchManagement;
 using System;
 using UnityEngine;
 using Zenject;
@@ -16,16 +17,24 @@ namespace Kborod.UI.Screens.Table.BallsMove
         [SerializeField] private Camera tableCamera;
         [SerializeField] private Transform ballsRoot;
 
+        [Inject] private MatchBase _match;
         [Inject] private IEngineForUI _engine;
 
-        private int ballNum;
-        private bool onlyKitchen;
+        [Inject] private readonly MyShotInput _myShotInput;
+
+        private int _ballNum;
+        private bool _onlyKitchen;
 
         private void Start()
         {
             icon.PointerDownEvent += PointerDownHandler;
             icon.PointerUpEvent += PointerUpHandler;
             icon.DragEvent += DragHandler;
+
+            _match.StateChanged += StateChangedHandler;
+            _match.AimInfoReceived += AimInfoReceivedHandler;
+
+            RefreshByState(_match.State);
         }
 
         private void OnDestroy()
@@ -33,16 +42,48 @@ namespace Kborod.UI.Screens.Table.BallsMove
             icon.PointerDownEvent -= PointerDownHandler;
             icon.PointerUpEvent -= PointerUpHandler;
             icon.DragEvent -= DragHandler;
+
+            _match.StateChanged -= StateChangedHandler;
+            _match.AimInfoReceived -= AimInfoReceivedHandler;
+        }
+
+        private void StateChangedHandler(MatchState state)
+        {
+            RefreshByState(state);
+        }
+
+        private void RefreshByState(MatchState state)
+        {
+            if (state == MatchState.PrepeareTurn && _match.CanIManageTurningPlayer && _match.TurnSettings.CanMoveBall.HasValue)
+            {
+                gameObject.SetActive(true);
+                _ballNum = _match.TurnSettings.CanMoveBall.Value;
+                _onlyKitchen = _match.TurnSettings.MoveOnlyInKitchen;
+                icon.Show();
+                RefreshIconPosition();
+            }
+            else
+            {
+                gameObject.SetActive(false);
+            }
+        }
+
+        private void AimInfoReceivedHandler(AimInfo info)
+        {
+            if (info.IsBallMovingNow)
+                RefreshIconPosition();
+
+            icon.Hide();
         }
 
         private void PointerDownHandler()
         {
-            PointerDownEvent?.Invoke();
+            _myShotInput.MoveCueBall(null, null);
         }
 
         private void PointerUpHandler()
         {
-            PointerUpEvent?.Invoke();
+            _myShotInput.MoveCueBallCompleted();
         }
 
         private void DragHandler(Vector2 pointerWorldPosition)
@@ -50,34 +91,12 @@ namespace Kborod.UI.Screens.Table.BallsMove
             Vector2 worldPoint = tableCamera.ScreenToWorldPoint(pointerWorldPosition);
             Vector2 modelPoint = ballsRoot.InverseTransformPoint(worldPoint) / Config.MODEL_COORD_TO_WORLD_KOEF;
 
-            var moved = _engine.ReplaceBall(ballNum, modelPoint.x, modelPoint.y, onlyKitchen);
-            if (moved)
-            {
-                ballReplaced?.Invoke(_engine.Balls[ballNum]);
-                RefreshIcon();
-            }
+            _myShotInput.MoveCueBall(modelPoint.x, modelPoint.y);
         }
 
-        public void Show(bool onlyKitchen, int ballNum = 0)
+        private void RefreshIconPosition()
         {
-            gameObject.SetActive(true);
-            icon.Show();
-
-            this.ballNum = ballNum;
-            this.onlyKitchen = onlyKitchen;
-
-            RefreshIcon();
-            RefreshPanel();
-        }
-
-        public void Hide()
-        {
-            gameObject.SetActive(false);
-        }
-
-        private void RefreshIcon()
-        {
-            var worldBallPosition = ballsRoot.TransformPoint(_engine.Balls[ballNum].v.p0 * Config.MODEL_COORD_TO_WORLD_KOEF);
+            var worldBallPosition = ballsRoot.TransformPoint(_engine.Balls[_ballNum].v.p0 * Config.MODEL_COORD_TO_WORLD_KOEF);
             icon.transform.position = tableCamera.WorldToScreenPoint(worldBallPosition);
         }
 

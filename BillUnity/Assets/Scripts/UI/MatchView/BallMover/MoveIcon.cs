@@ -19,14 +19,13 @@ namespace Kborod.UI.Screens.Table.BallsMove
             icon.color = new Color(1, 1, 1, 1);
         }
 
-        private void Hide()
+        public void Hide()
         {
             icon.color = new Color(1, 1, 1, 0);
         }
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            Hide();
             PointerDownEvent?.Invoke();
         }
 

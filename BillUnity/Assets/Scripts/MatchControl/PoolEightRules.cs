@@ -11,6 +11,7 @@ namespace Kborod.MatchManagement.PoolEight
         private ReadOnlyCollection<int> StripedBalls = new ReadOnlyCollection<int>(new List<int>() { 9, 10, 11, 12, 13, 14, 15 });
         private ReadOnlyCollection<int> AllAimBalls = new ReadOnlyCollection<int>(new List<int>() { 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15 });
         private ReadOnlyCollection<int> EightBalls = new ReadOnlyCollection<int>(new List<int>() { 8 });
+        private ReadOnlyCollection<int> EmptyList = new ReadOnlyCollection<int>(new List<int>());
 
         public RulesShotResult ProcessShot(ShotResult shotResult, List<Ball> balls, PoolBallType playerBallType) 
         {
@@ -50,7 +51,7 @@ namespace Kborod.MatchManagement.PoolEight
             {
                 PoolBallType.Solid => SolidBalls,
                 PoolBallType.Striped => StripedBalls,
-                PoolBallType.None => null,
+                PoolBallType.None => EmptyList,
                 _ => throw new System.NotImplementedException(),
             };
         }

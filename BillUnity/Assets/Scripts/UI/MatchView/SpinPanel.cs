@@ -1,5 +1,8 @@
+using Kborod.MatchManagement;
+using Kborod.UI.Screens.Table;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 namespace Kborod.UI.Screens.SpinUI
 {
@@ -10,42 +13,55 @@ namespace Kborod.UI.Screens.SpinUI
         [SerializeField] private RectTransform point;
         [SerializeField] private ChooseSpinPopup popup;
 
-        public float SpinX { get; private set; } = 0;
-        public float SpinY { get; private set; } = 0;
+
+        [Inject] private MatchBase _match;
+        [Inject] private MyShotInput _myShotInput;
+
+        private float _spinX => _match.AimInfo.SpinX;
+        private float _spinY => _match.AimInfo.SpinY;
 
         private float ballRadius;
         private float maxSpin = 1f;
 
         private void Awake()
         {
-            button.onClick.AddListener(() => popup.Show(SpinX, SpinY, maxSpin, SpinChangedHandler));
+            _match.AimInfoReceived += AimInfoReceivedHandler;
+
+            button.onClick.AddListener(ClickHandler);
 
             ballRadius = ball.GetComponent<RectTransform>().sizeDelta.x * 0.33f;
             RefreshUI();
         }
 
+        private void OnDestroy()
+        {
+            _match.AimInfoReceived -= AimInfoReceivedHandler;
+        }
+
         public void SetMaxSpin(float maxSpin)
         {
             this.maxSpin = maxSpin;
-            Clear();
         }
 
-        public void Clear()
+        private void AimInfoReceivedHandler(AimInfo info)
         {
-            SpinX = SpinY = 0;
             RefreshUI();
+        }
+
+        private void ClickHandler()
+        {
+            if (_match.State == MatchState.PrepeareTurn && _match.CanIManageTurningPlayer)
+                popup.Show(_spinX, _spinY, maxSpin, SpinChangedHandler);
         }
 
         private void SpinChangedHandler(float spinX, float spinY)
         {
-            SpinX = spinX;
-            SpinY = spinY;
-            RefreshUI();
+            _myShotInput.ChangeSpin(spinX, spinY);
         }
 
         private void RefreshUI()
         {
-            point.localPosition = new Vector2(SpinX * ballRadius, SpinY * ballRadius);
+            point.localPosition = new Vector2(_spinX * ballRadius, _spinY * ballRadius);
         }
     }
 }

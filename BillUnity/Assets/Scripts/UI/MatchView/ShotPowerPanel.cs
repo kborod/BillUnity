@@ -1,8 +1,10 @@
-﻿using Kborod.Utils;
-using System;
+﻿using Kborod.MatchManagement;
+using Kborod.UI.Screens.Table;
+using Kborod.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Zenject;
 
 namespace Kborod.UI.Screens
 {
@@ -13,10 +15,10 @@ namespace Kborod.UI.Screens
         [SerializeField] private Transform handle;
         [SerializeField] private Image scale;
 
-        public Action<float> PowerSelected;
-        public Action<float> PowerChanged;
-
         private const float MIN_POWER = 0.02f;
+
+        [Inject] private MatchBase _match;
+        [Inject] private MyShotInput _myShotInput;
 
         private float _areaHeight;
         private float _handleY;
@@ -32,16 +34,31 @@ namespace Kborod.UI.Screens
         {
             ResetPanel();
             _areaHeight = handleArea.rect.height;
+
+            _match.StateChanged += MatchStateChangedHandler;
             handleAreaEvents.BeginDrag += PointerDownHandler;
             handleAreaEvents.Drag += PointerMoveHandler;
             handleAreaEvents.EndDrag += PointerUpHandler;
+        }
+
+        private void OnDestroy()
+        {
+            _match.StateChanged -= MatchStateChangedHandler;
+            handleAreaEvents.BeginDrag -= PointerDownHandler;
+            handleAreaEvents.Drag -= PointerMoveHandler;
+            handleAreaEvents.EndDrag -= PointerUpHandler;
+        }
+
+        private void MatchStateChangedHandler(MatchState state)
+        {
+            gameObject.SetActive(state == MatchState.PrepeareTurn && _match.CanIManageTurningPlayer);
         }
 
         private void PointerUpHandler(PointerEventData data)
         {
             if (_currPower >  MIN_POWER) 
             {
-                PowerSelected?.Invoke(_currPower);
+                _myShotInput.SelectPower(_currPower);
             }
 
             ResetPanel();
@@ -54,7 +71,7 @@ namespace Kborod.UI.Screens
             _handleY = Mathf.Clamp(_handleY + delta, -_areaHeight, 0);
             //Debug.Log($"Move: {data.position.y} -- {_handleY} -- {_lastY} -- {delta} -- {_resolutionKoeff}");
             RefreshByHandleY();
-            PowerChanged?.Invoke(_currPower);
+            _myShotInput.ChangePower(_currPower);
         }
 
         private void PointerDownHandler(PointerEventData data)

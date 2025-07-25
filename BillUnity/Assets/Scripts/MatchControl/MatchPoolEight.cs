@@ -1,7 +1,6 @@
 ﻿using Kborod.BilliardCore;
 using Kborod.MatchManagement.PoolEight;
 using System;
-using UnityEngine;
 
 namespace Kborod.MatchManagement
 {
@@ -28,11 +27,11 @@ namespace Kborod.MatchManagement
 
             _engine.PrepeareNewGame(2);
 
-            _enginePlayer.ShotTickCompleted += ShotTickCompletedHandler;
-            _enginePlayer.ShotCompleted += ShotCompletedHandler;
+            _engineShotMaker.ShotTickCompleted += ShotTickCompletedHandler;
+            _engineShotMaker.ShotCompleted += ShotCompletedHandler;
 
             PoolEightRules = new PoolEightRules();
-            CurrTurnSettings = PoolEightRules.GetFirstTurnSettings(_engine.Balls, PoolBallType.None);
+            TurnSettings = PoolEightRules.GetFirstTurnSettings(_engine.Balls, PoolBallType.None);
 
             CanIManageTurningPlayer = true;
 
@@ -41,17 +40,19 @@ namespace Kborod.MatchManagement
 
         public void Dispose()
         {
-            _enginePlayer.ShotTickCompleted -= ShotTickCompletedHandler;
-            _enginePlayer.ShotCompleted -= ShotCompletedHandler;
+            _engineShotMaker.ShotTickCompleted -= ShotTickCompletedHandler;
+            _engineShotMaker.ShotCompleted -= ShotCompletedHandler;
         }
 
-        public override void MakeShot(int ballNumber, Vector2 direction, float power, float spinX, float spinY, int? pocket = null)
+        public override void MakeShot(AimInfo aimInfo)
         {
             ChangeState(MatchState.Animation);
 
-            _enginePlayer.MakeShot(ballNumber, direction * power, spinX, spinY);
+            var cuePower = 300;
 
-            InvokeCueBallHittedWithPower(power);
+            _engineShotMaker.MakeShot(aimInfo.CueBall.Value, aimInfo.DirectionX * aimInfo.Power * cuePower, aimInfo.DirectionY * aimInfo.Power * cuePower, aimInfo.SpinX, aimInfo.SpinY);
+
+            InvokeCueBallHittedWithPower(aimInfo.Power);
         }
 
         private void ShotTickCompletedHandler(ShotTickResult tickResult)
@@ -73,7 +74,7 @@ namespace Kborod.MatchManagement
 
             TrySwitchTurningPlayer(rulesResult);
 
-            CurrTurnSettings = PoolEightRules.GetTurnSettings(_engine.Balls, _turningPlayer.BallType, rulesResult.Foul != FoulType.None);
+            TurnSettings = PoolEightRules.GetTurnSettings(_engine.Balls, _turningPlayer.BallType, rulesResult.Foul != FoulType.None);
 
             ChangeState(MatchState.PrepeareTurn);
         }
@@ -82,7 +83,7 @@ namespace Kborod.MatchManagement
         {
             if (State != MatchState.PrepeareTurn)
                 throw new Exception("TurnSettings available during player turn");
-            return CurrTurnSettings;
+            return TurnSettings;
         }
 
         private void TrySwitchTurningPlayer(RulesShotResult rulesResult)

@@ -13,6 +13,7 @@ namespace Kborod.MatchManagement
         public event Action<ShotTickResult> ShotTickCompleted;
         public event Action<ShotResultData> ShotCompleted;
         public event Action TurningPlayerChanged;
+        public event Action<AimInfo> AimInfoReceived;
 
         public abstract GameType GameType { get; }
         public abstract Player TurningPlayer { get; }
@@ -20,21 +21,37 @@ namespace Kborod.MatchManagement
         public abstract Player Player2 { get; }
 
         public MatchState State { get; private set; }
-        public TurnSettings CurrTurnSettings { get; protected set; }
+        public TurnSettings TurnSettings { get; protected set; }
         public bool CanIManageTurningPlayer { get; protected set; }
 
+        public AimInfo AimInfo => _aimInfo;
+
         [Inject] protected Engine _engine { get; }
-        [Inject] protected EnginePlayer _enginePlayer { get; }
+        [Inject] protected EngineShotMaker _engineShotMaker { get; }
 
+        private AimInfo _aimInfo;
 
-        public abstract void MakeShot(int ballNumber, Vector2 direction, float power, float spinX, float spinY, int? pocket = null);
+        public abstract void MakeShot(AimInfo aimInfo);
 
+        public void ChangeAimInfo(AimInfo info)
+        {
+            _aimInfo = info;
+
+            if (info.IsBallMovingNow && info.CueBallX != null && info.CueBallY != null)
+                _engine.ReplaceBall(info.CueBall.Value, info.CueBallX.Value, info.CueBallY.Value, TurnSettings.MoveOnlyInKitchen);
+
+            AimInfoReceived?.Invoke(info);
+        }
 
         protected void ChangeState(MatchState state)
         {
             if (State == state)
                 throw new Exception($"Already in this state ({state})");
             State = state;
+
+            if (state == MatchState.PrepeareTurn)
+                _aimInfo = new AimInfo();
+
             StateChanged?.Invoke(state);
         }
 

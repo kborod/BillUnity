@@ -269,5 +269,10 @@ namespace Kborod.BilliardCore
 			isRemoved = false;
 			MoveToUpperLayer();
 		}
+
+		public void ChangeNumber(int number)
+		{
+			Number = number;
+		}
 	}
 }
