@@ -7,6 +7,33 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.tivadar.best.http": {
+      "version": "file:com.tivadar.best.http",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.burst": "1.8.23",
+        "com.unity.profiling.core": "1.0.0"
+      }
+    },
+    "com.tivadar.best.signalrcore": {
+      "version": "file:com.tivadar.best.signalrcore",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.tivadar.best.http": "3.0.0",
+        "com.tivadar.best.websockets": "3.0.0"
+      }
+    },
+    "com.tivadar.best.websockets": {
+      "version": "file:com.tivadar.best.websockets",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.burst": "1.8.10",
+        "com.tivadar.best.http": "3.0.10"
+      }
+    },
     "com.unity.2d.animation": {
       "version": "10.2.0",
       "depth": 1,
@@ -120,8 +147,8 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
-      "version": "1.8.21",
-      "depth": 3,
+      "version": "1.8.23",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
