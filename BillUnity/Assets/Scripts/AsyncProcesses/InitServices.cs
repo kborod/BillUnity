@@ -4,7 +4,7 @@ using Zenject;
 
 namespace Kborod.AsyncProcesses
 {
-    public class InitServices : IAsyncProcess
+    public class InitServices
     {
         private UIScreensLoader _screensLoader;
 

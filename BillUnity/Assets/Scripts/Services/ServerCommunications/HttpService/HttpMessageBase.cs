@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Kborod.Services.ServerHTTPCommunication
+namespace Kborod.Services.ServerCommunication
 {
     public abstract class HttpMessageBase
     {

@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using Kborod.AsyncProcesses;
-using UnityEngine;
 using Zenject;
 
 namespace Kborod.Loader
@@ -14,6 +13,7 @@ namespace Kborod.Loader
         public async UniTask StartApplication()
         {
             await InitApp();
+            await Login();
             await MainMenu();
         }
 
@@ -35,6 +35,11 @@ namespace Kborod.Loader
 
             //await _container.Instantiate<PreloaderProcess>().Run();
             //await _container.Instantiate<AgreementProcess>().Run();
+        }
+
+        private async UniTask Login()
+        {
+            await _container.Instantiate<AuthProcess>().Run();
         }
     }
 }

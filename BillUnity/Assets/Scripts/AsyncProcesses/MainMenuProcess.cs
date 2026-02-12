@@ -5,7 +5,7 @@ using Zenject;
 
 namespace Kborod.AsyncProcesses
 {
-    public class MainMenuProcess : IAsyncProcess
+    public class MainMenuProcess
     {
         [Inject] private ScreensHelper _screensHelper;
 

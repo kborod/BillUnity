@@ -1,29 +1,33 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using Kborod.Services.ServerCommunication.Token;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
 using Zenject;
 
-namespace Kborod.Services.ServerHTTPCommunication
+namespace Kborod.Services.ServerCommunication
 {
-    public class HttpService : MonoBehaviour
+    public class HttpService
     {
-        [SerializeField] private string _authServerAddr;
-        [SerializeField] private string _gameAPIServerAddr;
 
         public event Action<HttpMessageBase> OnCurrentMessageChanged;
         public event Action<bool> OnConnectionError;
 
-        [Inject] private ITokenProvider _tokenProvider;
+        [Inject] private ITokenService _tokenProvider;
         [Inject] private IHttpTransport _transport;
 
+        private string _mainApiServerAddr = "https://localhost:7155/";
+
         private Queue<HttpMessageBase> _messagesQueue = new Queue<HttpMessageBase>();
-        private bool isWaitServerResponse;
+        private bool _isWaitServerResponse;
 
-        public void SendMessage(HttpMessageBase msg)
+        private string _currentToken;
+
+        public async UniTaskVoid SendMessage(HttpMessageBase msg)
         {
-            _tokenProvider.RefreshTokenIfNeed();
+            //TODO BORODIN подумать над этим
+            _currentToken = await _tokenProvider.GetTokenOrNull();
 
-            if (isWaitServerResponse)
+            if (_isWaitServerResponse)
                 _messagesQueue.Enqueue(msg);
             else
                 ProcessMessage(msg);
@@ -59,22 +63,22 @@ namespace Kborod.Services.ServerHTTPCommunication
             }
             else
             {
-                isWaitServerResponse = false;
+                _isWaitServerResponse = false;
                 SetCurrentMessage(null);
             }
         }
 
-        private void ProcessMessage(HttpMessageBase msg)
+        private async void ProcessMessage(HttpMessageBase msg)
         {
             SetCurrentMessage(msg);
-            isWaitServerResponse = true;
-            var serverAddress = msg.TargetApi == TargetApi.Authorization ? _authServerAddr : _gameAPIServerAddr;
+            _isWaitServerResponse = true;
+            var serverAddress = msg.TargetApi == TargetApi.MainApi ? _mainApiServerAddr : throw new NotImplementedException();
             var address = $"{serverAddress}{msg.ApiAddress}";
 
             _transport.SendMessage(
                     msg,
                     address,
-                    _tokenProvider?.TokenOrNull,
+                    _currentToken,
                     RequestSuccessCallback,
                     RequestErrorCallback,
                     ConnectionErrorCallback

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Kborod.Services.ServerHTTPCommunication
+namespace Kborod.Services.ServerCommunication
 {
     public interface IHttpTransport
     {

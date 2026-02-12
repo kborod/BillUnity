@@ -2,29 +2,31 @@ using Best.SignalR;
 using Best.SignalR.Encoders;
 using Best.SignalR.Messages;
 using Cysharp.Threading.Tasks;
-using Kborod.Services.ServerHTTPCommunication;
+using Kborod.Services.ServerCommunication.Token;
 using Newtonsoft.Json;
 using System;
 using UnityEngine;
 using Zenject;
 
-namespace Dexnet.Services.ServerHTTPCommunication
+namespace Kborod.Services.ServerCommunication.Sockets
 {
     public class SocketService
     {
         public event Action HubCreated;
 
         //private const string _serverAddr = "http://localhost:5237/";
-        //private const string _serverAddr = "https://localhost:7155/";
-        private const string _serverAddr = "http://121.32.32.12:7400/";
+        private const string _serverAddr = "https://localhost:7155/";
         private const string _hubAddr = "gameHub";
 
-        [Inject] private ITokenProvider _tokenProvider;
+        [Inject] private ITokenService _tokenProvider;
+        private string token;
 
         private HubConnection hub;
 
-        public async UniTask ConnectHubAsync()
+        public async UniTask ConnectHubAsync(string token)
         {
+            this.token = token;
+
             await TryDisconnectAsync();
             try
             {
@@ -52,20 +54,20 @@ namespace Dexnet.Services.ServerHTTPCommunication
             await TryDisconnectAsync();
         }
 
-        public void Send<T>(SocketMethod method, T data)
-        {
-            Debug.Log($"<color=blue>[Hub message sent]</color> <color=yellow>{method}</color>:{JsonConvert.SerializeObject(data)}");
-            hub.Send(method.ToString(), data)
-                .OnSuccess(response => Debug.Log($"<color=green>[Hub message sent success]</color> <color=yellow>{method}</color>"))
-                .OnError(error => Debug.Log($"<color=red>[Hub message sent error]</color> <color=yellow>{method}</color> error:{JsonConvert.SerializeObject(error)}"));
-        }
+        //public void Send<T>(SocketMethod method, T data)
+        //{
+        //    Debug.Log($"<color=blue>[Hub message sent]</color> <color=yellow>{method}</color>:{JsonConvert.SerializeObject(data)}");
+        //    hub.Send(method.ToString(), data)
+        //        .OnSuccess(response => Debug.Log($"<color=green>[Hub message sent success]</color> <color=yellow>{method}</color>"))
+        //        .OnError(error => Debug.Log($"<color=red>[Hub message sent error]</color> <color=yellow>{method}</color> error:{JsonConvert.SerializeObject(error)}"));
+        //}
 
-        public void Send(SocketMethod method)
-        {
-            hub.Send(method.ToString())
-                .OnSuccess(response => Debug.Log($"<color=green>[Hub message sent success]</color> <color=yellow>{method}</color>"))
-                .OnError(error => Debug.Log($"<color=red>[Hub message sent error]</color> <color=yellow>{method}</color> error:{JsonConvert.SerializeObject(error)}"));
-        }
+        //public void Send(SocketMethod method)
+        //{
+        //    hub.Send(method.ToString())
+        //        .OnSuccess(response => Debug.Log($"<color=green>[Hub message sent success]</color> <color=yellow>{method}</color>"))
+        //        .OnError(error => Debug.Log($"<color=red>[Hub message sent error]</color> <color=yellow>{method}</color> error:{JsonConvert.SerializeObject(error)}"));
+        //}
 
         public void Invoke<TReq, TResp>(string method, TReq data, Action<TResp> callback, Action<Exception> errorCallback)
         {
@@ -84,10 +86,10 @@ namespace Dexnet.Services.ServerHTTPCommunication
                 });
         }
 
-        public void HandleMethod<T>(SocketMethod method, Action<T> callback) => hub.On(method.ToString(), callback);
-        public void HandleMethod<T1, T2>(SocketMethod method, Action<T1, T2> callback) => hub.On(method.ToString(), callback);
+        //public void HandleMethod<T>(SocketMethod method, Action<T> callback) => hub.On(method.ToString(), callback);
+        //public void HandleMethod<T1, T2>(SocketMethod method, Action<T1, T2> callback) => hub.On(method.ToString(), callback);
 
-        public void HandleMethod(SocketMethod method, Action callback) => hub.On(method.ToString(), callback);
+        //public void HandleMethod(SocketMethod method, Action callback) => hub.On(method.ToString(), callback);
 
         private async UniTask TryDisconnectAsync()
         {
@@ -100,19 +102,24 @@ namespace Dexnet.Services.ServerHTTPCommunication
 
         private void CreateHubConnection()
         {
+            var uriBuilder = new UriBuilder($"{_serverAddr}{_hubAddr}");
+            uriBuilder.Query = "access_token=" + token;
             HubOptions options = new HubOptions();
-            hub = new HubConnection(new Uri($"{_serverAddr}{_hubAddr}"), new JsonProtocol(new JsonDotNetEncoder()), options);
+            hub = new HubConnection(uriBuilder.Uri, new JsonProtocol(new JsonDotNetEncoder()), options);
+            hub.ReconnectPolicy = new RetryPolicy();
         }
 
         private void SubscribeHubEvents()
         {
-            hub.OnConnected += (hub) => Debug.Log($"<color=green>Hub {hub.Uri} connect</color>");
-            hub.OnError += (hub, arg2) => Debug.LogError($"<color=red>hub {hub.Uri} error!</color>" + arg2);
-            hub.OnClosed += (hub) => Debug.Log($"<color=red>Hub {hub.Uri} closed!</color>");
-            hub.OnReconnecting += (hub, arg2) => Debug.Log($"<color=green>Hub {hub.Uri} reconnecting</color>");
-            hub.OnReconnected += (hub) => Debug.Log($"<color=green>Hub {hub.Uri} reconnected</color>");
-            hub.OnTransportEvent += (hub, transp, events) => Debug.Log($"<color=green>Hub {hub.Uri} {transp.TransportType}</color> event: <color=green>{events}</color>");
+            hub.OnConnected += (hub) => Debug.Log($"<color=green>Hub {GetUriForLog()}:</color> connect");
+            hub.OnError += (hub, arg2) => Debug.LogError($"<color=red>hub {GetUriForLog()}:</color> error!" + arg2);
+            hub.OnClosed += (hub) => Debug.Log($"<color=red>Hub {GetUriForLog()}:</color> closed!");
+            hub.OnReconnecting += (hub, arg2) => Debug.Log($"<color=#FF7575>Hub {GetUriForLog()}:</color> reconnecting");
+            hub.OnReconnected += (hub) => Debug.Log($"<color=green>Hub {GetUriForLog()}:</color> reconnected");
+            hub.OnTransportEvent += (hub, transp, events) => Debug.Log($"<color=blue>Hub {GetUriForLog()} {transp.TransportType}</color> transportEvent: {events}");
             hub.OnMessage += OnHubMessageReceived;
+
+            string GetUriForLog() => $"{hub.Uri.ToString().Substring(0, 50)}...";
         }
 
         private bool OnHubMessageReceived(HubConnection connection, Message message)
@@ -120,6 +127,17 @@ namespace Dexnet.Services.ServerHTTPCommunication
             if (message.type == MessageTypes.Invocation)
                 Debug.Log($"<color=orange>Hub message</color> <color=yellow>{message.target}</color> received:{JsonConvert.SerializeObject(message)}");
             return true;
+        }
+    }
+
+    public class RetryPolicy : IRetryPolicy
+    {
+        public TimeSpan? GetNextRetryDelay(RetryContext context)
+        {
+            if (context.ElapsedTime > TimeSpan.FromSeconds(10) && context.RetryReason.Contains("Connection Timed Out"))
+                return null;
+
+            return context.PreviousRetryCount > 4 ? null : TimeSpan.FromSeconds(context.PreviousRetryCount);
         }
     }
 }

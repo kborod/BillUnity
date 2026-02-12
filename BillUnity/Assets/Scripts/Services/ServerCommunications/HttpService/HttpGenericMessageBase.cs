@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-namespace Kborod.Services.ServerHTTPCommunication
+namespace Kborod.Services.ServerCommunication
 {
     public abstract class HttpGenericMessageBase<TRequest, TResponse> : HttpMessageBase
     {

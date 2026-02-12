@@ -439,6 +439,9 @@ stateDiagram
         /// <returns>The delay duration for the next retry attempt, or <c>null</c> if no more retries should be made.</returns>
         public TimeSpan? GetNextRetryDelay(RetryContext context)
         {
+
+            UnityEngine.Debug.Log($"!!!!!!!!!!!{context.PreviousRetryCount}");
+
             if (this.backoffTimes == null || context.PreviousRetryCount >= this.backoffTimes.Length)
                 return null;
 

@@ -1,38 +1,17 @@
-﻿using Kborod.Services.ServerHTTPCommunication;
-using System;
+﻿using Kborod.SharedDto.Auth;
 
-namespace kborod.Services.ServerHTTPCommunication
+namespace Kborod.Services.ServerCommunication
 {
-    public class AuthorizationMessage : HttpGenericMessageBase<LoginRequest, LoginResponse>
+    public class AuthorizationMessage : HttpGenericMessageBase<LoginDto, LoginResponseDto>
     {
         public override string MethodType => UnityEngine.Networking.UnityWebRequest.kHttpVerbPOST;
-        public override string ApiAddress => $"auth/login";
-        public override TargetApi TargetApi => TargetApi.Authorization;
+        public override string ApiAddress => $"Auth/login";
+        public override TargetApi TargetApi => TargetApi.MainApi;
 
-        public AuthorizationMessage(string nick)
-            : base(new LoginRequest() { Nick = nick })
+        public AuthorizationMessage(string email, string password)
+            : base(new() { Email = email, Password = password })
         {
         }
-    }
-
-    public class LoginRequest
-    {
-        public string Nick;
-    }
-
-    public class LoginResponse
-    {
-        public LoginData Content;
-    }
-
-    public class LoginData
-    {
-        public string refresh;
-        public DateTime refreshExpiredAt;
-        public long refreshExpiredAtUnix;
-        public string jwt;
-        public DateTime jwtExpiredAt;
-        public long jwtExpiredAtUnix;
     }
 }
 

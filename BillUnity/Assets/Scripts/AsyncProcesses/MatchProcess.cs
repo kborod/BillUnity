@@ -4,7 +4,7 @@ using Zenject;
 
 namespace Kborod.AsyncProcesses
 {
-    public class MatchProcess : IAsyncProcess
+    public class MatchProcess
     {
         [Inject] private ScreensHelper _screensHelper;
         public async UniTask Run()

@@ -1,9 +1,8 @@
-﻿namespace Kborod.Services.ServerHTTPCommunication
+﻿namespace Kborod.Services.ServerCommunication
 {
     public enum TargetApi
     {
-        Authorization,
-        GameAPI
+        MainApi,
     }
 }
 

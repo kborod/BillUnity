@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Kborod.AsyncProcesses
 {
-    public class OpenSceneProcess : IAsyncProcess
+    public class OpenSceneProcess
     {
         private string _sceneName;
 

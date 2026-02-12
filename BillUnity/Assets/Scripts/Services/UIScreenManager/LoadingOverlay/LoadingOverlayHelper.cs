@@ -1,4 +1,4 @@
-﻿using Kborod.Services.ServerHTTPCommunication;
+﻿using Kborod.Services.ServerCommunication;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -10,7 +10,7 @@ namespace Kborod.Services.UIScreenManager.LoadOverlay
     {
         [Inject] private LoadingOverlay _loadingOverlay;
         [Inject] private UIScreensLoader _screensLoader;
-        //[Inject] private HttpService _httpService;
+        [Inject] private HttpService _httpService;
 
         private void Awake()
         {
@@ -27,7 +27,7 @@ namespace Kborod.Services.UIScreenManager.LoadOverlay
             _screensLoader.LoadingStarted += ScreensManagerWorkStartedHandler;
             _screensLoader.LoadingCompleted += ScreensManagerWorkFinishedHandler;
 
-            //_httpService.OnCurrentMessageChanged += HttpMessageChanged;
+            _httpService.OnCurrentMessageChanged += HttpMessageChanged;
         }
 
         private void RemoveListeners()
@@ -35,7 +35,7 @@ namespace Kborod.Services.UIScreenManager.LoadOverlay
             _screensLoader.LoadingStarted -= ScreensManagerWorkStartedHandler;
             _screensLoader.LoadingCompleted -= ScreensManagerWorkFinishedHandler;
 
-            //_httpService.OnCurrentMessageChanged -= HttpMessageChanged;
+            _httpService.OnCurrentMessageChanged -= HttpMessageChanged;
         }
 
         //Отображение загрузки для каких-то функций, которые долго отрабатывают

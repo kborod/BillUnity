@@ -4,7 +4,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Kborod.Services.ServerHTTPCommunication
+namespace Kborod.Services.ServerCommunication
 {
     public class HttpTransportByUnityWebRequest : MonoBehaviour, IHttpTransport
     {

@@ -1,14 +1,13 @@
 using Kborod.Services.UIScreenManager.Transitions;
 using System;
 using UnityEngine;
-using Zenject;
 
 namespace Kborod.Services.UIScreenManager
 {
     public abstract class UIScreenBase : MonoBehaviour, ITransitionable
     {
-        public Action<UIScreenBase> OnCloseCalled { get; set; }
-        public Action<UIScreenBase> OnReleaseCalled { get; set; }
+        public event Action<UIScreenBase> OnCloseCalled;
+        public event Action<UIScreenBase> OnReleaseCalled;
 
         public virtual ITransition Transition => GetTransition();
 

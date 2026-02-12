@@ -13,14 +13,14 @@ namespace Kborod.Services.UIScreenManager
         [Inject] public UIModalsManager ModalsManager { get; private set; }
         [Inject] public MessagesOverlay MessagesOverlay { get; private set; }
 
-        public void OpenScreen<TScreen>() where TScreen : UIScreenBase
+        public async UniTask<TScreen> OpenScreen<TScreen>() where TScreen : UIScreenBase
         {
-            _ = ScreensManager.Open<TScreen>();
+            return await ScreensManager.Open<TScreen>();
         }
 
-        public void OpenModal<TScreen>() where TScreen : UIScreenBase
+        public async UniTask<TScreen> OpenModal<TScreen>() where TScreen : UIScreenBase
         {
-            _ = ModalsManager.Open<TScreen>();
+            return await ModalsManager.Open<TScreen>();
         }
 
         public async UniTask ClearAll()

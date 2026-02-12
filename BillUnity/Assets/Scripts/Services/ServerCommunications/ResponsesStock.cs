@@ -1,6 +1,6 @@
 ﻿using Kborod.Utils;
 
-namespace Kborod.Services.ServerHTTPCommunication
+namespace Kborod.Services.ServerCommunication
 {
     public class ResponsesStock : ObjectsCache<object>
     {
