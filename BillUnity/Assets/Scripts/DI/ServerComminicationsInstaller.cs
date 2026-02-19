@@ -1,6 +1,6 @@
 using Kborod.Services.ServerCommunication;
-using Kborod.Services.ServerCommunication.Sockets;
-using Kborod.Services.ServerCommunication.Sockets.ReliableMessageDelivery;
+using Kborod.Services.ServerCommunication.AsyncServerMessaging;
+using Kborod.Services.ServerCommunication.AsyncServerMessaging.ReliableMessageDelivery;
 using Kborod.Services.ServerCommunication.Token;
 using Kborod.Services.ServerTime;
 using UnityEngine;
@@ -20,9 +20,10 @@ namespace Kborod.Services.DI
             Container.Bind<ITokenService>().To<TokenService>().FromNew().AsSingle().NonLazy();
             Container.Bind<TokenRefreshService>().FromNew().AsSingle().NonLazy();
             
-            Container.Bind<SocketService>().FromNew().AsSingle().NonLazy();
-            Container.Bind<ReliableMessageDeliveryService>().FromNew().AsSingle().NonLazy();
-            
+            Container.Bind<IMessagingTransport>().To<GameHub>().FromNew().AsSingle().NonLazy();
+            Container.Bind<IMessagingService>().To<ReliableMessageDeliveryService>().FromNew().AsSingle().NonLazy();
+            Container.Bind<SessionHeartbeatServices>().FromNew().AsSingle().NonLazy();
+
             Container.Bind<TimeControl>().FromNew().AsSingle().NonLazy();
         }
     }

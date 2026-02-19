@@ -5,5 +5,3 @@
         MainApi,
     }
 }
-
-/* Copyright: Made by Appfox */

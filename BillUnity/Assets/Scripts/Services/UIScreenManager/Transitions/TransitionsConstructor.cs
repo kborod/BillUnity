@@ -31,5 +31,3 @@ namespace Kborod.Services.UIScreenManager
         private ITransition SetTransitionToBlack(GameObject go) => new TransitionToBlack(go, StretchedImagePrefab);
     }
 }
-
-/* Copyright: Made by Appfox */

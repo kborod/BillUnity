@@ -27,5 +27,3 @@ namespace Kborod.Services.LocalCache
             PlayerPrefs.HasKey(key.ToString());
     }
 }
-
-/* Copyright: Made by Appfox */

@@ -8,5 +8,3 @@ namespace Kborod.Services.UIScreenManager.Transitions
         UniTask Hide(ITransition nextOrNull = null);
     }
 }
-
-/* Copyright: Made by Appfox */

@@ -211,8 +211,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 279da3cabcdcf54478046f380b54a0de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _transitionSource: 0
-  _transitionType: 0
+  _transitionSource: 2
+  _transitionType: 2
 --- !u!114 &7758346398354901678
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -52,7 +52,7 @@ namespace Kborod.Services.ServerCommunication
 
                     if (_verbose)
                     {
-                        string logMessageTitle = ApplyColorTag("[Sended Request]", "blue");
+                        string logMessageTitle = ApplyColorTag("[Request sent]", "#009D08");
                         string logMessageName = ApplyColorTag(msg.GetType().Name, "yellow");
                         string logMessage = $"{logMessageTitle} ({logMessageName})  address: {address}\n message: {data}";
                         Debug.Log(logMessage);
@@ -118,5 +118,3 @@ namespace Kborod.Services.ServerCommunication
         }
     }
 }
-
-/* Copyright: Made by Appfox */

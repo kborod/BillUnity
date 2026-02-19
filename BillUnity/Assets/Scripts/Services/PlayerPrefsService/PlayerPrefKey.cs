@@ -6,8 +6,6 @@
         VolumeInterface,
 
         TokenData,
-        CacheTokenEnabled,
+        TryLoadTokenFromCacheEnabled,
     }
 }
-
-/* Copyright: Made by Appfox */

@@ -7,5 +7,3 @@
         ToBlack
     }
 }
-
-/* Copyright: Made by Appfox */

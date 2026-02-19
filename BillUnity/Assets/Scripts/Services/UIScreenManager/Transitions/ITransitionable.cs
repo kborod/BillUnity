@@ -5,5 +5,3 @@
         public ITransition Transition { get; }
     }
 }
-
-/* Copyright: Made by Appfox */

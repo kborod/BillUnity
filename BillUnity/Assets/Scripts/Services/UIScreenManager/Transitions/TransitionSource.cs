@@ -7,5 +7,3 @@
         ManualSelect
     }
 }
-
-/* Copyright: Made by Appfox */

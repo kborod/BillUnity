@@ -15,5 +15,3 @@ namespace Kborod.Services.UIScreenManager
         }
     }
 }
-
-/* Copyright: Made by Appfox */

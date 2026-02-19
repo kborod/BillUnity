@@ -197,5 +197,3 @@ namespace Kborod.Services.UIScreenManager
         Error
     }
 }
-
-/* Copyright: Made by Appfox */

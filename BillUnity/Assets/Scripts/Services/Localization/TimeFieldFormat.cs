@@ -8,4 +8,3 @@ namespace Kborod.Services.Localization
         LEAST
     }
 }
-/* Copyright: Made by Appfox */

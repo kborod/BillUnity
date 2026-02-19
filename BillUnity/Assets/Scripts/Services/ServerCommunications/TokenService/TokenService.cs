@@ -22,11 +22,11 @@ namespace Kborod.Services.ServerCommunication.Token
 
         public async UniTask<bool> TryLoadFromCache()
         {
-            if (_playerPrefsService.LoadOrDefault<bool>(PlayerPrefKey.CacheTokenEnabled) == false)
-            {
-                ClearCache();
-                return false;
-            }
+            //if (_playerPrefsService.LoadOrDefault<bool>(PlayerPrefKey.TryLoadTokenFromCacheEnabled) == false)
+            //{
+            //    ClearCache();
+            //    return false;
+            //}
 
             _tokenData = _playerPrefsService.LoadOrDefault<TokenData>(PlayerPrefKey.TokenData);
 

@@ -9,5 +9,3 @@ namespace Kborod.Services.ServerCommunication.Token
         public UniTask<bool> TryLoadFromCache();
     }
 }
-
-/* Copyright: Made by Appfox */

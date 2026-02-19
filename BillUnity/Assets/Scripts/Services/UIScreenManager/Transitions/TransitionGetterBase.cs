@@ -8,5 +8,3 @@ namespace Kborod.Services.UIScreenManager.Transitions
         public abstract ITransition Transition { get; }
     }
 }
-
-/* Copyright: Made by Appfox */

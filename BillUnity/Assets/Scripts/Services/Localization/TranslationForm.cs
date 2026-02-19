@@ -17,4 +17,3 @@ namespace Kborod.Services.Localization
         Form10,
     }
 }
-/* Copyright: Made by Appfox */

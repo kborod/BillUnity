@@ -89,5 +89,3 @@ namespace Kborod.Services.UIScreenManager.LoadOverlay
         }
     }
 }
-
-/* Copyright: Made by Appfox */

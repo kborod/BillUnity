@@ -86,4 +86,3 @@ namespace Kborod.Services.Localization
         localizationId
     }
 }
-/* Copyright: Made by Appfox */

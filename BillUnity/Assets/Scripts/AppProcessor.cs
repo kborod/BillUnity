@@ -14,7 +14,9 @@ namespace Kborod.Loader
         {
             await InitApp();
             await Login();
-            await MainMenu();
+            await InitRealTimeMsgs();
+            //await MainMenu();
+            await TestWindow();
         }
 
         public async UniTask MainMenu()
@@ -32,14 +34,21 @@ namespace Kborod.Loader
             UnityEngine.Application.runInBackground = true;
 
             await _container.Instantiate<InitServices>().Run();
-
-            //await _container.Instantiate<PreloaderProcess>().Run();
-            //await _container.Instantiate<AgreementProcess>().Run();
         }
 
         private async UniTask Login()
         {
             await _container.Instantiate<AuthProcess>().Run();
+        }
+
+        private async UniTask InitRealTimeMsgs()
+        {
+            await _container.Instantiate<InitRealTimeMessagingProcess>().Run();
+        }
+
+        private async UniTask TestWindow()
+        {
+            await _container.Instantiate<TestWindowProcess>().Run();
         }
     }
 }

@@ -16,5 +16,3 @@ namespace Kborod.Services.ServerCommunication
         protected virtual JsonSerializerSettings JsonSerializerSettings => new JsonSerializerSettings();
     }
 }
-
-/* Copyright: Made by Appfox */

@@ -7,5 +7,3 @@ namespace Kborod.Services.ServerCommunication
         //public LoginResponse GetLoginResponse() => Get<LoginResponse>();
     }
 }
-
-/* Copyright: Made by Appfox */

@@ -77,5 +77,3 @@ namespace Kborod.Services.Localization
 #endif
 	}
 }
-
-/* Copyright: Made by Appfox */

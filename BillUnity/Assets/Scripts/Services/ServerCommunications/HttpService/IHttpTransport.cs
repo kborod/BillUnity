@@ -13,5 +13,3 @@ namespace Kborod.Services.ServerCommunication
             Action<bool> connectionErrorCallback);
     }
 }
-
-/* Copyright: Made by Appfox */

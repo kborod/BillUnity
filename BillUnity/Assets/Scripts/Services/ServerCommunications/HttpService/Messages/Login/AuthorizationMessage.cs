@@ -14,5 +14,3 @@ namespace Kborod.Services.ServerCommunication
         }
     }
 }
-
-/* Copyright: Made by Appfox */

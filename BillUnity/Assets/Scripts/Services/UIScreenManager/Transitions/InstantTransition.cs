@@ -26,5 +26,3 @@ namespace Kborod.Services.UIScreenManager.Transitions
         }
     }
 }
-
-/* Copyright: Made by Appfox */

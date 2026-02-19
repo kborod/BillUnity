@@ -56,5 +56,3 @@ namespace Kborod.Utils
         }
     }
 }
-
-/* Copyright: Made by Appfox */

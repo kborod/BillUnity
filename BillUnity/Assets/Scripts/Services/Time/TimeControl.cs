@@ -10,5 +10,3 @@ namespace Kborod.Services.ServerTime
         //long unixSeconds = ((DateTimeOffset)someDate.ToUniversalTime()).ToUnixTimeSeconds();
     }
 }
-
-/* Copyright: Made by Appfox */

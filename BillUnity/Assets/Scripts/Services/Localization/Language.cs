@@ -7,4 +7,3 @@ namespace Kborod.Services.Localization
         //Zh = 3
     }
 }
-/* Copyright: Made by Appfox */

@@ -42,11 +42,13 @@ namespace Kborod.UI.Screens
         private void BackClickHandler()
         {
             _tcs.TrySetResult(Result<TokenData>.Fail("cancel clicked"));
+            Release();
         }
 
         private void LoginSuccessHandler(TokenData token)
         {
-            _tcs.TrySetResult(Result<TokenData>.Ok(token)); ;
+            _tcs.TrySetResult(Result<TokenData>.Ok(token));
+            Release();
         }
 
         private void LoginErrorHandler(string error)

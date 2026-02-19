@@ -9,4 +9,3 @@ namespace Kborod.Services.Localization
 		public long Id;
 	}
 }
-/* Copyright: Made by Appfox */
