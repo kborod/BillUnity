@@ -1,4 +1,4 @@
-using UnityEngine;
+using System;
 
 namespace Kborod.BilliardCore
 {
@@ -6,63 +6,51 @@ namespace Kborod.BilliardCore
     {
         public int Number { get; private set; }
 
-        //Признак, надо ли обновить состояние после итерации.
-        public bool NeedUpdateState = false;
+        /// <summary> Признак, надо ли обновить состояние после итерации. </summary>
+        public bool NeedUpdateState { get; set; } = false;
 
-        //признак - находится ли шар в состоянии покоя
-        public bool isSleep = true;
+        /// <summary> Признак - находится ли шар в состоянии покоя </summary>
+        public bool IsSleep { get; set; } = true;
 
-        /// <summary>
-		/// вектор поступательного движения шара
-		/// </summary>
-        public MyVector v = new MyVector();
+        /// <summary> вектор поступательного движения шара </summary>
+        public MyVector v { get; private set; } = new MyVector();
 
-        /// <summary>
-        /// Вектор вертикального вращения шара
-        /// </summary>
-        public MyVector vVertSpin = new MyVector();
+        /// <summary> Вектор вертикального вращения шара </summary>
+        public MyVector vVertSpin { get; private set; } = new MyVector();
 		
 		/// <summary>
 		/// Сила бокового вращения шара (длина вектора корректировки отскока)
 		/// Если< 0, значит вращение во часовой стрелке (берем -dx и -dy стены)
 		/// Если > 0, значит вращение против часовой стрелки(берем +dx и +dy стены)
 		/// </summary>
-		public float sideSpin;
-		
-		
-		private readonly float _friction;
-
-        /// <summary>
-        /// Инкремент трения при маленькой скорости шара (чтоб остановился быстрее)
-        /// </summary>
-        private float lastFr;
+		public float SideSpin { get; set; }
 
 
 
 
         //ШАР ЗАБИТ:
-        /// <summary>
-        /// Луза, в которую забит шар. 
-        /// </summary>
-        public Pocket pocketRemoveTo = null;
-        /// <summary>
-        /// признак - находится ли шар на столе (или уже забит) 
-        /// </summary>
-        public bool isRemoved = false;
-        /// <summary>
-        /// Оставшееся неинтегрированное время тика после забития шара
-        /// </summary>
-        public float removeDeltaTime = 0;
-		/**
-		 * Координата Z (для скрытия шара под столом)
-		 */
-		public float Zcoordinate { get; private set; }
-		
-		
-		
-		
-		
-		public Ball(int ballNumber)
+        /// <summary> Луза, в которую забит шар. </summary>
+        public Pocket PocketRemoveTo { get; set; } = null;
+
+        /// <summary> признак - находится ли шар на столе (или уже забит) </summary>
+        public bool IsRemoved { get; set; } = false;
+
+        /// <summary> Оставшееся неинтегрированное время тика после забития шара </summary>
+        public float RemoveDeltaTime { get;  set; }  = 0;
+
+        /// <summary> Координата Z (для скрытия шара под столом) </summary>
+        public float Zcoordinate { get; private set; }
+
+
+
+
+        private readonly float _friction;
+
+        /// <summary> Инкремент трения при маленькой скорости шара (чтоб остановился быстрее) </summary>
+        private float _lastFr;
+
+
+        public Ball(int ballNumber)
         {
             Number = ballNumber;
 
@@ -96,13 +84,13 @@ namespace Kborod.BilliardCore
 			vVertSpin.updatePointsFromComponents();
 			vVertSpin.makeVector();
 
-			sideSpin = spinVx * (Config.MAX_SIDE_ROTATION_LEN / 2 + (Config.MAX_SIDE_ROTATION_LEN / 2) * (v.len / 150)); // * Config.SIDE_ROTATION_POWER * v.len;
+			SideSpin = spinVx * (Config.MAX_SIDE_ROTATION_LEN / 2 + (Config.MAX_SIDE_ROTATION_LEN / 2) * (v.len / 150)); // * Config.SIDE_ROTATION_POWER * v.len;
 			//trace("ASDSD", sideSpin, spinVx, v.len);
 		}
 
 		public void Integrate(float timeKoef)
 		{
-			if (isRemoved) return;
+			if (IsRemoved) return;
 			v.p0.x += v.vx * timeKoef;
 			v.p0.y += v.vy * timeKoef;
 			v.updatePointsFromComponents();
@@ -124,22 +112,22 @@ namespace Kborod.BilliardCore
 
 			if (v.len < 3)
 			{
-				lastFr = 0.17f * (1 - v.len * v.len / 9);
+				_lastFr = 0.17f * (1 - v.len * v.len / 9);
 			}
 			else
 			{
-				lastFr = 0;
+				_lastFr = 0;
 			}
 			//trace (lastFr);
 			//trace ("   " + v.len);
 
-			v.vx = v.vx * (1 - _friction * speedfrKoef - lastFr);
-			v.vy = v.vy * (1 - _friction * speedfrKoef - lastFr);
+			v.vx = v.vx * (1 - _friction * speedfrKoef - _lastFr);
+			v.vy = v.vy * (1 - _friction * speedfrKoef - _lastFr);
 
 			UpdateVerticalRotation(speedfrKoef);
 			UpdateSideRotation(speedfrKoef);
 
-			if (v.len < 0.25 && vVertSpin.len < 0.25 && (sideSpin > -0.25 && sideSpin < 0.25))
+			if (v.len < 0.25 && vVertSpin.len < 0.25 && (SideSpin > -0.25 && SideSpin < 0.25))
 			{
 				StopBall();
 
@@ -162,7 +150,7 @@ namespace Kborod.BilliardCore
 
             //Расстояние между p1 вектора v и p1 вектора vVertSpin. (если эти точки расположены рядом, 
             //то вектор поступательного движения и вектор вертикального вращения совпадают - шар катится а не скользит)
-            len = Mathf.Sqrt( (v.vx - vVertSpin.vx) * (v.vx - vVertSpin.vx) + (v.vy - vVertSpin.vy) * (v.vy - vVertSpin.vy) ) ;
+            len = MathF.Sqrt( (v.vx - vVertSpin.vx) * (v.vx - vVertSpin.vx) + (v.vy - vVertSpin.vy) * (v.vy - vVertSpin.vy) ) ;
 			//if (bNumber == 0) trace("***" + v.len + " " + len);
 			//trace ("**" + v.vx + "-----" + v.vy + "     " + len);
 			if (len < 1)
@@ -212,15 +200,15 @@ namespace Kborod.BilliardCore
 		private void UpdateSideRotation(float speedFrKoef)
 		{
 			//Инкремент трения при маленькой скорости шара (чтоб остановился быстрее)
-			if (v.len < 3 && sideSpin > -2 && sideSpin < 2)
+			if (v.len < 3 && SideSpin > -2 && SideSpin < 2)
 			{
-				lastFr = 0.2f * (1 - v.len  / 3);
+				_lastFr = 0.2f * (1 - v.len  / 3);
 			}
             else
 			{
-				lastFr = 0;
+				_lastFr = 0;
 			}
-			sideSpin *= 0.95f + (0.05f * (1 - speedFrKoef)) - lastFr;
+			SideSpin *= 0.95f + (0.05f * (1 - speedFrKoef)) - _lastFr;
 			/*if (bNumber == 0)
 			{
 				trace (sideSpin);
@@ -258,15 +246,15 @@ namespace Kborod.BilliardCore
 			vVertSpin.updatePointsFromComponents();
 			vVertSpin.makeVector();
 
-			sideSpin = 0;
+			SideSpin = 0;
 		}
 		
 		public void ResetParams()
 		{
 			NeedUpdateState = false;
-			isSleep = true;
-			pocketRemoveTo = null;
-			isRemoved = false;
+			IsSleep = true;
+			PocketRemoveTo = null;
+			IsRemoved = false;
 			MoveToUpperLayer();
 		}
 

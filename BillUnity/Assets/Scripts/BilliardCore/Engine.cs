@@ -1,10 +1,5 @@
-using Kborod.BilliardCore;
-using Kborod.UI.Screens.Table;
-using PlasticGui;
 using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
-using UnityEngine;
 
 namespace Kborod.BilliardCore
 {
@@ -13,8 +8,6 @@ namespace Kborod.BilliardCore
 
     public class Engine : IEngineForUI
     {
-        public TableType TableType => TableType.Pool;
-
         private ShotResult shotCalculateResult;
 
 		public List<Ball> Balls { get; private set; } = new List<Ball>();
@@ -41,45 +34,45 @@ namespace Kborod.BilliardCore
 
         private void LogCoords()
         {
-			var deltaX = -380;
-			var deltaY = -275;// -262.275;
+			//var deltaX = -380;
+			//var deltaY = -275;// -262.275;
 
-            List<Vector2[]> coords = new List<Vector2[]>();
-			foreach (var item in RealWalls)
-			{
-				coords.Add(new Vector2[] { new Vector2(item.p0.x, item.p0.y), new Vector2(item.p1.x, item.p1.y) });
-			}
-			var s = "Walls:\n";
-            foreach (var pair in coords)
-            {
-				//s += $"[{pair[0].x + deltaX};{pair[0].y + deltaY}] [{pair[1].x + deltaX};{pair[1].y + deltaY}]\n";
-				s += string.Format("{{new Vector2[]{{new Vector2({0}, {1}), new Vector2({2}, {3})}}}},\n", 
-					$"{(pair[0].x + deltaX).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f",
-                    $"{(pair[0].y + deltaY).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f",
-					$"{(pair[1].x + deltaX).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f",
-					$"{(pair[1].y + deltaY).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f"
-                    );
-            }
-			Debug.Log(s);
+   //         List<Point[]> coords = new List<Point[]>();
+			//foreach (var item in RealWalls)
+			//{
+			//	coords.Add(new Point[] { new Point(item.p0.x, item.p0.y), new Point(item.p1.x, item.p1.y) });
+			//}
+			//var s = "Walls:\n";
+   //         foreach (var pair in coords)
+   //         {
+			//	//s += $"[{pair[0].x + deltaX};{pair[0].y + deltaY}] [{pair[1].x + deltaX};{pair[1].y + deltaY}]\n";
+			//	s += string.Format("{{new Point[]{{new Point({0}, {1}), new Point({2}, {3})}}}},\n", 
+			//		$"{(pair[0].x + deltaX).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f",
+   //                 $"{(pair[0].y + deltaY).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f",
+			//		$"{(pair[1].x + deltaX).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f",
+			//		$"{(pair[1].y + deltaY).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f"
+   //                 );
+   //         }
+			//Debug.Log(s);
 
 
-			coords.Clear();
-            foreach (var item in pockets)
-            {
-                coords.Add(new Vector2[] { new Vector2(item.x, item.y), new Vector2(item.vRemove.vx, item.vRemove.vy) });
-            }
-            s = "Pockets:\n"; 
-			foreach (var pair in coords)
-            {
-				//s += $"[{pair[0].x + deltaX};{pair[0].y + deltaY}] [{pair[1].x};{pair[1].y}]\n";
-				s += string.Format("{{new Vector2[]{{new Vector2({0},{1}), new Vector2({2},{3})}}}},\n",
-                    $"{(pair[0].x + deltaX).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f",
-					$"{(pair[0].y + deltaY).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f",
-					$"{(pair[1].x).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f",
-                    $"{(pair[1].y).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f"
-                    );
-            }
-            Debug.Log(s);
+			//coords.Clear();
+   //         foreach (var item in pockets)
+   //         {
+   //             coords.Add(new Point[] { new Point(item.x, item.y), new Point(item.vRemove.vx, item.vRemove.vy) });
+   //         }
+   //         s = "Pockets:\n"; 
+			//foreach (var pair in coords)
+   //         {
+			//	//s += $"[{pair[0].x + deltaX};{pair[0].y + deltaY}] [{pair[1].x};{pair[1].y}]\n";
+			//	s += string.Format("{{new Point[]{{new Point({0},{1}), new Point({2},{3})}}}},\n",
+   //                 $"{(pair[0].x + deltaX).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f",
+			//		$"{(pair[0].y + deltaY).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f",
+			//		$"{(pair[1].x).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f",
+   //                 $"{(pair[1].y).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US"))}f"
+   //                 );
+   //         }
+   //         Debug.Log(s);
         }
 
         /**
@@ -117,7 +110,7 @@ namespace Kborod.BilliardCore
 
 			foreach (var ball in Balls)
 			{
-				if (ball.Number == ballNum || ball.isRemoved == true) continue;
+				if (ball.Number == ballNum || ball.IsRemoved == true) continue;
 				vc.p0.x = tmpX;
 				vc.p0.y = tmpY;
 				vc.p1.x = ball.v.p0.x;
@@ -139,9 +132,9 @@ namespace Kborod.BilliardCore
         public void ReturnPocketedBall(int ballNum)
 		{
 			// TODO Доработать алгоритм подбора позиции
-			if ((Balls[ballNum] as Ball).isRemoved == false)
+			if ((Balls[ballNum] as Ball).IsRemoved == false)
 			{
-				Debug.LogError("ERROR returnPocketedBall(). ball.isRemoved = false. ballNum:" + ballNum);
+				ToLogError("ERROR returnPocketedBall(). ball.isRemoved = false. ballNum:" + ballNum);
 				return;
 			}
 			var ball = Balls[ballNum] as Ball;
@@ -172,7 +165,7 @@ namespace Kborod.BilliardCore
 		{
 			if (activeBalls.Count > 0 && currShotDuration > 0)
 			{
-                Debug.LogError("ERROR makeShot(): shot under process");
+                ToLogError("ERROR makeShot(): shot under process");
 				return;
 			}
 			else if (activeBalls.Count == 0)
@@ -183,7 +176,7 @@ namespace Kborod.BilliardCore
 			
 			if (Balls.Count < ballNumber || Balls[ballNumber] == null)
 			{
-                Debug.LogError("ERROR makeShot():" + ballNumber + " undefined");
+                ToLogError("ERROR makeShot():" + ballNumber + " undefined");
 				return;
 			}
 			else
@@ -213,7 +206,7 @@ namespace Kborod.BilliardCore
 		 */
 		public void UpdateModel(int deltaTime, out ShotTickResult tickResult, out ShotResult shotResultOrNull)
 		{
-			if (deltaTime <= 0) { Debug.LogError("ERROR updateModel. deltaTime:" + deltaTime); }
+			if (deltaTime <= 0) { ToLogError("ERROR updateModel. deltaTime:" + deltaTime); }
 
             tickResult = new ShotTickResult();
 			tickResult.SetDeltaTime(deltaTime);
@@ -324,9 +317,9 @@ namespace Kborod.BilliardCore
 				
 				for (var k = 0; k < Balls.Count; k++)
 				{
-					if (Balls[k].isRemoved == true) continue;
+					if (Balls[k].IsRemoved == true) continue;
 					
-					if (activeBalls[i].Number == k || Balls[k].isSleep == false)
+					if (activeBalls[i].Number == k || Balls[k].IsSleep == false)
 					{
 						continue;
 					}
@@ -403,7 +396,7 @@ namespace Kborod.BilliardCore
 			//check if balls collide at start
 			if (pen >= 0.001)
 			{
-				toLog(/*GameTime.getInstance().getServerTime() + " " + */ currDt + " ERROR getTimeToNextBallsCollision: collide at start. b1:" + b1.Number + " b2:" + b2.Number + " pen:" + pen); 
+				ToLog(/*GameTime.getInstance().getServerTime() + " " + */ currDt + " ERROR getTimeToNextBallsCollision: collide at start. b1:" + b1.Number + " b2:" + b2.Number + " pen:" + pen); 
 			}
 			//reduce movement vector from ball2 from movement vector of ball1
 			v3 = new MyVector();
@@ -418,7 +411,7 @@ namespace Kborod.BilliardCore
 			vp = MyVector.projectVector(vc, v3.dx, v3.dy);
 			
 			//vector to center of ball2 in direction of movement vectors normal
-			vn.p0 = new Vector2(v1.p0.x + vp.vx, v1.p0.y + vp.vy);
+			vn.p0 = new Point(v1.p0.x + vp.vx, v1.p0.y + vp.vy);
 			vn.p1 = v2.p0;
 			vn.updateComponentsFromPoints();
 			vn.makeVector();
@@ -430,11 +423,11 @@ namespace Kborod.BilliardCore
 			{
 				//collision
 				//amount to move back moving ball
-				moveBack = Mathf.Sqrt(Config.BALL_DIAM_PX_SQUARED - vn.len * vn.len);
+				moveBack = MathF.Sqrt(Config.BALL_DIAM_PX_SQUARED - vn.len * vn.len);
 				
 				//vector from ball1 starting point to its coordinates when collision happens
 				v4.p0 = v1.p0;
-				v4.p1 = new Vector2(vn.p0.x - moveBack * v3.dx, vn.p0.y - moveBack * v3.dy);
+				v4.p1 = new Point(vn.p0.x - moveBack * v3.dx, vn.p0.y - moveBack * v3.dy);
 				v4.updateComponentsFromPoints();
 				v4.makeVector();
 				
@@ -477,7 +470,7 @@ namespace Kborod.BilliardCore
 		{
             BallWallIntersectResult ir = getBallWallIntersectionInfo(b.v.p0.x, b.v.p0.y, b.v.p1.x, b.v.p1.y, w.p0.x, w.p0.y, w.p1.x, w.p1.y);
 			
-			if (ir.isIntersect == false || !ir.isNeedProcessCollision)
+			if (ir.IsIntersect == false || !ir.IsNeedProcessCollision)
 			{
 				return float.MaxValue;
 			}
@@ -569,14 +562,14 @@ namespace Kborod.BilliardCore
 			//check if balls collide at start
 			if (pen >= 0.001)
 			{
-				toLog(/*GameTime.getInstance().getServerTime() + " " + int(currDt) + */" ERROR getTimeToNextBallAngleCollision: collide at start. b:" + b.Number + " a:" + a.x + "," + a.y + " pen:" + pen); 
+				ToLog(/*GameTime.getInstance().getServerTime() + " " + int(currDt) + */" ERROR getTimeToNextBallAngleCollision: collide at start. b:" + b.Number + " a:" + a.x + "," + a.y + " pen:" + pen); 
 			}
 			
 			//projection of vc on v1
 			vp = MyVector.projectVector(vc, v1.dx, v1.dy);
 			
 			//vector to center of angle in direction of movement vectors normal
-			vn.p0 = new Vector2(v1.p0.x + vp.vx, v1.p0.y + vp.vy);
+			vn.p0 = new Point(v1.p0.x + vp.vx, v1.p0.y + vp.vy);
 			vn.p1.x = a.x;
 			vn.p1.y = a.y;
 			vn.updateComponentsFromPoints();
@@ -589,11 +582,11 @@ namespace Kborod.BilliardCore
 			{
 				//collision
 				//amount to move back moving ball
-				moveBack = Mathf.Sqrt(Config.BALL_RAD_PX_SQUARED - vn.len * vn.len);
+				moveBack = MathF.Sqrt(Config.BALL_RAD_PX_SQUARED - vn.len * vn.len);
 				
 				//vector from ball1 starting point to its coordinates when collision happens
 				v4.p0 = v1.p0;
-				v4.p1 = new Vector2(vn.p0.x - moveBack * v1.dx, vn.p0.y - moveBack * v1.dy);
+				v4.p1 = new Point(vn.p0.x - moveBack * v1.dx, vn.p0.y - moveBack * v1.dy);
 				v4.updateComponentsFromPoints();
 				v4.makeVector();
 				
@@ -662,14 +655,14 @@ namespace Kborod.BilliardCore
 			//check if balls collide at start
 			if (pen >= 0.001)
 			{
-				toLog(/*GameTime.getInstance().getServerTime() + " " + int(currDt) + */" ERROR getTimeToNextBallPocketCollision: collide at start. b:" + b.Number + " p:" + p.x + "," + p.y + " pen:" + pen); 
+				ToLog(/*GameTime.getInstance().getServerTime() + " " + int(currDt) + */" ERROR getTimeToNextBallPocketCollision: collide at start. b:" + b.Number + " p:" + p.x + "," + p.y + " pen:" + pen); 
 			}
 			
 			//projection of vc on v1
 			vp = MyVector.projectVector(vc, v1.dx, v1.dy);
 			
 			//vector to center of pocket in direction of movement vectors normal
-			vn.p0 = new Vector2(v1.p0.x + vp.vx, v1.p0.y + vp.vy);
+			vn.p0 = new Point(v1.p0.x + vp.vx, v1.p0.y + vp.vy);
 			vn.p1.x = p.x;
 			vn.p1.y = p.y;
 			vn.updateComponentsFromPoints();
@@ -682,11 +675,11 @@ namespace Kborod.BilliardCore
 			{
 				//collision
 				//amount to move back moving ball
-				moveBack = Mathf.Sqrt(Config.POCKET_RAD_PX_SQUARED - vn.len * vn.len);
+				moveBack = MathF.Sqrt(Config.POCKET_RAD_PX_SQUARED - vn.len * vn.len);
 				
 				//vector from ball1 starting point to its coordinates when collision happens
 				v4.p0 = v1.p0;
-				v4.p1 = new Vector2(vn.p0.x - moveBack * v1.dx, vn.p0.y - moveBack * v1.dy);
+				v4.p1 = new Point(vn.p0.x - moveBack * v1.dx, vn.p0.y - moveBack * v1.dy);
 				v4.updateComponentsFromPoints();
 				v4.makeVector();
 				
@@ -720,7 +713,7 @@ namespace Kborod.BilliardCore
 		{
 			if (collisions.BallsCollisions.Count == 0 && collisions.BallWallCollisions.Count == 0 && collisions.BallAngleCollisions.Count == 0 && collisions.BallPocketCollisions.Count == 0)
 			{
-				toLog("calcCollisionObject ERROR: collisionCount == 0");
+				ToLog("calcCollisionObject ERROR: collisionCount == 0");
 			}
 
 			foreach (var pair in collisions.BallsCollisions)
@@ -768,7 +761,7 @@ namespace Kborod.BilliardCore
 			//check if balls are not collide at start
 			if (pen < -0.01)
 			{
-				toLog("ERROR applyCollisionToBalls: balls are not collide. vc.len:" + vc.len);
+				ToLog("ERROR applyCollisionToBalls: balls are not collide. vc.len:" + vc.len);
 			}
 			else
 			{
@@ -784,7 +777,7 @@ namespace Kborod.BilliardCore
 
                 shotTickResult.TryChangeMaxBallsCollPower(newv2Balls.power);
 
-                toLog(/*GameTime.getInstance().getServerTime() + " " + int(currDt) + */"BB Collision Applied:" + b1.Number + " " + b2.Number);
+                ToLog(/*GameTime.getInstance().getServerTime() + " " + int(currDt) + */"BB Collision Applied:" + b1.Number + " " + b2.Number);
 			}
 			
 			b1.NeedUpdateState = true;
@@ -808,9 +801,9 @@ namespace Kborod.BilliardCore
             BallWallIntersectResult ir = getBallWallIntersectionInfo(b.v.p0.x, b.v.p0.y, b.v.p1.x, b.v.p1.y, w.p0.x, w.p0.y, w.p1.x, w.p1.y);
 			
 			//check if ball vs wall are not collide
-			if (ir.isNeedProcessCollision == false)
+			if (ir.IsNeedProcessCollision == false)
 			{
-				toLog("ERROR calcCollision: ball vs wall are not collide. BallNum:" + b.Number + " WallP0:" + w.p0.x + ";" + w.p0.y + " U1:" + ir.u1 + " U2:" + ir.u2);
+				ToLog("ERROR calcCollision: ball vs wall are not collide. BallNum:" + b.Number + " WallP0:" + w.p0.x + ";" + w.p0.y + " U1:" + ir.u1 + " U2:" + ir.u2);
                 BallWallIntersectResult ir2 = getBallWallIntersectionInfo(b.v.p0.x, b.v.p0.y, b.v.p1.x, b.v.p1.y, w.p0.x, w.p0.y, w.p1.x, w.p1.y);
             }
 			else
@@ -818,7 +811,7 @@ namespace Kborod.BilliardCore
 				//trace ("BW Collision before Applied:" + " bP0X:" + b.v.p0.x + " bP0Y:" + b.v.p0.y + " bP1X" + b.v.p1.x + " bP1Y" + b.v.p1.y);
 				
 				//косинус угла между вектором поступательного движения и стеной (чем перпендикулярнее, тем ближе к 0)
-				cos = Mathf.Abs(MyVector.getDotP(w, b.v) / ( w.len * b.v.len));
+				cos = MathF.Abs(MyVector.getDotP(w, b.v) / ( w.len * b.v.len));
 				//trace ("cos = " + String(MyVector.getDotP(w, b.v) / ( w.len * b.v.len)));
 				newv1Ball = MyVector.bounceBallFromWall(b.v, w);
 				b.v.vx = newv1Ball.vx * (Config.WALL_ELASTIC + (1 - Config.WALL_ELASTIC) * cos);
@@ -826,12 +819,12 @@ namespace Kborod.BilliardCore
 				b.v.p0.x = ir.x;	//чтобы избавиться от погрешностей
 				b.v.p0.y = ir.y;
 				
-				if (b.sideSpin != 0)
+				if (b.SideSpin != 0)
 				{
-					b.v.vx += w.dx * b.sideSpin * (1 - cos);
-					b.v.vy += w.dy * b.sideSpin * (1 - cos);
+					b.v.vx += w.dx * b.SideSpin * (1 - cos);
+					b.v.vy += w.dy * b.SideSpin * (1 - cos);
 				}
-				b.sideSpin *= cos;
+				b.SideSpin *= cos;
 				
 				b.v.updatePointsFromComponents();
 				b.v.makeVector();
@@ -841,7 +834,7 @@ namespace Kborod.BilliardCore
 				if (b.vVertSpin.len > 1)
 				{
 					//косинус угла между вектором вертикального вращения и стеной
-					cos = Mathf.Abs(MyVector.getDotP(w, b.vVertSpin) / ( w.len * b.vVertSpin.len));
+					cos = MathF.Abs(MyVector.getDotP(w, b.vVertSpin) / ( w.len * b.vVertSpin.len));
 					//trace ("cos = " + cos);
 					b.vVertSpin.vx *= (0.2f + 0.8f * cos) * Config.VERTICAL_ROTATION_WALL_ABSORB;
 					b.vVertSpin.vy *= (0.2f + 0.8f * cos) * Config.VERTICAL_ROTATION_WALL_ABSORB;
@@ -851,7 +844,7 @@ namespace Kborod.BilliardCore
 				shotTickResult.TryChangeMaxWallsCollPower(newv1Ball.power);
 				
 				//trace ("BW Collision after Applied:" + " bP0X:" + b.v.p0.x + " bP0Y:" + b.v.p0.y + " bP1X" + b.v.p1.x + " bP1Y" + b.v.p1.y);
-				toLog(/*GameTime.getInstance().getServerTime() + " " + int(currDt) + */"BW Collision Applied. BallNum:" + b.Number + " wallP0:" + w.p0.x + ";" + w.p0.y);
+				ToLog(/*GameTime.getInstance().getServerTime() + " " + int(currDt) + */"BW Collision Applied. BallNum:" + b.Number + " wallP0:" + w.p0.x + ";" + w.p0.y);
 			}
 			
 			b.NeedUpdateState = true;
@@ -881,10 +874,10 @@ namespace Kborod.BilliardCore
 			var pen = Config.BALL_RAD_PX - vc.len;
 			
 			//check if balls are not collide at start
-			toLog("BALL_ANGLE:" + pen);
+			ToLog("BALL_ANGLE:" + pen);
 			if (pen < -0.01)
 			{
-				toLog("ERROR applyBallAngleCollision: ball with angle are not collide. vc.len:" + vc.len);
+				ToLog("ERROR applyBallAngleCollision: ball with angle are not collide. vc.len:" + vc.len);
 			}
 			else
 			{
@@ -895,7 +888,7 @@ namespace Kborod.BilliardCore
 				vOrt.updatePointsFromComponents();
 				vOrt.makeVector();
 				//косинус угла между вектором поступательного движения и касательной к углу
-				cos = Mathf.Abs(MyVector.getDotP(vOrt, b.v) / ( vOrt.len * b.v.len));
+				cos = MathF.Abs(MyVector.getDotP(vOrt, b.v) / ( vOrt.len * b.v.len));
 				//trace ("ASDASD" + String(Config.WALL_ELASTIC + (1 - Config.WALL_ELASTIC) * cos));
 				newv1Ball = MyVector.bounceBallFromAngle(b.v, vc);
 				
@@ -911,8 +904,8 @@ namespace Kborod.BilliardCore
 				if (b.vVertSpin.len > 1)
 				{
 					//косинус угла между вектором движения и касательной к углу
-					cos = Mathf.Abs(MyVector.getDotP(vOrt, b.vVertSpin) / ( vOrt.len * b.vVertSpin.len));
-					toLog("cosVA = "  + cos);
+					cos = MathF.Abs(MyVector.getDotP(vOrt, b.vVertSpin) / ( vOrt.len * b.vVertSpin.len));
+					ToLog("cosVA = "  + cos);
 					b.vVertSpin.vx *= (0.2f + 0.8f * cos) * Config.VERTICAL_ROTATION_WALL_ABSORB;
 					b.vVertSpin.vy *= (0.2f + 0.8f * cos) * Config.VERTICAL_ROTATION_WALL_ABSORB;
 					b.vVertSpin.makeVector();
@@ -921,7 +914,7 @@ namespace Kborod.BilliardCore
 				shotTickResult.TryChangeMaxWallsCollPower(newv1Ball.power);
 				
 				//trace ("BA Collision after Applied:" + " bP0X:" + b.v.p0.x + " bP0Y:" + b.v.p0.y + " bP1X" + b.v.p1.x + " bP1Y" + b.v.p1.y);
-				toLog(/*GameTime.getInstance().getServerTime() + " " + int(currDt) + */"BA Collision Applied: b:" + b.Number + " a:" + a.x + "," + a.y);
+				ToLog(/*GameTime.getInstance().getServerTime() + " " + int(currDt) + */"BA Collision Applied: b:" + b.Number + " a:" + a.x + "," + a.y);
 			}
 			
 			b.NeedUpdateState = true;
@@ -948,10 +941,10 @@ namespace Kborod.BilliardCore
 			var pen = Config.POCKET_RAD_PX - vc.len;
 			
 			//check if balls are not collide at start
-			toLog("BALL_POCKET:" + pen);
+			ToLog("BALL_POCKET:" + pen);
 			if (pen < -0.01)
 			{
-				toLog("ERROR applyBallPocketCollision: ball with pocket are not collide. vc.len:" + vc.len);
+				ToLog("ERROR applyBallPocketCollision: ball with pocket are not collide. vc.len:" + vc.len);
 			}
 			else
 			{
@@ -959,9 +952,9 @@ namespace Kborod.BilliardCore
 				shotCalculateResult.PocketedBallsPockets.Add(p.pocketNum);
 				
 				//TODO Добавить анимацию удаления шара
-				b.isRemoved = true;
-				b.pocketRemoveTo = p;
-				b.removeDeltaTime = currDt;
+				b.IsRemoved = true;
+				b.PocketRemoveTo = p;
+				b.RemoveDeltaTime = currDt;
 
 				shotTickResult.TryChangeMaxPocketedPower(b.v.len / Config.MAX_SHOT_POWER);
 				shotTickResult.AddPocketedBall(b);
@@ -992,11 +985,11 @@ namespace Kborod.BilliardCore
 			foreach (var b in Balls) 
 			{
 				if (b.NeedUpdateState == false) continue;
-				if (b.isRemoved)
+				if (b.IsRemoved)
 				{
 					removeBallFromTable(b);
 				}
-				else if (b.isSleep)
+				else if (b.IsSleep)
 				{
 					if (b.v.len > 0) addActiveBall(b);
 				}
@@ -1013,28 +1006,28 @@ namespace Kborod.BilliardCore
 		{
 			if (activeBalls.IndexOf(b) >= 0) 
 			{ 
-				toLog("addActiveBall ERROR!");
+				ToLog("addActiveBall ERROR!");
 				return;
 			}
 			activeBalls.Add(b);
-			b.isSleep = false;
+			b.IsSleep = false;
 		}
 		
 		private void removeActiveBall(Ball b)
 		{
 			if (activeBalls.Remove(b) == false)
 			{
-				toLog("removeActiveBall ERROR!");
+				ToLog("removeActiveBall ERROR!");
 				return;
 			}
-			b.isSleep = true;
+			b.IsSleep = true;
 		}
 		
 		private void removeBallFromTable(Ball b)
 		{
 			if (activeBalls.Remove(b))
 			{
-				b.isSleep = true;
+				b.IsSleep = true;
 			}
 		}
 		
@@ -1056,7 +1049,7 @@ namespace Kborod.BilliardCore
 			updateNextTimeToVelUpdate();
 			lastDt = 0;
 			
-			toLog("SHOT RESETED.");
+			ToLog("SHOT RESETED.");
 		}
 		/**
 		 * 
@@ -1113,7 +1106,7 @@ namespace Kborod.BilliardCore
 			
 			for (var i = 0; i < Balls.Count; i++) 
 			{
-				if (b.Number != (Balls[i] as Ball).Number && (Balls[i] as Ball).isRemoved == false)
+				if (b.Number != (Balls[i] as Ball).Number && (Balls[i] as Ball).IsRemoved == false)
 				{
 					aimTimeToCollTmp = getTimeToNextBallsCollision(b, Balls[i]);
 					if (aimTimeToColl > aimTimeToCollTmp)
@@ -1235,7 +1228,7 @@ namespace Kborod.BilliardCore
 		 */
 		public float getBallX(int bNum = 0)
 		{
-			if (Balls[bNum] == null) { toLog("ERROR:GameCore.getBallX() balls[bNum] == null, bnum:" + bNum); return 0; }
+			if (Balls[bNum] == null) { ToLog("ERROR:GameCore.getBallX() balls[bNum] == null, bnum:" + bNum); return 0; }
 			return Balls[bNum].v.p0.x;
 		}
 		/**
@@ -1245,7 +1238,7 @@ namespace Kborod.BilliardCore
 		 */
 		public float getBallY(int bNum = 0)
 		{
-			if (Balls[bNum] == null) { toLog("ERROR:GameCore.getBallY() balls[bNum] == null, bnum:" + bNum); return 0; }
+			if (Balls[bNum] == null) { ToLog("ERROR:GameCore.getBallY() balls[bNum] == null, bnum:" + bNum); return 0; }
 			return Balls[bNum].v.p0.y;
 		}
 		
@@ -1334,7 +1327,7 @@ namespace Kborod.BilliardCore
 				
 				if (u1 <= 0 || u1 == 1 || u2 >= 1)
 				{
-					toLog("Walls cutIntersections ERROR: u1:" + u1 + " u2:" + u2); 
+					ToLog("Walls cutIntersections ERROR: u1:" + u1 + " u2:" + u2); 
 					return;
 				}
 				else
@@ -1404,9 +1397,9 @@ namespace Kborod.BilliardCore
 		 * @param	pocketNum
 		 * @return
 		 */
-		public Vector2 getPocketCoord(int pocketNum)
+		public Point getPocketCoord(int pocketNum)
 		{
-			return new Vector2(pockets[pocketNum].x, pockets[pocketNum].y);
+			return new Point(pockets[pocketNum].x, pockets[pocketNum].y);
 		}
 		
 		
@@ -1430,7 +1423,7 @@ namespace Kborod.BilliardCore
 			var y0 = 0f + (posNum - 5);
 
 			(Balls[9] as Ball).SetPosition(x0, y0);
-			var step = Mathf.Sqrt(Config.BALL_DIAM_PX_SQUARED - Config.BALL_RAD_PX_SQUARED) + 0.1f + (0.5f * posNum / 10f);
+			var step = MathF.Sqrt(Config.BALL_DIAM_PX_SQUARED - Config.BALL_RAD_PX_SQUARED) + 0.1f + (0.5f * posNum / 10f);
 			(Balls[12] as Ball).SetPosition(x0 + step, y0 - Config.BALL_RAD_PX);
 			(Balls[7] as Ball).SetPosition(x0 + step, y0 + Config.BALL_RAD_PX);
 			(Balls[1] as Ball).SetPosition(x0 + 2 * step, y0 - 2 * Config.BALL_RAD_PX);
@@ -1467,84 +1460,78 @@ namespace Kborod.BilliardCore
 		 * Установить игровую позицию шаров на столе
 		 * @param	posParams
 		 */
-		public void setBallsPosition(string posParams)
+		public void SetBallsPosition(List<BallData> ballPositions)
 		{
-			var a = posParams.Split("*");
-			if (a.Length != 16) 
+			if (ballPositions.Count != 16) 
 			{
-				toLog("setBallsPosition Error. a.length:" + a.Length);
+				ToLog("setBallsPosition Error. a.length:" + ballPositions.Count);
 				return;
 			}
 			
 			resetShotParams();
 			activeBalls.Clear();
-			
-			for (var i = 0; i < a.Length; i++) 
+
+			foreach (var ballData in ballPositions)
 			{
-				
-				var ballParam = a[i].Split("_");
-				var b = Balls[int.Parse(ballParam[0])];
+                var b = Balls[ballData.Number];
 				b.ResetParams();
-				b.isRemoved = (ballParam[1] == "1")? true : false;
-				b.SetPosition(float.Parse(ballParam[2]), float.Parse(ballParam[3]));
+				b.IsRemoved = ballData.IsRemoved;
+                b.SetPosition(ballData.X, ballData.Y);
 				b.v.vx = 0;
 				b.v.vy = 0;
 				b.v.updatePointsFromComponents();
-			}
-			
+
+            }
 		}
-		
-		/////////////////////ДЛЯ ТЕСТОВ:////////////////////
-		
-		
-		
-		/**
-		 * Логирование
-		 * @param	s
-		 */
-		private void toLog(string s)
+
+        /////////////////////ДЛЯ ТЕСТОВ:////////////////////
+        private void ToLog(string s)
 		{
-			//Debug.Log("GameCore: " + s);
-		}
+            //Debug.Log("GameCore: " + s);
+        }
+        private void ToLogError(string s)
+		{
+            //Debug.LogError("GameCore: " + s);
+        }
 
         ////////////////////КООРДИНАТЫ////////////////////
-        
-		private List<Vector2[]> wallsCoord = new List<Vector2[]>()
+
+        private List<Point[]> wallsCoord = new List<Point[]>()
 		{
-			{new Vector2[]{new Vector2(-285f, -155f), new Vector2(-23f, -155f)}},
-			{new Vector2[]{new Vector2(-23f, -155f), new Vector2(-13f, -195f)}},
-			{new Vector2[]{new Vector2(-13f, -195f), new Vector2(13f, -195f)}},
-			{new Vector2[]{new Vector2(13f, -195f), new Vector2(23f, -155f)}},
-			{new Vector2[]{new Vector2(23f, -155f), new Vector2(285f, -155f)}},
-			{new Vector2[]{new Vector2(285f, -155f), new Vector2(310f, -180f)}},
-			{new Vector2[]{new Vector2(310f, -180f), new Vector2(335f, -155f)}},
-			{new Vector2[]{new Vector2(335f, -155f), new Vector2(310f, -130f)}},
-			{new Vector2[]{new Vector2(310f, -130f), new Vector2(310f, 130f)}},
-			{new Vector2[]{new Vector2(310f, 130f), new Vector2(335f, 155f)}},
-			{new Vector2[]{new Vector2(335f, 155f), new Vector2(310f, 180f)}},
-			{new Vector2[]{new Vector2(310f, 180f), new Vector2(285f, 155f)}},
-			{new Vector2[]{new Vector2(285f, 155f), new Vector2(23f, 155f)}},
-			{new Vector2[]{new Vector2(23f, 155f), new Vector2(13f, 195f)}},
-			{new Vector2[]{new Vector2(13f, 195f), new Vector2(-13f, 195f)}},
-			{new Vector2[]{new Vector2(-13f, 195f), new Vector2(-23f, 155f)}},
-			{new Vector2[]{new Vector2(-23f, 155f), new Vector2(-285f, 155f)}},
-			{new Vector2[]{new Vector2(-285f, 155f), new Vector2(-310f, 180f)}},
-			{new Vector2[]{new Vector2(-310f, 180f), new Vector2(-335f, 155f)}},
-			{new Vector2[]{new Vector2(-335f, 155f), new Vector2(-310f, 130f)}},
-			{new Vector2[]{new Vector2(-310f, 130f), new Vector2(-310f, -130f)}},
-			{new Vector2[]{new Vector2(-310f, -130f), new Vector2(-335f, -155f)}},
-			{new Vector2[]{new Vector2(-335f, -155f), new Vector2(-310f, -180f)}},
-			{new Vector2[]{new Vector2(-310f, -180f), new Vector2(-285f, -155f)}},
+			{new Point[]{new Point(-285f, -155f), new Point(-23f, -155f)}},
+			{new Point[]{new Point(-23f, -155f), new Point(-13f, -195f)}},
+			{new Point[]{new Point(-13f, -195f), new Point(13f, -195f)}},
+			{new Point[]{new Point(13f, -195f), new Point(23f, -155f)}},
+			{new Point[]{new Point(23f, -155f), new Point(285f, -155f)}},
+			{new Point[]{new Point(285f, -155f), new Point(310f, -180f)}},
+			{new Point[]{new Point(310f, -180f), new Point(335f, -155f)}},
+			{new Point[]{new Point(335f, -155f), new Point(310f, -130f)}},
+			{new Point[]{new Point(310f, -130f), new Point(310f, 130f)}},
+			{new Point[]{new Point(310f, 130f), new Point(335f, 155f)}},
+			{new Point[]{new Point(335f, 155f), new Point(310f, 180f)}},
+			{new Point[]{new Point(310f, 180f), new Point(285f, 155f)}},
+			{new Point[]{new Point(285f, 155f), new Point(23f, 155f)}},
+			{new Point[]{new Point(23f, 155f), new Point(13f, 195f)}},
+			{new Point[]{new Point(13f, 195f), new Point(-13f, 195f)}},
+			{new Point[]{new Point(-13f, 195f), new Point(-23f, 155f)}},
+			{new Point[]{new Point(-23f, 155f), new Point(-285f, 155f)}},
+			{new Point[]{new Point(-285f, 155f), new Point(-310f, 180f)}},
+			{new Point[]{new Point(-310f, 180f), new Point(-335f, 155f)}},
+			{new Point[]{new Point(-335f, 155f), new Point(-310f, 130f)}},
+			{new Point[]{new Point(-310f, 130f), new Point(-310f, -130f)}},
+			{new Point[]{new Point(-310f, -130f), new Point(-335f, -155f)}},
+			{new Point[]{new Point(-335f, -155f), new Point(-310f, -180f)}},
+			{new Point[]{new Point(-310f, -180f), new Point(-285f, -155f)}},
 
         };
-		private List<Vector2[]> pocketsCoords = new List<Vector2[]>()
+		private List<Point[]> pocketsCoords = new List<Point[]>()
 		{
-            {new Vector2[]{new Vector2(-317.5f,-162.5f), new Vector2(1f,1f)}},
-			{new Vector2[]{new Vector2(0f,-175f), new Vector2(0f,1f)}},
-			{new Vector2[]{new Vector2(317.5f,-162.5f), new Vector2(-1f,1f)}},
-			{new Vector2[]{new Vector2(317.5f,162.5f), new Vector2(-1f,-1f)}},
-			{new Vector2[]{new Vector2(0f,175f), new Vector2(0f,-1f)}},
-			{new Vector2[]{new Vector2(-317.5f,162.5f), new Vector2(1f,-1f)}},
+            {new Point[]{new Point(-317.5f,-162.5f), new Point(1f,1f)}},
+			{new Point[]{new Point(0f,-175f), new Point(0f,1f)}},
+			{new Point[]{new Point(317.5f,-162.5f), new Point(-1f,1f)}},
+			{new Point[]{new Point(317.5f,162.5f), new Point(-1f,-1f)}},
+			{new Point[]{new Point(0f,175f), new Point(0f,-1f)}},
+			{new Point[]{new Point(-317.5f,162.5f), new Point(1f,-1f)}},
         };
 
     }

@@ -148,7 +148,7 @@ namespace Kborod.MatchManagement.PoolEight
         {
             foreach (var bNumber in GetBallsByType(ballType))
             {
-                if (balls[bNumber].isRemoved == false)
+                if (balls[bNumber].IsRemoved == false)
                     return false;
             }
             return true;

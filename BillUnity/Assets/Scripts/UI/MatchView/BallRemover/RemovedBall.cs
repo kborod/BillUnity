@@ -21,7 +21,7 @@ namespace Kborod.UI.Screens
 		public RemovedBall(Ball b) 
 		{
             this.ball = b;
-            this.pocket = b.pocketRemoveTo;
+            this.pocket = b.PocketRemoveTo;
         }
 
         /// <summary>

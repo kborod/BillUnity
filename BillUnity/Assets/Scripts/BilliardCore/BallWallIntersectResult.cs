@@ -1,17 +1,14 @@
 namespace Kborod.BilliardCore
 {
+    /// <summary> Объект с информацией о пересечении луча и отрезка (вектора скорости шара и стенки стола) </summary>
     public class BallWallIntersectResult
     {
 
-        /// <summary>
-        /// Признак, пересекается ли траектория шара и стена
-        /// </summary>
-        public bool isIntersect => u1 >= 0 && u2 >= 0 && u2 <= 1;
+        /// <summary> Признак, пересекается ли траектория шара и стена </summary>
+        public bool IsIntersect => u1 >= 0 && u2 >= 0 && u2 <= 1;
 
-        /// <summary>
-        /// если P2 шара слева от вектора стены (векторное произведение < 0), значит надо обрабатывать коллизию, иначе коллизия уже обработана и шар уже движется в направлении от стены
-        /// </summary>
-        public bool isNeedProcessCollision => vectorProductZcoord > 0;
+        /// <summary> если P2 шара слева от вектора стены (векторное произведение < 0), значит надо обрабатывать коллизию, иначе коллизия уже обработана и шар уже движется в направлении от стены  </summary>
+        public bool IsNeedProcessCollision => vectorProductZcoord > 0;
 
         /// <summary>
         /// Координата Х точки пересечения
@@ -38,14 +35,6 @@ namespace Kborod.BilliardCore
         /// векторное произведение
         /// </summary>
         public float vectorProductZcoord = 0;
-
-        /// <summary>
-        /// Объект с информацией о пересечении луча и отрезка (вектора скорости шара и стенки стола)
-        /// </summary>
-        public BallWallIntersectResult()
-        {
-
-        }
 
         public void clear()
 		{

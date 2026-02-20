@@ -1,14 +1,14 @@
-using UnityEngine;
+using System;
 
 namespace Kborod.BilliardCore
 {
     public class MyVector
     {
         //начальная точка вектора
-        public Vector2 p0;
+        public Point p0;
 
         //конечная точка вектора
-        public Vector2 p1;
+        public Point p1;
 
         //компонента x вектора
         public float vx;
@@ -88,7 +88,7 @@ namespace Kborod.BilliardCore
 		
 		public void updateLen()
 		{
-			len = Mathf.Sqrt(vx * vx + vy * vy);
+			len = MathF.Sqrt(vx * vx + vy * vy);
 		}
 
 		/*public void holdVector()
@@ -150,7 +150,7 @@ namespace Kborod.BilliardCore
 			//projection components
 			projRes.vx = dp * dx;
 			projRes.vy = dp * dy;
-			projRes.len = Mathf.Sqrt(projRes.vx * projRes.vx + projRes.vy * projRes.vy);
+			projRes.len = MathF.Sqrt(projRes.vx * projRes.vx + projRes.vy * projRes.vy);
 			return projRes;
 		}
 		
@@ -199,7 +199,7 @@ namespace Kborod.BilliardCore
 			//projection of v1 on v2 normal
 			proj12 = projectVector(v1, v2.lx, v2.ly);
 			//reverse projection on v2 normal
-			proj12.len = Mathf.Sqrt(proj12.vx * proj12.vx + proj12.vy * proj12.vy);
+			proj12.len = MathF.Sqrt(proj12.vx * proj12.vx + proj12.vy * proj12.vy);
 			proj12.vx = v2.rx * proj12.len;
 			proj12.vy = v2.ry * proj12.len;
 			//add the projections
@@ -230,7 +230,7 @@ namespace Kborod.BilliardCore
 
 			//trace ("proj11:" + JSON.encode(proj11))
 			//trace ("proj12:" + JSON.encode(proj12))
-			proj12.len = Mathf.Sqrt(proj12.vx * proj12.vx + proj12.vy * proj12.vy);
+			proj12.len = MathF.Sqrt(proj12.vx * proj12.vx + proj12.vy * proj12.vy);
 			proj12.vx = -1 * vc.dx * proj12.len;
 			proj12.vy = -1 * vc.dy * proj12.len;
 

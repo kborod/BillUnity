@@ -66,7 +66,7 @@ namespace Kborod.UI.Screens.Table.TopPanel
             {
                 var ballNum = _player.BallType == PoolBallType.Solid ? i + 1 : i + 9;
                 _ballIcons[i].SetBall(ballNum, GameType.PoolEight, 0.25f);
-                if (_engineForUI.Balls[ballNum].isRemoved)
+                if (_engineForUI.Balls[ballNum].IsRemoved)
                     _ballIcons[i].SetTransparency0_1(1);
             }
         }

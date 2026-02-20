@@ -1,4 +1,5 @@
 using Kborod.BilliardCore;
+using Kborod.Extensions;
 using Kborod.MatchManagement;
 using Kborod.UI.Screens.Table.BallsMove;
 using Kborod.UI.Screens.Table.BallsRemove;
@@ -98,7 +99,7 @@ namespace Kborod.UI.Screens.Table
 
         private void UpdateBallsPositions(float deltaTime = 0)
         {
-            foreach (var b in _engineForUI.Balls.Where(b => !b.isRemoved))
+            foreach (var b in _engineForUI.Balls.Where(b => !b.IsRemoved))
             {
                 UpdateBallPosition(b, deltaTime);
             }
@@ -116,13 +117,13 @@ namespace Kborod.UI.Screens.Table
                     b.v.p0.y * Config.MODEL_COORD_TO_WORLD_KOEF,
                     b.Zcoordinate);
             balls[b.Number].Rotate(new Vector3(b.vVertSpin.vy, -b.vVertSpin.vx), b.vVertSpin.len * deltaTime * 0.06f, Space.World);
-            balls[b.Number].Rotate(new Vector3(0, 0, 1), -b.sideSpin * deltaTime * 0.12f, Space.World);
+            balls[b.Number].Rotate(new Vector3(0, 0, 1), -b.SideSpin * deltaTime * 0.12f, Space.World);
 
             //if (b.bNumber == 0 /*&& b.isRemoved*/)
             //    Debug.Log($"{b.v.vx} {b.v.vy} --- {b.vVertSpin.vx} {b.vVertSpin.vy}");
 
 
-            ballShadows[b.Number].gameObject.SetActive(!b.isRemoved);
+            ballShadows[b.Number].gameObject.SetActive(!b.IsRemoved);
             ballShadows[b.Number].localPosition = new Vector3(
                     b.v.p0.x * Config.MODEL_COORD_TO_WORLD_KOEF,
                     b.v.p0.y * Config.MODEL_COORD_TO_WORLD_KOEF,
@@ -137,7 +138,7 @@ namespace Kborod.UI.Screens.Table
                 foreach (var wall in _engineForUI.RealWalls)
                 {
                     var tablePoint = Instantiate(debugPointPrefab, ballsRoot);
-                    tablePoint.localPosition = wall.p0 * Config.MODEL_COORD_TO_WORLD_KOEF;
+                    tablePoint.localPosition = wall.p0.ToVector2() * Config.MODEL_COORD_TO_WORLD_KOEF;
                     tablePoint.name = $"Point {counter}";
                 }
             }

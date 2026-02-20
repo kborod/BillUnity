@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace Kborod.BilliardCore
 {
     public class Pocket
@@ -20,7 +18,7 @@ namespace Kborod.BilliardCore
         /// <summary>
         /// Точка, после отскока от которой шар скатывается под стол.
         /// </summary>
-        public Vector2 pRemove;
+        public Point pRemove;
 		/**
 		 * Луза
 		 * @param	pocketNum
@@ -42,7 +40,7 @@ namespace Kborod.BilliardCore
             vRemove.vy = vy;
             vRemove.updatePointsFromComponents();
             vRemove.makeVector();
-            pRemove = new Vector2(x + (-vRemove.dx * (r - Config.BALL_RAD_PX)), y + (-vRemove.dy * (r - Config.BALL_RAD_PX)));
+            pRemove = new Point(x + (-vRemove.dx * (r - Config.BALL_RAD_PX)), y + (-vRemove.dy * (r - Config.BALL_RAD_PX)));
         }
     }
 }

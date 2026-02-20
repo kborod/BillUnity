@@ -1,4 +1,5 @@
 using Kborod.BilliardCore;
+using Kborod.Extensions;
 using Kborod.MatchManagement;
 using System;
 using UnityEngine;
@@ -96,7 +97,7 @@ namespace Kborod.UI.Screens.Table.BallsMove
 
         private void RefreshIconPosition()
         {
-            var worldBallPosition = ballsRoot.TransformPoint(_engine.Balls[_ballNum].v.p0 * Config.MODEL_COORD_TO_WORLD_KOEF);
+            var worldBallPosition = ballsRoot.TransformPoint(_engine.Balls[_ballNum].v.p0.ToVector2() * Config.MODEL_COORD_TO_WORLD_KOEF);
             icon.transform.position = tableCamera.WorldToScreenPoint(worldBallPosition);
         }
 

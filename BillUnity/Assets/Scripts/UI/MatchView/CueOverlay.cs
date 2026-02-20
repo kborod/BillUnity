@@ -1,4 +1,5 @@
 using Kborod.BilliardCore;
+using Kborod.Extensions;
 using Kborod.MatchManagement;
 using System;
 using UnityEngine;
@@ -54,7 +55,7 @@ namespace Kborod.UI.Screens
 
             var cueBall = _match.AimInfo.CueBall.Value;
 
-            var ballPosition = ballsRoot.TransformPoint(_engine.Balls[cueBall].v.p0 * Config.MODEL_COORD_TO_WORLD_KOEF);
+            var ballPosition = ballsRoot.TransformPoint(_engine.Balls[cueBall].v.p0.ToVector2() * Config.MODEL_COORD_TO_WORLD_KOEF);
 
             cueHolder.transform.localPosition = ballPosition;
 

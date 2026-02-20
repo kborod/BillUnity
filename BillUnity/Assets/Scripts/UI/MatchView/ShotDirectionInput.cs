@@ -1,4 +1,5 @@
 ﻿using Kborod.BilliardCore;
+using Kborod.Extensions;
 using Kborod.MatchManagement;
 using Kborod.UI.Screens.Table;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace Kborod.UI.Screens
         [Inject] private MatchBase _match;
         [Inject] private MyShotInput _myShotInput;
 
-        private Vector2 ballPosition => ballsRoot.TransformPoint(_engine.Balls[_myShotInput.CurrentCueBallOrNull.Value].v.p0 * Config.MODEL_COORD_TO_WORLD_KOEF);
+        private Vector2 ballPosition => ballsRoot.TransformPoint(_engine.Balls[_myShotInput.CurrentCueBallOrNull.Value].v.p0.ToVector2() * Config.MODEL_COORD_TO_WORLD_KOEF);
         private Vector2 lastCursorScreenPosition;
 
         private void Start()

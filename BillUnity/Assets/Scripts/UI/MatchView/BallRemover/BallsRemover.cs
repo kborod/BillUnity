@@ -1,4 +1,5 @@
 ﻿using Kborod.BilliardCore;
+using Kborod.Extensions;
 using Kborod.MatchManagement;
 using PathCreation;
 using System;
@@ -73,7 +74,7 @@ namespace Kborod.UI.Screens.Table.BallsRemove
 				removedBall.ChangeMoveVector(RemoveState.STATE_TO_POCKET_POINT);
 			}
             removedBalls.Add(removedBall);
-			UpdateBall(removedBall, b.removeDeltaTime);
+			UpdateBall(removedBall, b.RemoveDeltaTime);
             TryStartCoroutine();
 		}
 
@@ -104,7 +105,7 @@ namespace Kborod.UI.Screens.Table.BallsRemove
 			}
 			else if (removedBall.state == RemoveState.STATE_TO_POCKET_POINT)
 			{
-				if (Vector2.Distance(removedBall.ball.v.p0, removedBall.pocket.pRemove) > removedBall.ball.v.len* (deltaTime / Config.SPEED_UPDATE_DELTA )  )
+				if (Vector2.Distance(removedBall.ball.v.p0.ToVector2(), removedBall.pocket.pRemove.ToVector2()) > removedBall.ball.v.len* (deltaTime / Config.SPEED_UPDATE_DELTA )  )
 				{
 					removedBall.ball.v.p0.x += removedBall.ball.v.vx* (deltaTime / Config.SPEED_UPDATE_DELTA );
 					removedBall.ball.v.p0.y += removedBall.ball.v.vy* (deltaTime / Config.SPEED_UPDATE_DELTA );
@@ -122,7 +123,7 @@ namespace Kborod.UI.Screens.Table.BallsRemove
 			}
             else if (removedBall.state == RemoveState.STATE_FROM_POCKET)
             {
-                if (Vector2.Distance(removedBall.ball.v.p0, removedBall.pocket.pRemove) < Config.POCKET_RAD_PX * 3)
+                if (Vector2.Distance(removedBall.ball.v.p0.ToVector2(), removedBall.pocket.pRemove.ToVector2()) < Config.POCKET_RAD_PX * 3)
                 {
                     removedBall.ball.v.p0.x += removedBall.ball.v.vx * (deltaTime / Config.SPEED_UPDATE_DELTA);
                     removedBall.ball.v.p0.y += removedBall.ball.v.vy * (deltaTime / Config.SPEED_UPDATE_DELTA);
@@ -158,10 +159,10 @@ namespace Kborod.UI.Screens.Table.BallsRemove
                 removedBall.currPathDis += (BallSpeed * deltaTime / Config.SPEED_UPDATE_DELTA) * Config.MODEL_COORD_TO_WORLD_KOEF;
                 if (removedBall.currPathDis > removedBall.maxPathDis) removedBall.currPathDis = removedBall.maxPathDis;
                 Vector2 p = GetPathPointInModelCoord(removedBall.currPathDis);
-                var moveVector = p - removedBall.ball.v.p0;
+                var moveVector = p - removedBall.ball.v.p0.ToVector2();
                 moveVector.Normalize();
                 moveVector = moveVector * BallSpeed;
-                removedBall.ball.v.p0 = p;
+                removedBall.ball.v.p0 = p.ToPoint();
                 removedBall.ball.v.vx = moveVector.x;
                 removedBall.ball.v.vy = moveVector.y;
                 removedBall.ball.v.updatePointsFromComponents();
@@ -174,7 +175,7 @@ namespace Kborod.UI.Screens.Table.BallsRemove
                 if (removedBalls.FirstOrDefault(rb => rb.state != RemoveState.STATE_ANIM_OVER && rb.state != RemoveState.STATE_WITHOUT_ANIM_WAIT) != null)
                     Debug.LogError("BallsRemover has moving balls");
 
-                removedBall.ball.v.p0 = GetPathPointInModelCoord(maxPathDistance);
+                removedBall.ball.v.p0 = GetPathPointInModelCoord(maxPathDistance).ToPoint();
                 ballsOnPathCount++;
                 removedBall.SetState(RemoveState.STATE_ANIM_OVER);
                 removedBall.ball.StopBall();
