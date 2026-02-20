@@ -1,5 +1,7 @@
 ﻿using Kborod.BilliardCore;
-using Kborod.MatchManagement.PoolEight;
+using Kborod.BilliardCore.Enums;
+using Kborod.BilliardCore.Rules;
+using Kborod.BilliardCore.Rules.PoolEight;
 using System;
 
 namespace Kborod.MatchManagement
@@ -50,7 +52,7 @@ namespace Kborod.MatchManagement
 
             var cuePower = 300;
 
-            _engineShotMaker.MakeShot(aimInfo.CueBall.Value, aimInfo.DirectionX * aimInfo.Power * cuePower, aimInfo.DirectionY * aimInfo.Power * cuePower, aimInfo.SpinX, aimInfo.SpinY);
+            _ = _engineShotMaker.MakeShot(aimInfo.CueBall.Value, aimInfo.DirectionX * aimInfo.Power * cuePower, aimInfo.DirectionY * aimInfo.Power * cuePower, aimInfo.SpinX, aimInfo.SpinY);
 
             InvokeCueBallHittedWithPower(aimInfo.Power);
         }

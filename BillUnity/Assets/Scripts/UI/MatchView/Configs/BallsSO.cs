@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using System.Linq;
 using Kborod.MatchManagement;
+using Kborod.BilliardCore.Enums;
 
 namespace Kborod.UI.Screens.Table
 {

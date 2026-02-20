@@ -1,6 +1,7 @@
 ﻿using Kborod.BilliardCore;
+using Kborod.BilliardCore.Enums;
+using Kborod.BilliardCore.Rules;
 using System;
-using UnityEngine;
 using Zenject;
 
 namespace Kborod.MatchManagement
@@ -38,7 +39,7 @@ namespace Kborod.MatchManagement
             _aimInfo = info;
 
             if (info.IsBallMovingNow && info.CueBallX != null && info.CueBallY != null)
-                _engine.ReplaceBall(info.CueBall.Value, info.CueBallX.Value, info.CueBallY.Value, TurnSettings.MoveOnlyInKitchen);
+                _engine.ReplaceBall(info.CueBall.Value, info.CueBallX.Value, info.CueBallY.Value, TurnSettings.MoveOnlyInKitchen, correctionAllowed: true);
 
             AimInfoReceived?.Invoke(info);
         }

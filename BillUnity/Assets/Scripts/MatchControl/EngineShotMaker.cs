@@ -13,7 +13,7 @@ namespace Kborod.MatchManagement
 
         [Inject] private Engine Engine;
 
-        public async void MakeShot(int ballNumber, float directionX, float directionY, float spinX, float spinY)
+        public async UniTaskVoid MakeShot(int ballNumber, float directionX, float directionY, float spinX, float spinY)
         {
             Engine.MakeShot(directionX, directionY, ballNumber, spinX, spinY);
 
