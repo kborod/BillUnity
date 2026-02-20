@@ -1,5 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
-using Kborod.Services.ServerCommunication.AsyncServerMessaging.Messages;
+using Kborod.SharedDto.AsyncServerMessaging.Messages;
 using System;
 using System.Collections.Generic;
 using UnityEngine;

@@ -2,8 +2,8 @@
 using Best.SignalR.Encoders;
 using Best.SignalR.Messages;
 using Cysharp.Threading.Tasks;
-using Kborod.Services.ServerCommunication.AsyncServerMessaging.Messages;
 using Kborod.Services.ServerCommunication.Token;
+using Kborod.SharedDto.AsyncServerMessaging.Messages;
 using Newtonsoft.Json;
 using System;
 using UnityEngine;

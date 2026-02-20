@@ -1,8 +1,8 @@
 using Cysharp.Threading.Tasks;
 using Kborod.Services.ServerCommunication.AsyncServerMessaging;
-using Kborod.Services.ServerCommunication.AsyncServerMessaging.Messages;
 using Kborod.Services.ServerCommunication.Token;
 using Kborod.Services.UIScreenManager;
+using Kborod.SharedDto.AsyncServerMessaging.Messages;
 using Kborod.Utils;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,7 +21,7 @@ namespace Kborod.UI.Screens
 
         private UniTaskCompletionSource<Result<TokenData>> _tcs;
 
-        private void Start()
+        private async void Start()
         {
             _btnStartSession.onClick.AddListener(StartSessionClickHandler);
             _btnHubDisconnect.onClick.AddListener(HubDisconnectClickHandler);

@@ -1,4 +1,4 @@
-using Kborod.Services.ServerCommunication.AsyncServerMessaging.Messages;
+using Kborod.SharedDto.AsyncServerMessaging.Messages;
 using System.Collections.Generic;
 using System.Linq;
 
