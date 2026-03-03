@@ -13,6 +13,11 @@ namespace Kborod.SharedDto.AsyncServerMessaging.Messages
         SessionErrorResponse = 105,
 
         AddedToQueueResponse = 201,
-        MatchStartedResponse = 202,
+        SearchCancelledResponse = 202,
+        MatchStartedResponse = 203,
+        AimInfoResponse = 204,
+        MakeShotResponse = 205,
+        StartTurnResponse = 206,
+        MatchOverResponse = 207,
     }
 }

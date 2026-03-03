@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Kborod.BilliardCore
 {
@@ -1471,14 +1472,20 @@ namespace Kborod.BilliardCore
 				(Balls[i] as Ball).v.p0.y = (Balls[i] as Ball).v.p1.y = (int)((Balls[i] as Ball).v.p0.y * Config.COORD_ROUND_TO) / (float) Config.COORD_ROUND_TO;
 			}
 		}
-		
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/**
-		 * Установить игровую позицию шаров на столе
-		 * @param	posParams
-		 */
-		public void SetBallsPosition(List<BallData> ballPositions)
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /// <summary> Установить игровую позицию шаров на столе </summary>
+        public List<BallData> GetBallDatas()
+        {
+			return Balls
+				.Select(b => new BallData { IsRemoved = b.IsRemoved, Number = b.Number, X = b.v.p0.x, Y = b.v.p0.y })
+				.ToList();
+        }
+
+        /// <summary> Установить игровую позицию шаров на столе </summary>
+        public void SetBallsPosition(List<BallData> ballPositions)
 		{
 			if (ballPositions.Count != 16) 
 			{

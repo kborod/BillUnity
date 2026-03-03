@@ -14,7 +14,8 @@ namespace Kborod.UI.Screens
         [SerializeField] private PointerEventsWrapper ball;
         [SerializeField] private RectTransform point;
 
-        [Inject] private readonly MatchBase _matchBase;
+        [Inject] private MatchServices _matchServices;
+        private MatchBase _match => _matchServices.Match;
 
         private Action<float, float> callback;
 
@@ -28,7 +29,7 @@ namespace Kborod.UI.Screens
             ball.Drag += PointerEventHandler;
             ball.PointerUp += PointerUpHandler;
 
-            _matchBase.StateChanged += MatchStateChangedHandler;
+            _match.StateChanged += MatchStateChangedHandler;
 
             ballRadius = ball.GetComponent<RectTransform>().sizeDelta.x * 0.33f;
         }
@@ -40,7 +41,7 @@ namespace Kborod.UI.Screens
             ball.Drag -= PointerEventHandler;
             ball.PointerUp -= PointerUpHandler;
 
-            _matchBase.StateChanged -= MatchStateChangedHandler;
+            _match.StateChanged -= MatchStateChangedHandler;
         }
 
         public void Show(float currSpinX, float currSpinY, float maxSpin, Action<float, float> callback)

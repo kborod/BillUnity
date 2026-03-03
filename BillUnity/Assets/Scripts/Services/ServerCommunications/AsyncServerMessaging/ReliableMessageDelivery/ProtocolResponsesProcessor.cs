@@ -12,7 +12,8 @@ namespace Kborod.Services.ServerCommunication.AsyncServerMessaging.ReliableMessa
             List<ResponseEnvelope> responses = new List<ResponseEnvelope>() { response };
             if (response.ResponseType == ResponseType.SessionErrorResponse)
             {
-                return Result<List<ResponseEnvelope>>.Fail("Session not created on server");
+                var error = response.GetPayload<SessionErrorResponseDto>().Error;
+                return Result<List<ResponseEnvelope>>.Fail(error);
             }
             if (response.ResponseType == ResponseType.ResendLastRequestsResponse)
             {

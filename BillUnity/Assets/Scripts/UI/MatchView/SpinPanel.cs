@@ -15,8 +15,9 @@ namespace Kborod.UI.Screens.SpinUI
         [SerializeField] private ChooseSpinPopup popup;
 
 
-        [Inject] private MatchBase _match;
-        [Inject] private MyShotInput _myShotInput;
+        [Inject] private MatchServices _matchServices;
+        private MatchBase _match => _matchServices.Match;
+        private MyInput _myShotInput => _matchServices.MyInput;
 
         private float _spinX => _match.AimInfo.SpinX;
         private float _spinY => _match.AimInfo.SpinY;
@@ -51,7 +52,7 @@ namespace Kborod.UI.Screens.SpinUI
 
         private void ClickHandler()
         {
-            if (_match.State == MatchState.PrepeareTurn && _match.CanIManageTurningPlayer)
+            if (_match.State == MatchState.PrepeareTurn && _myShotInput.CanIManageTurningPlayer)
                 popup.Show(_spinX, _spinY, maxSpin, SpinChangedHandler);
         }
 

@@ -9,10 +9,10 @@ namespace Kborod.Services.DI
     {
         public override void InstallBindings()
         {
-            var accountModelLocal = new AccountModelLocal();
-            Container.Bind<AccountModel>().FromInstance(accountModelLocal).AsSingle();
+            Container.Bind<AccountModel>().To<AccountModelLocal>().FromNew().AsSingle();
 
             Container.Bind<AuthService>().FromNew().AsSingle().NonLazy();
+
             //AsTransient - При инжекте каждый раз новый генерится
             Container.Bind<EmailPasswordAuthProvider>().FromNew().AsTransient().Lazy();
         }

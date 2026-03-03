@@ -11,8 +11,9 @@ namespace Kborod.UI.Screens.Table.TopPanel
         [SerializeField] private GameObject turnOverlay;
         [SerializeField] private bool isPlayer1;
 
-        [Inject] private MatchBase _match; 
-        
+        [Inject] private MatchServices _matchServices;
+        private MatchBase _match => _matchServices.Match;
+
         private Player _player => isPlayer1 ? _match.Player1 : _match.Player2;
 
 

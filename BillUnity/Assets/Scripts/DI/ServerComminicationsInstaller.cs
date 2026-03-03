@@ -24,7 +24,7 @@ namespace Kborod.Services.DI
             Container.Bind<IMessagingService>().To<ReliableMessageDeliveryService>().FromNew().AsSingle().NonLazy();
             Container.Bind<SessionHeartbeatServices>().FromNew().AsSingle().NonLazy();
 
-            Container.Bind<TimeControl>().FromNew().AsSingle().NonLazy();
+            Container.Bind<TimeService>().FromNew().AsSingle().NonLazy();
         }
     }
 }

@@ -11,7 +11,10 @@ namespace Kborod.SharedDto.AsyncServerMessaging.Messages
         IamAlive = 104,
         StartSession = 105,
 
-        WantMatch = 201,
-        WantMatchCancel = 202,
+        SearchMatch = 201,
+        CancelSearchMatch = 202,
+        AimInfo = 203,
+        MakeShot = 204,
+        ShotResult = 205,
     }
 }

@@ -1,4 +1,5 @@
 using Kborod.BilliardCore.Enums;
+using Kborod.BilliardCore.Rules;
 using Kborod.MatchManagement;
 using Kborod.Services.Localization;
 using Kborod.Services.UIScreenManager;
@@ -10,9 +11,11 @@ namespace Kborod.UI.Screens.Table
     public class MatchMessages : MonoBehaviour
     {
         [SerializeField] private MessagesOverlay matchMessages;
-
-        [Inject] private MatchBase _match;
+        
+        [Inject] private MatchServices _matchServices;
         [Inject] private LocalizationService _localization;
+
+        private MatchBase _match => _matchServices.Match;
 
         private MatchPoolEight _matchPoolEight;
 
@@ -37,7 +40,7 @@ namespace Kborod.UI.Screens.Table
 
 
 
-        private void ShotCompletedHandler(ShotResultData data)
+        private void ShotCompletedHandler(ShotResultByRules data)
         {
             if (data.Foul != FoulType.None)
             {

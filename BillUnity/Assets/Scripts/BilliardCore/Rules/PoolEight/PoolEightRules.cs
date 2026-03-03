@@ -13,9 +13,9 @@ namespace Kborod.BilliardCore.Rules.PoolEight
         private ReadOnlyCollection<int> EightBalls = new ReadOnlyCollection<int>(new List<int>() { 8 });
         private ReadOnlyCollection<int> EmptyList = new ReadOnlyCollection<int>(new List<int>());
 
-        public RulesShotResult ProcessShot(ShotResult shotResult, List<Ball> balls, PoolBallType playerBallType) 
+        public PoolEightRulesShotResult ProcessShot(ShotResult shotResult, List<Ball> balls, PoolBallType playerBallType) 
         {
-            var result = new RulesShotResult();
+            var result = new PoolEightRulesShotResult();
             result.ReturnedBalls = GetReturnedBallsAfterShot(shotResult);
 
             var foul = GetFoulInShot(shotResult, balls, playerBallType);
@@ -24,6 +24,7 @@ namespace Kborod.BilliardCore.Rules.PoolEight
             result.TurnTransition = IsTurnTransition(shotResult, foul, ballTypeSelected != PoolBallType.None, playerBallType);
             result.Foul = foul;
             result.BallTypeSelected = ballTypeSelected;
+            result.GameOver = shotResult.PocketedBalls.Contains(8);
             result.UserWin = foul != FoulType.None && shotResult.PocketedBalls.Contains(8) && IsAllBallsPocketed(balls, playerBallType);
 
             return result;
@@ -153,14 +154,5 @@ namespace Kborod.BilliardCore.Rules.PoolEight
             }
             return true;
         }
-    }
-
-    public class RulesShotResult
-    {
-        public List<int> ReturnedBalls;
-        public bool TurnTransition;
-        public FoulType Foul;
-        public PoolBallType BallTypeSelected;
-        public bool UserWin;
     }
 }

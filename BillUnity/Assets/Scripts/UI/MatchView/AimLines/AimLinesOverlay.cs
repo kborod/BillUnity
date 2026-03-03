@@ -9,8 +9,9 @@ namespace Kborod.UI.Screens
     {
         [SerializeField] private AimLinesDrawer aimLinesDrawer;
 
-        [Inject] private IEngineForUI _engine;
-        [Inject] private MatchBase _match;
+        [Inject] private IMatchServices _matchServices;
+        private IEngineForUI _engine => _matchServices.EngineForUI;
+        private MatchBase _match => _matchServices.Match;
 
         private Ball bTmp = new Ball(0);
 

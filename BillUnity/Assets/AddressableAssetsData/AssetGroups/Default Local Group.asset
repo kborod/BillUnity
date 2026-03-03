@@ -25,6 +25,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5d5ad7b0093b887438bb7bf1f322774f
+    m_Address: UI/Screens/SearchOpponentScreen.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5ff968b2487a2c54891cc44440e8550d
     m_Address: UI/Screens/LoginByEmailScreen.prefab
     m_ReadOnly: 0

@@ -5,6 +5,7 @@ namespace Kborod.DomainModel
 {
     public abstract class AccountModel
     {
-        public string Name { get; protected set; }
+        public abstract string Id { get; }
+        public abstract string Name { get; }
     }
 }

@@ -2,6 +2,7 @@
 using Kborod.SharedDto.AsyncServerMessaging.Messages;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -105,19 +106,49 @@ namespace Kborod.Services.ServerCommunication.AsyncServerMessaging.ReliableMessa
 
             foreach (var r in responsesForProcess)
             {
-                RaiseResponseReceived(response.GetPayload());
+                switch (r.ResponseType)
+                {
+                    case ResponseType.ErrorResponse: RaiseResponseReceived(response.GetPayload<ErrorResponseDto>()); break;
+                    case ResponseType.TestResponse: RaiseResponseReceived(response.GetPayload<TestResponseDto>()); break;
+
+                    //Протокольные сообщения до сюда не дойдут, так как обрабатываются в ProtocolResponsesProcessor
+                    //и не передаются дальше, но на всякий случай оставлю их здесь закомментированными
+                    //case ResponseType.MessageReceivedResponse: RaiseResponseReceived(response.GetPayload<MessageReceivedResponseDto>()); break;
+                    //case ResponseType.ResendLastRequestsResponse: RaiseResponseReceived(response.GetPayload<ResendLastMessagesResponseDto>()); break;
+                    //case ResponseType.AreYouAliveResponse: RaiseResponseReceived(response.GetPayload<AreYouAliveResponseDto>()); break;
+                    //case ResponseType.LastResponsesListResponse: RaiseResponseReceived(response.GetPayload<LastMessagesResponseDto>()); break;
+                    //case ResponseType.SessionErrorResponse: RaiseResponseReceived(response.GetPayload<SessionErrorResponseDto>()); break;
+
+                    case ResponseType.AddedToQueueResponse: RaiseResponseReceived(response.GetPayload<AddedToQueueResponseDto>()); break;
+                    case ResponseType.SearchCancelledResponse: RaiseResponseReceived(response.GetPayload<SearchCancelledResponseDto>()); break;
+                    case ResponseType.MatchStartedResponse: RaiseResponseReceived(response.GetPayload<MatchStartedResponseDto>()); break;
+                    case ResponseType.AimInfoResponse: RaiseResponseReceived(response.GetPayload<AimInfoResponseDto>()); break;
+                    case ResponseType.MakeShotResponse: RaiseResponseReceived(response.GetPayload<MakeShotResponseDto>()); break;
+                    case ResponseType.StartTurnResponse: RaiseResponseReceived(response.GetPayload<StartTurnResponseDto>()); break;
+                    case ResponseType.MatchOverResponse: RaiseResponseReceived(response.GetPayload<MatchOverResponseDto>()); break;
+
+                    default: throw new NotImplementedException();
+
+                }
+
                 Debug.Log($"[MessageDeliveryService] Response {r.SequenceNumber} processed");
             }
             Debug.Log($"Session: {_sessionMessages}");
 
         }
 
-        private void RaiseResponseReceived(IResponse response)
+        private void RaiseResponseReceived<T>(T response) where T:  IResponse
         {
-            var set = Gethandlers(response);
-            if (set == null)
+            var t = response.GetType();
+
+            var set = GetHandlers(response);
+            if (set == null || set.Count == 0)
                 return;
-            foreach (var handler in set)
+
+            var immutableSetCopy = set.ToArray();
+
+
+            foreach (var handler in immutableSetCopy)
             {
                 try { handler.Invoke(response); }
                 catch (Exception ex)
@@ -125,13 +156,16 @@ namespace Kborod.Services.ServerCommunication.AsyncServerMessaging.ReliableMessa
                     Debug.LogError($"Response {response.GetType().Name} handler invoking error : {ex}");
                 }
             }
+        }
 
-            HashSet<Action<T>> Gethandlers<T>(T response) where T : IResponse
+        private HashSet<Action<T>> GetHandlers<T>(T response) where T : IResponse
+        {
+            if (_handlers.TryGetValue(response.GetType(), out var obj))
             {
-                if (_handlers.TryGetValue(typeof(T), out var obj) && obj is HashSet<Action<T>> set)
+                if (obj is HashSet<Action<T>> set)
                     return set;
-                return null;
             }
+            return null;
         }
     }
 }

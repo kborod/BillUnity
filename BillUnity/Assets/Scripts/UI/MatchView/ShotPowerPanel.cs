@@ -1,5 +1,4 @@
 ﻿using Kborod.MatchManagement;
-using Kborod.UI.Screens.Table;
 using Kborod.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,8 +16,9 @@ namespace Kborod.UI.Screens
 
         private const float MIN_POWER = 0.02f;
 
-        [Inject] private MatchBase _match;
-        [Inject] private MyShotInput _myShotInput;
+        [Inject] private MatchServices _matchServices;
+        private MatchBase _match => _matchServices.Match;
+        private MyInput _myShotInput => _matchServices.MyInput;
 
         private float _areaHeight;
         private float _handleY;
@@ -35,23 +35,25 @@ namespace Kborod.UI.Screens
             ResetPanel();
             _areaHeight = handleArea.rect.height;
 
-            _match.StateChanged += MatchStateChangedHandler;
+            _match.StateChanged += RefreshByMatchState;
             handleAreaEvents.BeginDrag += PointerDownHandler;
             handleAreaEvents.Drag += PointerMoveHandler;
             handleAreaEvents.EndDrag += PointerUpHandler;
+
+            RefreshByMatchState(_match.State);
         }
 
         private void OnDestroy()
         {
-            _match.StateChanged -= MatchStateChangedHandler;
+            _match.StateChanged -= RefreshByMatchState;
             handleAreaEvents.BeginDrag -= PointerDownHandler;
             handleAreaEvents.Drag -= PointerMoveHandler;
             handleAreaEvents.EndDrag -= PointerUpHandler;
         }
 
-        private void MatchStateChangedHandler(MatchState state)
+        private void RefreshByMatchState(MatchState state)
         {
-            gameObject.SetActive(state == MatchState.PrepeareTurn && _match.CanIManageTurningPlayer);
+            gameObject.SetActive(state == MatchState.PrepeareTurn && _myShotInput.CanIManageTurningPlayer);
         }
 
         private void PointerUpHandler(PointerEventData data)

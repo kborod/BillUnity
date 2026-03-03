@@ -1,5 +1,6 @@
 using Kborod.BilliardCore;
 using Kborod.BilliardCore.Enums;
+using Kborod.BilliardCore.Rules;
 using Kborod.MatchManagement;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,8 +15,9 @@ namespace Kborod.UI.Screens.Table.TopPanel
         [SerializeField] private bool isPlayer1;
 
         [Inject] DiContainer _diContainer;
-        [Inject] private MatchBase _match;
-        [Inject] private IEngineForUI _engineForUI;
+        [Inject] private MatchServices _matchServices;
+        private MatchBase _match => _matchServices.Match;
+        private IEngineForUI _engineForUI => _matchServices.EngineForUI;
 
         private MatchPoolEight _matchPollEight;
         private PoolEightPlayer _player;
@@ -72,14 +74,14 @@ namespace Kborod.UI.Screens.Table.TopPanel
             }
         }
 
-        private void ShotCompletedHandler(ShotResultData data)
+        private void ShotCompletedHandler(ShotResultByRules data)
         {
             foreach (var pocketedBall in data.ShotResult.PocketedBalls)
             {
                 if (data.ReturnedPocketedBalls.Contains(pocketedBall))
                     continue;
 
-                if (pocketedBall.GetPoolBallType() == _player.BallType)
+                if (pocketedBall.GetPoolBallType() == _player.BallType && pocketedBall != 8)
                     BallPocketedHandler(pocketedBall);
             } 
         }

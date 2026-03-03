@@ -8,8 +8,9 @@ namespace Kborod.UI.Screens.Table
 {
     public class MatchSound: MonoBehaviour
     {
-        [Inject] private MatchBase _match;
-        [Inject] private SoundService _soundService;
+        [Inject] private SoundService _soundService; 
+        [Inject] private MatchServices _matchServices;
+        private MatchBase _match => _matchServices.Match;
 
 
         private void Start()

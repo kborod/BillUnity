@@ -9,7 +9,7 @@ namespace Kborod.Services.ServerCommunication.Token
     {
         [Inject] private TokenRefreshService _tokenRefreshService;
         [Inject] private PlayerPrefsService _playerPrefsService;
-        [Inject] private TimeControl _timeService;
+        [Inject] private TimeService _timeService;
 
         private TokenData _tokenData;
 

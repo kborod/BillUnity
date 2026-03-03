@@ -13,9 +13,10 @@ namespace Kborod.UI.Screens
         [SerializeField] private Camera tableCamera;
         [SerializeField] private Transform ballsRoot;
 
-        [Inject] private IEngineForUI _engine;
-        [Inject] private MatchBase _match;
-        [Inject] private MyShotInput _myShotInput;
+        [Inject] private MatchServices _matchServices;
+        private IEngineForUI _engine => _matchServices.EngineForUI;
+        private MatchBase _match => _matchServices.Match;
+        private MyInput _myShotInput => _matchServices.MyInput;
 
         private Vector2 ballPosition => ballsRoot.TransformPoint(_engine.Balls[_myShotInput.CurrentCueBallOrNull.Value].v.p0.ToVector2() * Config.MODEL_COORD_TO_WORLD_KOEF);
         private Vector2 lastCursorScreenPosition;
@@ -24,24 +25,28 @@ namespace Kborod.UI.Screens
         {
             mouseInput.MouseDown += MouseDownHandler;
             mouseInput.MouseMove += MouseMoveHandler;
-            _match.StateChanged -= MatchStateChangedHandler;
+            _match.StateChanged += RefreshByMatchState;
+
+            RefreshByMatchState(_match.State);
         }
 
         private void OnDestroy()
         {
             mouseInput.MouseDown -= MouseDownHandler;
             mouseInput.MouseMove -= MouseMoveHandler;
-            _match.StateChanged -= MatchStateChangedHandler;
+            _match.StateChanged -= RefreshByMatchState;
         }
 
-        private void MatchStateChangedHandler(MatchState state)
+        private void RefreshByMatchState(MatchState state)
         {
-            if (state == MatchState.PrepeareTurn && _match.CanIManageTurningPlayer)
+            if (state == MatchState.PrepeareTurn && _myShotInput.CanIManageTurningPlayer)
             {
+                mouseInput.enabled = true;
                 gameObject.SetActive(true);
             }
             else
             {
+                mouseInput.enabled = false;
                 gameObject.SetActive(false);
             }
         }

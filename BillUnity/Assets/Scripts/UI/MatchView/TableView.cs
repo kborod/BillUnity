@@ -1,9 +1,9 @@
 using Kborod.BilliardCore;
+using Kborod.BilliardCore.Rules;
 using Kborod.Extensions;
 using Kborod.MatchManagement;
 using Kborod.UI.Screens.Table.BallsMove;
 using Kborod.UI.Screens.Table.BallsRemove;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -28,8 +28,9 @@ namespace Kborod.UI.Screens.Table
         [SerializeField] private BallReplacer ballReplacer;
 
         [Inject] private BallsSO _ballsSO;
-        [Inject] private MatchBase _match;
-        [Inject] private IEngineForUI _engineForUI;
+        [Inject] private MatchServices _matchServices;
+        private MatchBase _match => _matchServices.Match;
+        private IEngineForUI _engineForUI => _matchServices.EngineForUI;
 
         //private TableParams tableParams = new TableParams();
 
@@ -83,7 +84,7 @@ namespace Kborod.UI.Screens.Table
             UpdateBallsPositions(result.DeltaTimeMS);
         }
 
-        private void ShotCompleteHandler(ShotResultData result)
+        private void ShotCompleteHandler(ShotResultByRules result)
         {
             UpdateBallsPositions();
         }

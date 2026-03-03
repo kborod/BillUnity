@@ -6,7 +6,7 @@ namespace Kborod.Services.ServerCommunication.Token
 {
     public class TokenRefreshService
     {
-        [Inject] private TimeControl _timeService;
+        [Inject] private TimeService _timeService;
 
         public async UniTask<TokenData> TryRefresh(TokenData data)
         {

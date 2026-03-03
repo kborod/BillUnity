@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Kborod.AsyncProcesses;
+using Kborod.BilliardCore.Enums;
 using Zenject;
 
 namespace Kborod.Loader
@@ -13,8 +14,8 @@ namespace Kborod.Loader
         public async UniTask StartApplication()
         {
             await InitApp();
-            // Login();
-            //await InitRealTimeMsgs();
+            await Login();
+            await InitRealTimeMsgs();
             await MainMenu();
             //await TestWindow();
         }
@@ -24,9 +25,16 @@ namespace Kborod.Loader
             await _container.Instantiate<MainMenuProcess>().Run();
         }
 
-        public async UniTask Match()
+        public async UniTask TrainingMatch()
         {
-            await _container.Instantiate<MatchProcess>().Run();
+            await _container.Instantiate<InitTrainingMatchProcess>().Run();
+        }
+
+        public async UniTask PvpMatch(GameType gameType, BetType betType)
+        {
+            var processResult = await _container.Instantiate<InitPvpMatchProcess>().Run(gameType, betType);
+            if (processResult.IsSuccess == false)
+                MainMenu().Forget();
         }
 
         private async UniTask InitApp()

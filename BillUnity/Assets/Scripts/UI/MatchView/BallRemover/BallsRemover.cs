@@ -1,4 +1,5 @@
 ﻿using Kborod.BilliardCore;
+using Kborod.BilliardCore.Rules;
 using Kborod.Extensions;
 using Kborod.MatchManagement;
 using PathCreation;
@@ -20,7 +21,8 @@ namespace Kborod.UI.Screens.Table.BallsRemove
         [SerializeField] private PathCreator pathCreator;
         [SerializeField] private Transform ballsRoot;
 
-        [Inject] MatchBase _match;
+        [Inject] private MatchServices _matchServices;
+        private MatchBase _match => _matchServices.Match;
 
         private float maxPathDistance => pathCreator.path.length - ballsOnPathCount * Config.BALL_DIAM_PX * Config.MODEL_COORD_TO_WORLD_KOEF;
 
@@ -48,7 +50,7 @@ namespace Kborod.UI.Screens.Table.BallsRemove
             tickResult.PocketedBallsOrNull?.ForEach(b => AddBall(b, ballsRoot, false));
         }
 
-        private void ShotCompletedHandler(ShotResultData result)
+        private void ShotCompletedHandler(ShotResultByRules result)
         {
             if (result.ReturnedPocketedBalls.Count > 0)
             {

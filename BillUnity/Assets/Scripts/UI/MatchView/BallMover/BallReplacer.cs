@@ -18,10 +18,10 @@ namespace Kborod.UI.Screens.Table.BallsMove
         [SerializeField] private Camera tableCamera;
         [SerializeField] private Transform ballsRoot;
 
-        [Inject] private MatchBase _match;
-        [Inject] private IEngineForUI _engine;
-
-        [Inject] private readonly MyShotInput _myShotInput;
+        [Inject] private IMatchServices _matchServices;
+        private MatchBase _match => _matchServices.Match;
+        private IEngineForUI _engine => _matchServices.EngineForUI;
+        private MyInput _myShotInput => _matchServices.MyInput;
 
         private int _ballNum;
         private bool _onlyKitchen;
@@ -55,7 +55,7 @@ namespace Kborod.UI.Screens.Table.BallsMove
 
         private void RefreshByState(MatchState state)
         {
-            if (state == MatchState.PrepeareTurn && _match.CanIManageTurningPlayer && _match.TurnSettings.CanMoveBall.HasValue)
+            if (state == MatchState.PrepeareTurn && _myShotInput.CanIManageTurningPlayer && _match.TurnSettings.CanMoveBall.HasValue)
             {
                 gameObject.SetActive(true);
                 _ballNum = _match.TurnSettings.CanMoveBall.Value;

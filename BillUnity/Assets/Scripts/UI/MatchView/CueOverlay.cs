@@ -1,7 +1,6 @@
 using Kborod.BilliardCore;
 using Kborod.Extensions;
 using Kborod.MatchManagement;
-using System;
 using UnityEngine;
 using Zenject;
 
@@ -17,35 +16,45 @@ namespace Kborod.UI.Screens
         private const float CUE_MIN_X = -0.35f;
         private const float CUE_MAX_X = -1.2f;
 
-        [Inject] private IEngineForUI _engine;
-        [Inject] private MatchBase _match;
-
-        
-
-        private Vector2 currDirection => cueHolder.right.normalized;
+        [Inject] private MatchServices _matchServices;
+        private IEngineForUI _engine => _matchServices.EngineForUI;
+        private MatchBase _match => _matchServices.Match;
 
         private void Start()
         {
             _match.StateChanged += MatchStateChangedHandler;
-            _match.AimInfoReceived += Refresh;
+            _match.AimInfoReceived += AimInfoChangedHandler;
 
-            Refresh(_match.AimInfo);
+            Refresh();
         }
 
         private void OnDestroy()
         {
             _match.StateChanged -= MatchStateChangedHandler;
-            _match.AimInfoReceived -= Refresh;
+            _match.AimInfoReceived -= AimInfoChangedHandler;
         }
 
         private void MatchStateChangedHandler(MatchState state)
         {
-            gameObject.SetActive(state == MatchState.PrepeareTurn);
+            Refresh();
         }
 
-        private void Refresh(AimInfo info)
+        private void AimInfoChangedHandler(AimInfo info)
         {
-            if (_match.AimInfo.CueBall.HasValue == false || _match.AimInfo.IsBallMovingNow)
+            Refresh();
+        }
+
+        private void Refresh()
+        {
+            if (_match.State != MatchState.PrepeareTurn)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
+            var info = _match.AimInfo;
+
+            if (info.CueBall.HasValue == false || info.IsBallMovingNow)
             {
                 gameObject.SetActive(false);
                 return;
