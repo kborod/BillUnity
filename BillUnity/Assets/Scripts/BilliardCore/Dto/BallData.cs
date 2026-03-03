@@ -6,5 +6,10 @@ namespace Kborod.BilliardCore
 		public bool IsRemoved;
 		public float X;
 		public float Y;
+
+        public void SetPosition(float x, float y)
+        {
+            X = x; Y = y;
+        }
     }
 }

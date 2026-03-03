@@ -28,6 +28,7 @@ namespace Kborod.MatchManagement.Control
 
             _messagingService.SendRequest(new SearchMatchDto(gameType, betType));
             _matchStartedTcs = new UniTaskCompletionSource<Result<MatchStartedResponseDto>>();
+
             return await _matchStartedTcs.Task;
         }
 

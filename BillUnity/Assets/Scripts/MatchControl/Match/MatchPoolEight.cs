@@ -21,8 +21,8 @@ namespace Kborod.MatchManagement
         private PoolEightPlayer _player1;
         private PoolEightPlayer _player2;
 
-        public void Init(string matchId, int ballsPosition, PoolEightPlayer player1, PoolEightPlayer player2, 
-            string turningPlayerId, long turnEndtime)
+        public void Init(string matchId, int posNum, PoolEightPlayer player1, PoolEightPlayer player2, 
+            string turningPlayerId)
         {
             Id = matchId;
 
@@ -31,17 +31,18 @@ namespace Kborod.MatchManagement
 
             _turningPlayer = player1.Id == turningPlayerId ? player1 : player2;
 
-            _engine.PrepeareNewGame(ballsPosition);
+            var ballDatas = Config.GetBallsPositionsForNewGame(GameType, posNum);
+            Engine.SetBallDatas(ballDatas);
 
             PoolEightRules = new PoolEightRules();
-            TurnSettings = PoolEightRules.GetFirstTurnSettings(_engine.Balls, PoolBallType.None);
+            TurnSettings = PoolEightRules.GetFirstTurnSettings(Engine.Balls, PoolBallType.None);
 
-            ChangeState(MatchState.PrepeareTurn);
+            ChangeState(MatchState.Inited);
         }
 
         protected override void ShotCompletedHandler(ShotResult shotResult)
         {
-            var rulesResult = PoolEightRules.ProcessShot(shotResult, _engine.Balls, _turningPlayer.BallType);
+            var rulesResult = PoolEightRules.ProcessShot(shotResult, MatchShotsCount <= 1, Engine.Balls, _turningPlayer.BallType);
             var shotData = new ShotResultByRules(
                 shotResult, 
                 rulesResult.Foul, 
@@ -52,13 +53,13 @@ namespace Kborod.MatchManagement
                     : null
                 );
 
-            rulesResult.ReturnedBalls.ForEach(ball => { _engine.ReturnPocketedBall(ball); });
+            rulesResult.ReturnedBalls.ForEach(ball => { Engine.ReturnPocketedBall(ball); });
 
             TrySelectBallTypes(rulesResult);
 
             TrySwitchTurningPlayer(rulesResult);
 
-            TurnSettings = PoolEightRules.GetTurnSettings(_engine.Balls, _turningPlayer.BallType, rulesResult.Foul != FoulType.None);
+            TurnSettings = PoolEightRules.GetTurnSettings(Engine.Balls, _turningPlayer.BallType, rulesResult.Foul != FoulType.None);
 
             if (rulesResult.GameOver)
                 ChangeState(MatchState.Over);

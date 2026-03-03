@@ -22,15 +22,16 @@ namespace Kborod.MatchManagement
         public abstract Player Player1 { get; }
         public abstract Player Player2 { get; }
 
-        public MatchState State { get; private set; }
+        public MatchState State { get; private set; } = MatchState.Initializing;
         public TurnSettings TurnSettings { get; protected set; }
         public long TurnEndTime { get; private set; }
 
         public AimInfo AimInfo => _aimInfo;
 
-        public IEngineForUI EngineForUI => _engine;
+        public IEngineForUI EngineForUI => Engine;
 
-        protected Engine _engine;
+        protected Engine Engine;
+        protected int MatchShotsCount = 0;
 
         private EngineShotMaker _engineShotMaker;
 
@@ -38,8 +39,8 @@ namespace Kborod.MatchManagement
 
         public MatchBase()
         {
-            _engine = new Engine();
-            _engineShotMaker = new EngineShotMaker(_engine);
+            Engine = new Engine();
+            _engineShotMaker = new EngineShotMaker(Engine);
 
             _engineShotMaker.ShotTickCompleted += ShotTickCompletedHandler;
             _engineShotMaker.ShotCompleted += ShotCompletedHandler;
@@ -57,8 +58,10 @@ namespace Kborod.MatchManagement
             ChangeState(MatchState.PrepeareTurn);
         }
 
-        public void MakeShot(AimInfo aimInfo, float cuePower = 300)
+        public void MakeShot(AimInfo aimInfo, float cuePower)
         {
+            MatchShotsCount++;
+
             ChangeState(MatchState.Animation);
 
             _aimInfo = aimInfo;
@@ -110,7 +113,7 @@ namespace Kborod.MatchManagement
         private void ReplaceBallFromAim()
         {
             if (_aimInfo.CueBall.HasValue && _aimInfo.CueBallX.HasValue && _aimInfo.CueBallY != null)
-                _engine.ReplaceBall(
+                Engine.ReplaceBall(
                     _aimInfo.CueBall.Value,
                     _aimInfo.CueBallX.Value,
                     _aimInfo.CueBallY.Value,

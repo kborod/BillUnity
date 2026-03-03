@@ -21,6 +21,10 @@ namespace Kborod.MatchManagement.Control
             _matchServices.MyInput.ShotMade += ShotMade;
             _match.StateChanged += MatchStateChangedHandler;
             _match.ShotCompleted += MatchShotCompletedHandler;
+
+            StartTurn();
+
+
             //ShotMade(
             //    new AimInfo
             //    {
@@ -42,7 +46,7 @@ namespace Kborod.MatchManagement.Control
 
         }
 
-        private void MatchShotCompletedHandler(ShotResultByRules result)
+        private void StartTurn()
         {
             _matchServices.Match.StartTurn(new StartTurnData
             {
@@ -50,6 +54,11 @@ namespace Kborod.MatchManagement.Control
                 TurningPlayerId = _match.TurningPlayer.Id,
                 MatchId = _match.Id
             });
+        }
+
+        private void MatchShotCompletedHandler(ShotResultByRules result)
+        {
+            StartTurn();
         }
 
         private void MatchStateChangedHandler(MatchState state)
@@ -72,7 +81,8 @@ namespace Kborod.MatchManagement.Control
         {
             if (_matchServices.Match.State != MatchState.PrepeareTurn)
                 return;
-            _match.MakeShot(info);
+            _match.MakeShot(info, GetCuePower());
         }
+        private float GetCuePower() => 300;
     }
 }

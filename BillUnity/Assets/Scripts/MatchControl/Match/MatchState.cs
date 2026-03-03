@@ -2,7 +2,8 @@
 {
     public enum MatchState
     {
-        Init,
+        Initializing,
+        Inited,
         PrepeareTurn,
         Animation,
         WaitingStartTurn,

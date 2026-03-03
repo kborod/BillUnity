@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Kborod.BilliardCore;
 using Kborod.MatchManagement;
 using Kborod.MatchManagement.Control;
 using Kborod.Services.UIScreenManager;
@@ -18,18 +19,21 @@ namespace Kborod.AsyncProcesses
         {
             await _screensHelper.ClearAll();
 
+            var matchId = "TestMatch";
+            var player1Id = "Player1Id";
+            var player2Id = "Player2Id";
+            var ballsPosition = 1;
+
+
             var match = new MatchPoolEight();
             match.Init(
-                "1", 
-                1,
-                new PoolEightPlayer("1", "Player1"),
-                new PoolEightPlayer("2", "Player2"), 
-                "1", 
-                long.MaxValue);
+                matchId,
+                ballsPosition,
+                new PoolEightPlayer(player1Id, "Player1"),
+                new PoolEightPlayer(player2Id, "Player2"),
+                player1Id);
 
-            _matchServices.Setup(match, new List<string>() { "1", "2" });
-
-            await UniTask.Delay(TimeSpan.FromSeconds(1.5f));
+            _matchServices.Setup(match, new List<string>() { player1Id, player2Id });
 
             var matchControl = _diContainer.Instantiate<MatchControlLocal>();
             matchControl.Init();

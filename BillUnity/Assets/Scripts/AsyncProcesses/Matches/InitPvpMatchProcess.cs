@@ -36,15 +36,16 @@ namespace Kborod.AsyncProcesses
                 startData.BallsPosition,
                 new PoolEightPlayer(_accoundModel.Id, _accoundModel.Name),
                 new PoolEightPlayer(startData.Opponent.Id, startData.Opponent.Username),
-                startData.TurningPlayerId,
-                startData.EndTurnTimestamp);
+                startData.TurningPlayerId);
 
             _matchServices.Setup(match, new List<string>() { _accoundModel.Id });
 
+            
+
+            await new OpenSceneProcess("TableScene").Run(); 
+            
             var matchControl = _diContainer.Instantiate<MatchControlNetwork>();
             matchControl.Setup(startData);
-
-            await new OpenSceneProcess("TableScene").Run();
 
             return Result.Ok();
         }

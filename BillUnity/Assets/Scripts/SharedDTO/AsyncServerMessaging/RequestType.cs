@@ -13,8 +13,9 @@ namespace Kborod.SharedDto.AsyncServerMessaging.Messages
 
         SearchMatch = 201,
         CancelSearchMatch = 202,
-        AimInfo = 203,
-        MakeShot = 204,
-        ShotResult = 205,
+        MatchInited = 203,
+        AimInfo = 204,
+        MakeShot = 205,
+        ShotResult = 206,
     }
 }

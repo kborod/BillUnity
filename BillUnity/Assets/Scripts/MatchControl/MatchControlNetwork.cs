@@ -34,6 +34,8 @@ namespace Kborod.MatchManagement.Control
 
             _myInput.AimInfoChanged += MyAimInfoReceived;
             _myInput.ShotMade += MyMakeShotReceived;
+
+            _messagingService.SendRequest(new MatchInitedDto(_match.Id));
         }
 
         public void Dispose()
@@ -61,7 +63,7 @@ namespace Kborod.MatchManagement.Control
         private void OppMakeShotReceived(MakeShotResponseDto dto)
         {
             if (!IsMyTurn && _match.State == MatchState.PrepeareTurn)
-                _match.MakeShot(dto.MakeShotData.AimInfo);
+                _match.MakeShot(dto.MakeShotData.AimInfo, GetOppCuePower());
         }
 
         private void ShotCompletedHandler(ShotResultByRules data)
@@ -92,7 +94,7 @@ namespace Kborod.MatchManagement.Control
 
             _turnTimer.Stop();
             _messagingService.SendRequest(new MakeShotDto(new MakeShotData(_match.Id, aimInfo)));
-            _match.MakeShot(aimInfo);
+            _match.MakeShot(aimInfo, GetMyCuePower());
         }
 
         private void TurnTimeIsOver()
@@ -110,5 +112,8 @@ namespace Kborod.MatchManagement.Control
                 Debug.Log("Время хода соперника истекло.");
             }
         }
+
+        private float GetMyCuePower() => 300;
+        private float GetOppCuePower() => 300;
     }
 }

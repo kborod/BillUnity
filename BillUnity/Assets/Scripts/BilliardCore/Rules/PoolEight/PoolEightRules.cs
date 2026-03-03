@@ -13,15 +13,15 @@ namespace Kborod.BilliardCore.Rules.PoolEight
         private ReadOnlyCollection<int> EightBalls = new ReadOnlyCollection<int>(new List<int>() { 8 });
         private ReadOnlyCollection<int> EmptyList = new ReadOnlyCollection<int>(new List<int>());
 
-        public PoolEightRulesShotResult ProcessShot(ShotResult shotResult, List<Ball> balls, PoolBallType playerBallType) 
+        public PoolEightRulesShotResult ProcessShot(ShotResult shotResult, bool isFirstShot, List<Ball> balls, PoolBallType playerBallType) 
         {
             var result = new PoolEightRulesShotResult();
             result.ReturnedBalls = GetReturnedBallsAfterShot(shotResult);
 
             var foul = GetFoulInShot(shotResult, balls, playerBallType);
-            var ballTypeSelected = GetSelectedBallTypeInShot(shotResult, playerBallType);
+            var ballTypeSelected = GetSelectedBallTypeInShot(shotResult, isFirstShot, playerBallType);
 
-            result.TurnTransition = IsTurnTransition(shotResult, foul, ballTypeSelected != PoolBallType.None, playerBallType);
+            result.TurnTransition = IsTurnTransition(shotResult, isFirstShot, foul, ballTypeSelected != PoolBallType.None, playerBallType);
             result.Foul = foul;
             result.BallTypeSelected = ballTypeSelected;
             result.GameOver = shotResult.PocketedBalls.Contains(8);
@@ -97,7 +97,7 @@ namespace Kborod.BilliardCore.Rules.PoolEight
             }
         }
 
-        private bool IsTurnTransition(ShotResult shotResult, FoulType foul, bool ballTypeSelected, PoolBallType playerBallType)
+        private bool IsTurnTransition(ShotResult shotResult, bool isFirstShot, FoulType foul, bool ballTypeSelected, PoolBallType playerBallType)
         {
             if (foul != FoulType.None)
                 return true;
@@ -105,7 +105,7 @@ namespace Kborod.BilliardCore.Rules.PoolEight
                 return true;
             if (ballTypeSelected)
                 return false;
-            if (shotResult.IsFirstShot && shotResult.PocketedBalls.Count > 0)
+            if (isFirstShot && shotResult.PocketedBalls.Count > 0)
                 return false;
             if (playerBallType != PoolBallType.None)
             {
@@ -118,9 +118,9 @@ namespace Kborod.BilliardCore.Rules.PoolEight
             return true;
         }
 
-        private PoolBallType GetSelectedBallTypeInShot(ShotResult shotResult, PoolBallType playerBallType)
+        private PoolBallType GetSelectedBallTypeInShot(ShotResult shotResult, bool isFirstShot, PoolBallType playerBallType)
         {
-            if (shotResult.IsFirstShot)
+            if (isFirstShot)
             {
                 return PoolBallType.None;
             }   

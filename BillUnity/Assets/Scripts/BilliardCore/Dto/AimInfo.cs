@@ -1,4 +1,6 @@
-﻿namespace Kborod.BilliardCore
+﻿using Newtonsoft.Json;
+
+namespace Kborod.BilliardCore
 {
     public struct AimInfo
     {
@@ -9,11 +11,14 @@
 
         public float? CueBallX;
         public float? CueBallY;
-        public bool IsBallMovingNow;
 
         public float SpinX;
         public float SpinY;
 
         public float Power;
+
+        /// <summary> только для фронта </summary>
+        [JsonIgnore]
+        public bool IsBallMovingNow;
     }
 }
