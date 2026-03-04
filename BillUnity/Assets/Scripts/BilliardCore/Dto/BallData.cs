@@ -11,5 +11,10 @@ namespace Kborod.BilliardCore
         {
             X = x; Y = y;
         }
+
+        public override string ToString()
+        {
+            return $"Num:{Number}_IsRemoved:{IsRemoved}_X:{X}_Y:{Y}";
+        }
     }
 }

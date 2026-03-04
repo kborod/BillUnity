@@ -84,7 +84,7 @@ namespace Kborod.UI.Screens.Table
             UpdateBallsPositions(result.DeltaTimeMS);
         }
 
-        private void ShotCompleteHandler(ShotResultByRules result)
+        private void ShotCompleteHandler(RulesShotResult result)
         {
             UpdateBallsPositions();
         }

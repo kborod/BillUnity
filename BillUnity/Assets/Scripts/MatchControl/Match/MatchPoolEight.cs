@@ -3,6 +3,7 @@ using Kborod.BilliardCore.Enums;
 using Kborod.BilliardCore.Rules;
 using Kborod.BilliardCore.Rules.PoolEight;
 using System;
+using UnityEngine;
 
 namespace Kborod.MatchManagement
 {
@@ -15,7 +16,6 @@ namespace Kborod.MatchManagement
         public override Player TurningPlayer => _turningPlayer;
         public override Player Player1 => _player1;
         public override Player Player2 => _player2;
-        public PoolEightRules PoolEightRules { get; private set; }
 
         private PoolEightPlayer _turningPlayer;
         private PoolEightPlayer _player1;
@@ -34,59 +34,59 @@ namespace Kborod.MatchManagement
             var ballDatas = Config.GetBallsPositionsForNewGame(GameType, posNum);
             Engine.SetBallDatas(ballDatas);
 
-            PoolEightRules = new PoolEightRules();
             TurnSettings = PoolEightRules.GetFirstTurnSettings(Engine.Balls, PoolBallType.None);
 
             ChangeState(MatchState.Inited);
         }
 
+        public override void MakeShot(AimInfo aimInfo, float cuePower)
+        {
+            CalculateShot(aimInfo, cuePower);
+
+            base.MakeShot(aimInfo, cuePower);
+        }
+
         protected override void ShotCompletedHandler(ShotResult shotResult)
         {
-            var rulesResult = PoolEightRules.ProcessShot(shotResult, MatchShotsCount <= 1, Engine.Balls, _turningPlayer.BallType);
-            var shotData = new ShotResultByRules(
-                shotResult, 
-                rulesResult.Foul, 
-                rulesResult.ReturnedBalls,
-                nextTurnPlayerId: rulesResult.TurnTransition ? GetOpponentOf(_turningPlayer).Id : _turningPlayer.Id,
-                winUserIdOrNull: rulesResult.GameOver 
-                    ? rulesResult.UserWin ? _turningPlayer.Id : GetOpponentOf(_turningPlayer).Id
-                    : null
+            PoolEightTurnResults turnResults = shotResult.CompleteTurnWithRules_P8(
+                Engine,
+                _turningPlayer.Id,
+                _turningPlayer.BallType,
+                GetOpponentOf(_turningPlayer).Id,
+                MatchShotsCount <= 1
                 );
 
-            rulesResult.ReturnedBalls.ForEach(ball => { Engine.ReturnPocketedBall(ball); });
+            TrySelectBallTypes(
+                turnResults.RulesResult.CurrTurnPlayerId, 
+                turnResults.PoolEightRulesResult.BallTypeSelected);
 
-            TrySelectBallTypes(rulesResult);
+            SetTurningPlayer(turnResults.RulesResult.NextTurnPlayerId);
 
-            TrySwitchTurningPlayer(rulesResult);
+            TurnSettings = turnResults.NextTurnSettings;
 
-            TurnSettings = PoolEightRules.GetTurnSettings(Engine.Balls, _turningPlayer.BallType, rulesResult.Foul != FoulType.None);
-
-            if (rulesResult.GameOver)
+            if (turnResults.RulesResult.WinUserIdOrNull != null)
                 ChangeState(MatchState.Over);
             else
                 ChangeState(MatchState.WaitingStartTurn);
 
-            
-            InvokeShotCompleted(shotData);
+            CheckResult(turnResults);
+
+            InvokeShotCompleted(turnResults.RulesResult);
         }
 
-        private void TrySwitchTurningPlayer(PoolEightRulesShotResult rulesResult)
+        private void SetTurningPlayer(string id)
         {
-            if (_player1 == null || _player2 == null)
-                return;
-            if (rulesResult.TurnTransition)
-            {
-                _turningPlayer = GetOpponentOf(_turningPlayer);
-                InvokeTurningPlayerChanged();
-            }
+            _turningPlayer = _player1.Id == id ? _player1 : GetOpponentOf(_player1);
         }
 
-        private void TrySelectBallTypes(PoolEightRulesShotResult rulesResult)
+        private void TrySelectBallTypes(string playerId, PoolBallType selectedBallType)
         {
-            if (_turningPlayer.BallType != PoolBallType.None || rulesResult.BallTypeSelected == PoolBallType.None)
+            if (_player1.BallType != PoolBallType.None || selectedBallType == PoolBallType.None)
                 return;
-            _turningPlayer.BallType = rulesResult.BallTypeSelected;
-            GetOpponentOf(_turningPlayer).BallType = _turningPlayer.BallType == PoolBallType.Striped ? PoolBallType.Solid : PoolBallType.Striped;
+
+            var player = GetPlayer(playerId);
+            player.BallType = selectedBallType;
+            GetOpponentOf(player).BallType = player.BallType.GetOpposite();
 
             BallTypesSelected?.Invoke();
         }
@@ -97,6 +97,35 @@ namespace Kborod.MatchManagement
                 return _player2;
             else
                 return _player1;
+        }
+
+        private PoolEightPlayer GetPlayer(string playerId)
+        {
+            if (_player1.Id == playerId)
+                return _player1;
+            else
+                return _player2;
+        }
+
+        private PoolEightTurnResults _calcResult;
+        private void CalculateShot(AimInfo aimInfo, float cuePower)
+        {
+            var ballDatas = Engine.GetBallDatas();
+            var moveOnlyKitchen = TurnSettings.MoveOnlyInKitchen;
+            var playerBallType = _turningPlayer.BallType;
+
+            var calc = new ShotCalculator();
+            _calcResult = calc.CalculateShot(
+                _turningPlayer.Id, GetOpponentOf(_turningPlayer).Id, ballDatas, aimInfo, MatchShotsCount == 0, moveOnlyKitchen, cuePower, playerBallType);
+        }
+
+        private void CheckResult(PoolEightTurnResults turnResults)
+        {
+            Debug.Log("------CHECKING-------");
+            var differences = turnResults.RulesResult.GetDifferences(_calcResult.RulesResult);
+            if (!string.IsNullOrEmpty(differences))
+                Debug.Log(differences);
+            Debug.Log("------COMPLETE-------");
         }
     }
 }

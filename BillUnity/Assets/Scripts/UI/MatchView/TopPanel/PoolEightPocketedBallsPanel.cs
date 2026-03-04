@@ -74,9 +74,9 @@ namespace Kborod.UI.Screens.Table.TopPanel
             }
         }
 
-        private void ShotCompletedHandler(ShotResultByRules data)
+        private void ShotCompletedHandler(RulesShotResult data)
         {
-            foreach (var pocketedBall in data.ShotResult.PocketedBalls)
+            foreach (var pocketedBall in data.PocketedBalls)
             {
                 if (data.ReturnedPocketedBalls.Contains(pocketedBall))
                     continue;

@@ -40,7 +40,7 @@ namespace Kborod.UI.Screens.Table
 
 
 
-        private void ShotCompletedHandler(ShotResultByRules data)
+        private void ShotCompletedHandler(RulesShotResult data)
         {
             if (data.Foul != FoulType.None)
             {

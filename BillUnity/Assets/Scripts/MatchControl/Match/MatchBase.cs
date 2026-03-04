@@ -12,7 +12,7 @@ namespace Kborod.MatchManagement
 
         public event Action<float> CueBallHittedWithPower;
         public event Action<ShotTickResult> ShotTickCompleted;
-        public event Action<ShotResultByRules> ShotCompleted;
+        public event Action<RulesShotResult> ShotCompleted;
         public event Action TurningPlayerChanged;
         public event Action<AimInfo> AimInfoReceived;
 
@@ -58,7 +58,7 @@ namespace Kborod.MatchManagement
             ChangeState(MatchState.PrepeareTurn);
         }
 
-        public void MakeShot(AimInfo aimInfo, float cuePower)
+        public virtual void MakeShot(AimInfo aimInfo, float cuePower)
         {
             MatchShotsCount++;
 
@@ -100,7 +100,7 @@ namespace Kborod.MatchManagement
             StateChanged?.Invoke(state);
         }
 
-        protected void InvokeShotCompleted(ShotResultByRules shotResultData) 
+        protected void InvokeShotCompleted(RulesShotResult shotResultData) 
         {
             ShotCompleted?.Invoke(shotResultData);
         }

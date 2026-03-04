@@ -66,12 +66,12 @@ namespace Kborod.MatchManagement.Control
                 _match.MakeShot(dto.MakeShotData.AimInfo, GetOppCuePower());
         }
 
-        private void ShotCompletedHandler(ShotResultByRules data)
+        private void ShotCompletedHandler(RulesShotResult data)
         {
             var syncInfo = new SyncronizationInfo
             {
                 MatchId = _match.Id,
-                Balls = _match.EngineForUI.GetBallDatas(),
+                Balls = data.BallDatas,
                 TurningPlayerId = data.NextTurnPlayerId,
                 WinPlayerId = data.WinUserIdOrNull
             };

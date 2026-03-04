@@ -50,7 +50,7 @@ namespace Kborod.UI.Screens.Table.BallsRemove
             tickResult.PocketedBallsOrNull?.ForEach(b => AddBall(b, ballsRoot, false));
         }
 
-        private void ShotCompletedHandler(ShotResultByRules result)
+        private void ShotCompletedHandler(RulesShotResult result)
         {
             if (result.ReturnedPocketedBalls.Count > 0)
             {

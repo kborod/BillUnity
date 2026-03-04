@@ -56,7 +56,8 @@ namespace Kborod.MatchManagement.Control
             });
         }
 
-        private void MatchShotCompletedHandler(ShotResultByRules result)
+        
+        private void MatchShotCompletedHandler(RulesShotResult result)
         {
             StartTurn();
         }
@@ -81,6 +82,7 @@ namespace Kborod.MatchManagement.Control
         {
             if (_matchServices.Match.State != MatchState.PrepeareTurn)
                 return;
+
             _match.MakeShot(info, GetCuePower());
         }
         private float GetCuePower() => 300;

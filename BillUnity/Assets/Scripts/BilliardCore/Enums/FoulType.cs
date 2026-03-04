@@ -3,7 +3,6 @@ namespace Kborod.BilliardCore.Enums
     public enum FoulType
     {
         None = 0,
-        ShotSkipped = 1,
 
         P8_NoCollision = 101,
         P8_FirstCollision = 102,

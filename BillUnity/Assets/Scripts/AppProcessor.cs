@@ -14,8 +14,8 @@ namespace Kborod.Loader
         public async UniTask StartApplication()
         {
             await InitApp();
-            await Login();
-            await InitRealTimeMsgs();
+            //await Login();
+            //await InitRealTimeMsgs();
             await MainMenu();
             //await TestWindow();
         }

@@ -14,7 +14,5 @@ namespace Kborod.BilliardCore
 		public void ReturnPocketedBall(int ballNum);
 
 		public AimObject GetAimObject(Ball b);
-
-		public List<BallData> GetBallDatas();
     }
 }
