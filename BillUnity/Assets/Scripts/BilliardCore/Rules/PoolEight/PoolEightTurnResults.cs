@@ -3,7 +3,7 @@ using Kborod.BilliardCore.Rules.PoolEight;
 
 namespace Kborod.BilliardCore
 {
-    public class PoolEightTurnResults
+    public class PoolEightTurnResults : ITurnResult
     {
         public PoolEightRulesShotResult PoolEightRulesResult { get; private set; }
         public RulesShotResult RulesResult { get; private set; }
