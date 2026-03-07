@@ -17,9 +17,9 @@ namespace Kborod.Loader
 
             //await TestWindow();
             //return;
-            await TestLoginByTags();
+            //await TestLoginByTags();
             //await Login();
-            await InitRealTimeMsgs();
+            //await InitRealTimeMsgs();
             await MainMenu();
         }
 

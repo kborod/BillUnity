@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace Kborod.BilliardCore
+﻿namespace Kborod.BilliardCore
 {
     public struct AimInfo
     {

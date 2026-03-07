@@ -34,7 +34,7 @@ namespace Kborod.MatchManagement
             var ballDatas = Config.GetBallsPositionsForNewGame(GameType, posNum);
             Engine.SetBallDatas(ballDatas);
 
-            TurnSettings = PoolEightRules.GetFirstTurnSettings(Engine.Balls, PoolBallType.None);
+            TurnSettings = PoolEightRules.GetFirstTurnSettings(Engine.Balls);
 
             ChangeState(MatchState.Inited);
         }

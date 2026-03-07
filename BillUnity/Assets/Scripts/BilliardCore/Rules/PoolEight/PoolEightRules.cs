@@ -30,9 +30,9 @@ namespace Kborod.BilliardCore.Rules.PoolEight
             return result;
         }
 
-        public static TurnSettings GetFirstTurnSettings<T>(List<T> balls, PoolBallType playerBallType) where T : IBallData
+        public static TurnSettings GetFirstTurnSettings<T>(List<T> balls) where T : IBallData
         {
-            var result = GetTurnSettings(balls, playerBallType);
+            var result = GetTurnSettings(balls, PoolBallType.None);
             result.CanMoveBall = 0;
             result.MoveOnlyInKitchen = true;
             return result;
