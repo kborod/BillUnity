@@ -37,8 +37,9 @@ namespace Kborod.MatchManagement.Control
             _messagingService.SendRequest(new CancelSearchMatchDto());
         }
 
-        private void MatchStartReceivedHandler(MatchStartedResponseDto response)
+        private async void MatchStartReceivedHandler(MatchStartedResponseDto response)
         {
+            await _searchScreen.ShowFoundOpponent(response.StartMatchData.Opponent);
             Dispose();
             _matchStartedTcs.TrySetResult(Result<MatchStartedResponseDto>.Ok(response));
         }
@@ -68,7 +69,7 @@ namespace Kborod.MatchManagement.Control
             _messagingService.Unsubscribe<AddedToQueueResponseDto>(AddedToQueueReceivedHandler);
             _messagingService.Unsubscribe<SearchCancelledResponseDto>(SearchCancelledReceivedHandler);
 
-            //_searchScreen?.Release();
+            _searchScreen?.Release();
         }
     }
 }

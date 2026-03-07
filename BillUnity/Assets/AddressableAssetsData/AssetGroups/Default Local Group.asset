@@ -15,6 +15,11 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: d7e97fe49fe4b7948867ef70c34b01c8
   m_SerializeEntries:
+  - m_GUID: 3f48be808a49c8344b9d8e08ff3c8d01
+    m_Address: UI/Screens/TestShotScreen.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 490dcf028ab629542b75f1cba1074a36
     m_Address: UI/Screens/TestScreen.prefab
     m_ReadOnly: 0

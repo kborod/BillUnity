@@ -11,7 +11,8 @@ namespace Kborod.AsyncProcesses
 
         public async UniTask Run()
         {
-            await _screensHelper.ScreensManager.Open<TestScreen>();
+            //await _screensHelper.ScreensManager.Open<TestScreen>();
+            await _screensHelper.ScreensManager.Open<TestShotScreen>();
         }
     }
 }

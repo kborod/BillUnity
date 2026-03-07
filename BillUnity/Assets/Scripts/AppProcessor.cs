@@ -14,10 +14,13 @@ namespace Kborod.Loader
         public async UniTask StartApplication()
         {
             await InitApp();
-            //await Login();
-            //await InitRealTimeMsgs();
-            await MainMenu();
+
             //await TestWindow();
+            //return;
+            await TestLoginByTags();
+            //await Login();
+            await InitRealTimeMsgs();
+            await MainMenu();
         }
 
         public async UniTask MainMenu()
@@ -52,6 +55,13 @@ namespace Kborod.Loader
         private async UniTask InitRealTimeMsgs()
         {
             await _container.Instantiate<InitRealTimeMessagingProcess>().Run();
+        }
+
+        private async UniTask TestLoginByTags()
+        {
+            var result = await _container.Instantiate<TestLoginByMultiplayerTagsProcess>().LoginAndGetToken();
+            if (result.IsSuccess == false)
+                throw new System.Exception("Login error");
         }
 
         private async UniTask TestWindow()

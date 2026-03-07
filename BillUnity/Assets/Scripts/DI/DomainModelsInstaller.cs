@@ -10,6 +10,7 @@ namespace Kborod.Services.DI
         public override void InstallBindings()
         {
             Container.Bind<AccountModel>().To<AccountModelLocal>().FromNew().AsSingle();
+            Container.Bind<CuesModel>().To<CuesModelLocal>().FromNew().AsSingle();
 
             Container.Bind<AuthService>().FromNew().AsSingle().NonLazy();
 

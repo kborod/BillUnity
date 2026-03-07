@@ -108,15 +108,17 @@ namespace Kborod.MatchManagement
         }
 
         private PoolEightTurnResults _calcResult;
+        private PoolShotCalculator _shotCalculator = new PoolShotCalculator();
         private void CalculateShot(AimInfo aimInfo, float cuePower)
         {
             var ballDatas = Engine.GetBallDatas();
             var moveOnlyKitchen = TurnSettings.MoveOnlyInKitchen;
-            var playerBallType = _turningPlayer.BallType;
 
-            var calc = new ShotCalculator();
-            _calcResult = calc.CalculateShot(
-                _turningPlayer.Id, GetOpponentOf(_turningPlayer).Id, ballDatas, aimInfo, MatchShotsCount == 0, moveOnlyKitchen, cuePower, playerBallType);
+            var context = new CalculatePoolShotContext(Id, GameType, ballDatas, aimInfo, _turningPlayer.Id, _turningPlayer.BallType,
+                GetOpponentOf(_turningPlayer).Id, MatchShotsCount == 0, TurnSettings.MoveOnlyInKitchen, cuePower);
+            
+            //var _shotCalculator = new ShotCalculator();
+            _calcResult = _shotCalculator.CalculateShot(context);
         }
 
         private void CheckResult(PoolEightTurnResults turnResults)

@@ -17,6 +17,7 @@ namespace Kborod.AsyncProcesses
         [Inject] private DiContainer _diContainer;
         [Inject] private MatchServices _matchServices;
         [Inject] private AccountModel _accoundModel;
+        [Inject] private CuesModel _cuesModel;
 
 
         public async UniTask<Result> Run(GameType gameType, BetType betType)
@@ -38,9 +39,7 @@ namespace Kborod.AsyncProcesses
                 new PoolEightPlayer(startData.Opponent.Id, startData.Opponent.Username),
                 startData.TurningPlayerId);
 
-            _matchServices.Setup(match, new List<string>() { _accoundModel.Id });
-
-            
+            _matchServices.Setup(match, _cuesModel, new List<string>() { _accoundModel.Id });
 
             await new OpenSceneProcess("TableScene").Run(); 
             

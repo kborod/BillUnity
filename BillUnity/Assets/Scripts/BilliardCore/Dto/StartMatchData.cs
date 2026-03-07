@@ -11,6 +11,5 @@ namespace Kborod.BilliardCore
         public UserProfileDto Opponent { get; set; }
         public int BallsPosition { get; set; }
         public string TurningPlayerId { get; set; }
-        public long EndTurnTimestamp { get; set; }
     }
 }

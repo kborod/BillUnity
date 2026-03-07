@@ -1,4 +1,5 @@
 using Kborod.BilliardCore;
+using Kborod.DomainModel;
 using System;
 using System.Collections.Generic;
 
@@ -14,23 +15,28 @@ namespace Kborod.MatchManagement
         public AimInfo CurrentAimInfo => _aimInfo;
 
         private MatchBase _match;
+        private CuesModel _cuesModel;
 
         private AimInfo _aimInfo;
 
         private List<string> _canManagePlayers;
 
-        public MyInput(MatchBase match, List<string> canManagePlayerIds)
+        public MyInput(MatchBase match, CuesModel cuesModel, List<string> canManagePlayerIds)
         {
             _match = match;
+            _cuesModel = cuesModel;
             _canManagePlayers = canManagePlayerIds;
 
             _match.StateChanged += MatchStateChangedHandler;
+            _cuesModel.CueChanged += CueChangedHandler;
+
             ResetAimInfo();
         }
 
         public void Dispose()
         {
             _match.StateChanged -= MatchStateChangedHandler;
+            _cuesModel.CueChanged -= CueChangedHandler;
         }
 
         private void MatchStateChangedHandler(MatchState state)
@@ -79,6 +85,12 @@ namespace Kborod.MatchManagement
             AimInfoChanged?.Invoke(_aimInfo);
         }
 
+        private void CueChangedHandler()
+        {
+            _aimInfo.CueId = _cuesModel.CurrentCueId;
+            AimInfoChanged?.Invoke(_aimInfo);
+        }
+
         private void ResetAimInfo()
         {
             var turnSettings = _match.TurnSettings;
@@ -90,6 +102,7 @@ namespace Kborod.MatchManagement
             _aimInfo.CueBall = turnSettings.BallsAvailableToSelectAsCueball.Count == 1 ? turnSettings.BallsAvailableToSelectAsCueball[0] : null;
             _aimInfo.DirectionX = 1;
             _aimInfo.DirectionY = 0;
+            _aimInfo.CueId = _cuesModel.CurrentCueId;
             AimInfoChanged?.Invoke(_aimInfo);
         }
     }

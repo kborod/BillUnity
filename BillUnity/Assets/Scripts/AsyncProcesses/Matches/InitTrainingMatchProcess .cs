@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Kborod.BilliardCore;
+using Kborod.DomainModel;
 using Kborod.MatchManagement;
 using Kborod.MatchManagement.Control;
 using Kborod.Services.UIScreenManager;
@@ -11,6 +12,7 @@ namespace Kborod.AsyncProcesses
 {
     public class InitTrainingMatchProcess
     {
+        [Inject] private CuesModel _cuesModel;
         [Inject] private ScreensHelper _screensHelper;
         [Inject] private MatchServices _matchServices;
         [Inject] private DiContainer _diContainer;
@@ -33,7 +35,7 @@ namespace Kborod.AsyncProcesses
                 new PoolEightPlayer(player2Id, "Player2"),
                 player1Id);
 
-            _matchServices.Setup(match, new List<string>() { player1Id, player2Id });
+            _matchServices.Setup(match, _cuesModel, new List<string>() { player1Id, player2Id });
 
             var matchControl = _diContainer.Instantiate<MatchControlLocal>();
             matchControl.Init();

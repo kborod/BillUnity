@@ -6,6 +6,8 @@ namespace Kborod.Services.ServerTime
     {
         public long CurrTimestamp => DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
+        public TimeSpan CurrTimestampTimeSpan => TimeSpan.FromSeconds(CurrTimestamp);
+
         //DateTime someDate = DateTime.Now;  // или DateTime.UtcNow, или любая другая дата
         //long unixSeconds = ((DateTimeOffset)someDate.ToUniversalTime()).ToUnixTimeSeconds();
     }

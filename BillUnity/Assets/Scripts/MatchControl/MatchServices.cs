@@ -1,4 +1,5 @@
 ﻿using Kborod.BilliardCore;
+using Kborod.DomainModel;
 using System.Collections.Generic;
 
 namespace Kborod.MatchManagement
@@ -9,12 +10,12 @@ namespace Kborod.MatchManagement
         public MyInput MyInput { get; private set; }
         public IEngineForUI EngineForUI => Match.EngineForUI;
 
-        public void Setup(MatchBase match, List<string> canManagePlayerIds)
+        public void Setup(MatchBase match, CuesModel cuesModel, List<string> canManagePlayerIds)
         {
             Dispose();
 
             Match = match;
-            MyInput = new MyInput(match, canManagePlayerIds);
+            MyInput = new MyInput(match, cuesModel, canManagePlayerIds);
         }
 
         private void Dispose()

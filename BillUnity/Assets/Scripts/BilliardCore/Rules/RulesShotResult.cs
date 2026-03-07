@@ -22,6 +22,7 @@ namespace Kborod.BilliardCore.Rules
         /// <summary> Игрок, который будет производить удар в следующий ход </summary>
         public string NextTurnPlayerId{ get; private set; }
 
+        /// <summary> Победитель, если определен </summary>
         public string WinUserIdOrNull { get; private set; }
 
         public RulesShotResult(

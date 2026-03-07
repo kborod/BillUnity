@@ -1390,20 +1390,25 @@ namespace Kborod.BilliardCore
 				pockets.Add(new Pocket(0, pocketCoord.x, pocketCoord.y, Config.POCKET_RAD_PX, pocketRemoveBallVEctor.x, pocketRemoveBallVEctor.y));
 			}
 		}
-		
-		
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-		
 
-		private void RoundBallsCoord()
-		{
-			for (var i = 0; i < Balls.Count; i++) 
-			{
-				(Balls[i] as Ball).v.p0.x = (Balls[i] as Ball).v.p1.x = (int)((Balls[i] as Ball).v.p0.x * Config.COORD_ROUND_TO) / (float) Config.COORD_ROUND_TO;
-				(Balls[i] as Ball).v.p0.y = (Balls[i] as Ball).v.p1.y = (int)((Balls[i] as Ball).v.p0.y * Config.COORD_ROUND_TO) / (float) Config.COORD_ROUND_TO;
-			}
-		}
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
+
+
+        private void RoundBallsCoord()
+        {
+            for (var i = 0; i < Balls.Count; i++)
+            {
+                (Balls[i] as Ball).v.p0.x = (Balls[i] as Ball).v.p1.x = RoundDeterministic((Balls[i] as Ball).v.p0.x, 1);
+                (Balls[i] as Ball).v.p0.y = (Balls[i] as Ball).v.p1.y = RoundDeterministic((Balls[i] as Ball).v.p0.y, 1);
+            }
+        }
+
+        public float RoundDeterministic(float value, int digits)
+        {
+            return (float)Math.Round((double)value, digits, MidpointRounding.AwayFromZero);
+        }
 
         /////////////////////ДЛЯ ТЕСТОВ:////////////////////
         private void ToLog(string s)
