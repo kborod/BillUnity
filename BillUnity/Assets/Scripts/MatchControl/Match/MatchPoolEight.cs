@@ -37,15 +37,6 @@ namespace Kborod.MatchManagement
             TurnSettings = PoolEightRules.GetFirstTurnSettings(Engine.Balls);
 
             ChangeState(MatchState.Inited);
-
-            //var b = new Ball(0);
-            //b.v.p0.x = Engine.Balls[0].v.p0.x;
-            //b.v.p0.y = Engine.Balls[0].v.p0.y;
-            //b.v.vx = Fixed64.FromFloat(0.995037f);
-            //b.v.vy = Fixed64.FromFloat(0.0995037f);
-            //b.v.updatePointsFromComponents();
-            //b.v.makeVector();
-            //var a = Engine.GetAimObject(b);
         }
 
         public override void MakeShot(AimInfo aimInfo, int cuePower)
@@ -85,7 +76,10 @@ namespace Kborod.MatchManagement
 
         private void SetTurningPlayer(string id)
         {
+            if (_turningPlayer.Id == id)
+                return;
             _turningPlayer = _player1.Id == id ? _player1 : GetOpponentOf(_player1);
+            InvokeTurningPlayerChanged();
         }
 
         private void TrySelectBallTypes(string playerId, PoolBallType selectedBallType)

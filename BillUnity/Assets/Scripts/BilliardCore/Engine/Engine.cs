@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,8 +20,13 @@ namespace Kborod.BilliardCore
 		private Fixed64 timeToVelUpdate = Fixed64.Zero;		//время до следующего обновления скоростей
 		
 		private int cueBallNum = -1;
-		
-		public Engine()
+
+        private Fixed64 currDt = Fixed64.Zero;          //значение дельта, на которое обновляем модель
+        private Fixed64 lastDt = Fixed64.Zero;          //Значение дельта, оставшееся с предыдущей итерации
+
+        private Collisions collisions = new Collisions();
+
+        public Engine()
 		{ 
 			createWalls();
 			
@@ -194,9 +198,6 @@ namespace Kborod.BilliardCore
 			}
 		}
 		
-		private Fixed64 currDt = Fixed64.Zero;			//значение дельта, на которое обновляем модель
-		private Fixed64 lastDt = Fixed64.Zero;			//Значение дельта, оставшееся с предыдущей итерации
-		
 		
 		/**
 		 * Просчитать состояние модели шаров через deltaTime
@@ -222,8 +223,8 @@ namespace Kborod.BilliardCore
             while (true)
 			{
 				if (activeBalls.Count == 0) 
-				{					
-					shotCalculateResult.ShotDuration = currShotDuration.ToDouble();
+				{
+                    shotCalculateResult.ShotDuration = currShotDuration.ToDouble();
 					//RoundBallsCoord();
 					shotResultOrNull = shotCalculateResult;
                     return;
@@ -298,8 +299,6 @@ namespace Kborod.BilliardCore
 			collisions.TimeToCollision -= deltaTime;
 			//toLog(currShotDuration + ": Model Integrated");
 		}
-
-		private Collisions collisions = new Collisions();
 		
 		
 		/**
@@ -786,9 +785,6 @@ namespace Kborod.BilliardCore
 			b2.NeedUpdateState = true;
 		}
 		
-		
-		
-		private Fixed64 cos;
 		/**
 		 * Посчитать столкновение и обновить векторы после столкновения. b1 - активный шар (движется), b2 - шар в состоянии покоя
 		 * @param	шар
@@ -813,7 +809,7 @@ namespace Kborod.BilliardCore
 				//trace ("BW Collision before Applied:" + " bP0X:" + b.v.p0.x + " bP0Y:" + b.v.p0.y + " bP1X" + b.v.p1.x + " bP1Y" + b.v.p1.y);
 				
 				//косинус угла между вектором поступательного движения и стеной (чем перпендикулярнее, тем ближе к 0)
-				cos = Fixed64.Abs(MyVector.getDotP(w, b.v) / ( w.len * b.v.len));
+				var cos = Fixed64.Abs(MyVector.getDotP(w, b.v) / ( w.len * b.v.len));
 				//trace ("cos = " + String(MyVector.getDotP(w, b.v) / ( w.len * b.v.len)));
 				newv1Ball = MyVector.bounceBallFromWall(b.v, w);
 				b.v.vx = newv1Ball.vx * (Config.WALL_ELASTIC + (Fixed64.One - Config.WALL_ELASTIC) * cos);
@@ -890,7 +886,7 @@ namespace Kborod.BilliardCore
 				vOrt.updatePointsFromComponents();
 				vOrt.makeVector();
 				//косинус угла между вектором поступательного движения и касательной к углу
-				cos = Fixed64.Abs(MyVector.getDotP(vOrt, b.v) / ( vOrt.len * b.v.len));
+				var cos = Fixed64.Abs(MyVector.getDotP(vOrt, b.v) / ( vOrt.len * b.v.len));
 				//trace ("ASDASD" + String(Config.WALL_ELASTIC + (1 - Config.WALL_ELASTIC) * cos));
 				newv1Ball = MyVector.bounceBallFromAngle(b.v, vc);
 				
@@ -1049,7 +1045,10 @@ namespace Kborod.BilliardCore
 			currShotDuration = Fixed64.Zero;
 			timeToVelUpdate = Fixed64.Zero;
 			updateNextTimeToVelUpdate();
+			currDt = Fixed64.Zero;
 			lastDt = Fixed64.Zero;
+
+			collisions.Clear();
 			
 			ToLog("SHOT RESETED.");
 		}

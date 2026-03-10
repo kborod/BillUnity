@@ -17,5 +17,6 @@ namespace Kborod.SharedDto.AsyncServerMessaging.Messages
         AimInfo = 204,
         MakeShot = 205,
         ShotResult = 206,
+        LeaveMatch = 207,
     }
 }
