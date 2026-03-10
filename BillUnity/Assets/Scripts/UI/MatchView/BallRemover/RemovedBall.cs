@@ -33,7 +33,7 @@ namespace Kborod.UI.Screens
 			
 			if (state == RemoveState.STATE_TO_POCKET_POINT)
 			{
-				if (length < 15) length = 15;
+				if (length <  Fixed64.FromInt(15)) length = Fixed64.FromInt(15);
 				//else if (length > 30) length = 30;
 				
 				ball.v.p1.x = pocket.pRemove.x;
@@ -48,9 +48,9 @@ namespace Kborod.UI.Screens
 			else if (state == RemoveState.STATE_FROM_POCKET)
 			{
 				//length = 2;
-				if (length > 20) length = 20;
-				ball.v.p1.x = ball.v.p0.x + pocket.vRemove.dx* pocket.r * 3;
-				ball.v.p1.y = ball.v.p0.y + pocket.vRemove.dy* pocket.r * 3;
+				if (length > Fixed64.FromInt(20)) length = Fixed64.FromInt(20);
+				ball.v.p1.x = ball.v.p0.x + pocket.vRemove.dx* pocket.r * Fixed64.Three;
+				ball.v.p1.y = ball.v.p0.y + pocket.vRemove.dy* pocket.r * Fixed64.Three;
 				ball.v.updateComponentsFromPoints();
 				ball.v.makeVector();
 				ball.v.p1.x = ball.v.p0.x + ball.v.dx* length;

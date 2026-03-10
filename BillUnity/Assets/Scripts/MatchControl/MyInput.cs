@@ -2,6 +2,7 @@ using Kborod.BilliardCore;
 using Kborod.DomainModel;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Kborod.MatchManagement
 {
@@ -47,27 +48,27 @@ namespace Kborod.MatchManagement
 
         public void ChangePower(float power)
         {
-            _aimInfo.Power = power;
+            _aimInfo.PowerRaw = Fixed64.FromDouble(power).Raw;
             AimInfoChanged?.Invoke(_aimInfo);
         }
 
         public void SelectPower(float power)
         {
-            _aimInfo.Power = power;
+            _aimInfo.PowerRaw = Fixed64.FromDouble(power).Raw;
             ShotMade?.Invoke(_aimInfo);
         }
 
         public void ChangeDirection(float directionX, float directionY)
         {
-            _aimInfo.DirectionX = directionX;
-            _aimInfo.DirectionY = directionY;
+            _aimInfo.DirectionXraw = Fixed64.FromDouble(directionX).Raw;
+            _aimInfo.DirectionYraw = Fixed64.FromDouble(directionY).Raw;
             AimInfoChanged?.Invoke(_aimInfo);
         }
 
         public void MoveCueBall(float? x, float? y)
         {
-            _aimInfo.CueBallX = x;
-            _aimInfo.CueBallY = y;
+            _aimInfo.CueBallXraw = Fixed64.FromDouble(x.Value).Raw;
+            _aimInfo.CueBallYraw = Fixed64.FromDouble(y.Value).Raw;
             _aimInfo.IsBallMovingNow = true;
             AimInfoChanged?.Invoke(_aimInfo);
         }
@@ -80,8 +81,8 @@ namespace Kborod.MatchManagement
 
         public void ChangeSpin(float spinX, float spinY)
         {
-            _aimInfo.SpinX = spinX;
-            _aimInfo.SpinY = spinY;
+            _aimInfo.SpinXraw = Fixed64.FromDouble(spinX).Raw;
+            _aimInfo.SpinYraw = Fixed64.FromDouble(spinY).Raw;
             AimInfoChanged?.Invoke(_aimInfo);
         }
 
@@ -100,8 +101,8 @@ namespace Kborod.MatchManagement
                 throw new NotImplementedException();
 
             _aimInfo.CueBall = turnSettings.BallsAvailableToSelectAsCueball.Count == 1 ? turnSettings.BallsAvailableToSelectAsCueball[0] : null;
-            _aimInfo.DirectionX = 1;
-            _aimInfo.DirectionY = 0;
+            _aimInfo.DirectionXraw = Fixed64.FromDouble(0.995037d).Raw;
+            _aimInfo.DirectionYraw = Fixed64.FromDouble(0.0995037d).Raw;
             _aimInfo.CueId = _cuesModel.CurrentCueId;
             AimInfoChanged?.Invoke(_aimInfo);
         }

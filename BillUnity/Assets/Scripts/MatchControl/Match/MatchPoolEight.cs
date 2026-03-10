@@ -37,9 +37,18 @@ namespace Kborod.MatchManagement
             TurnSettings = PoolEightRules.GetFirstTurnSettings(Engine.Balls);
 
             ChangeState(MatchState.Inited);
+
+            //var b = new Ball(0);
+            //b.v.p0.x = Engine.Balls[0].v.p0.x;
+            //b.v.p0.y = Engine.Balls[0].v.p0.y;
+            //b.v.vx = Fixed64.FromFloat(0.995037f);
+            //b.v.vy = Fixed64.FromFloat(0.0995037f);
+            //b.v.updatePointsFromComponents();
+            //b.v.makeVector();
+            //var a = Engine.GetAimObject(b);
         }
 
-        public override void MakeShot(AimInfo aimInfo, float cuePower)
+        public override void MakeShot(AimInfo aimInfo, int cuePower)
         {
             CalculateShot(aimInfo, cuePower);
 
@@ -109,8 +118,9 @@ namespace Kborod.MatchManagement
 
         private PoolEightTurnResults _calcResult;
         private PoolShotCalculator _shotCalculator = new PoolShotCalculator();
-        private void CalculateShot(AimInfo aimInfo, float cuePower)
+        private void CalculateShot(AimInfo aimInfo, int cuePower)
         {
+            return;
             var ballDatas = Engine.GetBallDatas();
             var moveOnlyKitchen = TurnSettings.MoveOnlyInKitchen;
 
@@ -123,6 +133,7 @@ namespace Kborod.MatchManagement
 
         private void CheckResult(PoolEightTurnResults turnResults)
         {
+            return;
             Debug.Log("------CHECKING-------");
             var differences = turnResults.RulesResult.GetDifferences(_calcResult.RulesResult);
             if (!string.IsNullOrEmpty(differences))

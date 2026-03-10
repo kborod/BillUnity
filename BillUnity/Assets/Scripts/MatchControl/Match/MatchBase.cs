@@ -58,7 +58,7 @@ namespace Kborod.MatchManagement
             ChangeState(MatchState.PrepeareTurn);
         }
 
-        public virtual void MakeShot(AimInfo aimInfo, float cuePower)
+        public virtual void MakeShot(AimInfo aimInfo, int cuePower)
         {
             MatchShotsCount++;
 
@@ -67,9 +67,9 @@ namespace Kborod.MatchManagement
             _aimInfo = aimInfo;
             ReplaceBallFromAim();
 
-            _ = _engineShotMaker.MakeShot(aimInfo.CueBall.Value, aimInfo.DirectionX * aimInfo.Power * cuePower, aimInfo.DirectionY * aimInfo.Power * cuePower, aimInfo.SpinX, aimInfo.SpinY);
+            _ = _engineShotMaker.MakeShot(aimInfo, cuePower);
 
-            CueBallHittedWithPower?.Invoke(aimInfo.Power);
+            CueBallHittedWithPower?.Invoke(aimInfo.PowerRaw);
         }
 
         public void ChangeAimInfo(AimInfo info)
@@ -112,11 +112,11 @@ namespace Kborod.MatchManagement
 
         private void ReplaceBallFromAim()
         {
-            if (_aimInfo.CueBall.HasValue && _aimInfo.CueBallX.HasValue && _aimInfo.CueBallY != null)
+            if (_aimInfo.CueBall.HasValue && _aimInfo.CueBallXraw.HasValue && _aimInfo.CueBallYraw != null)
                 Engine.ReplaceBall(
                     _aimInfo.CueBall.Value,
-                    _aimInfo.CueBallX.Value,
-                    _aimInfo.CueBallY.Value,
+                    new Fixed64(_aimInfo.CueBallXraw.Value),
+                    new Fixed64(_aimInfo.CueBallYraw.Value),
                     TurnSettings.MoveOnlyInKitchen,
                     correctionAllowed: true);
         }

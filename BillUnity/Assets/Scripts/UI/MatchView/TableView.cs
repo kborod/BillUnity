@@ -114,11 +114,11 @@ namespace Kborod.UI.Screens.Table
         private void UpdateBallPosition(Ball b, float deltaTime)
         {
             balls[b.Number].localPosition = new Vector3(
-                    b.v.p0.x * Config.MODEL_COORD_TO_WORLD_KOEF,
-                    b.v.p0.y * Config.MODEL_COORD_TO_WORLD_KOEF,
-                    b.Zcoordinate);
-            balls[b.Number].Rotate(new Vector3(b.vVertSpin.vy, -b.vVertSpin.vx), b.vVertSpin.len * deltaTime * 0.06f, Space.World);
-            balls[b.Number].Rotate(new Vector3(0, 0, 1), -b.SideSpin * deltaTime * 0.12f, Space.World);
+                    b.v.p0.x.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF,
+                    b.v.p0.y.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF,
+                    b.Zcoordinate.ToFloat());
+            balls[b.Number].Rotate(new Vector3(b.vVertSpin.vy.ToFloat(), -b.vVertSpin.vx.ToFloat()), b.vVertSpin.len.ToFloat() * deltaTime * 0.06f, Space.World);
+            balls[b.Number].Rotate(new Vector3(0, 0, 1), -b.SideSpin.ToFloat() * deltaTime * 0.12f, Space.World);
 
             //if (b.bNumber == 0 /*&& b.isRemoved*/)
             //    Debug.Log($"{b.v.vx} {b.v.vy} --- {b.vVertSpin.vx} {b.vVertSpin.vy}");
@@ -126,9 +126,9 @@ namespace Kborod.UI.Screens.Table
 
             ballShadows[b.Number].gameObject.SetActive(!b.IsRemoved);
             ballShadows[b.Number].localPosition = new Vector3(
-                    b.v.p0.x * Config.MODEL_COORD_TO_WORLD_KOEF,
-                    b.v.p0.y * Config.MODEL_COORD_TO_WORLD_KOEF,
-                    Config.BALL_RAD_PX * Config.MODEL_COORD_TO_WORLD_KOEF);
+                    b.v.p0.x.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF,
+                    b.v.p0.y.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF,
+                    Config.BALL_RAD_PX.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF);
         }
 
         private void TryShowDebugPoints()

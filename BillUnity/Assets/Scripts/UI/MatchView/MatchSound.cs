@@ -45,14 +45,14 @@ namespace Kborod.UI.Screens.Table
         private void PlayPartyTickSounds(ShotTickResult tickResult)
 		{
 
-			if (tickResult.MaxBallsCollPower > 0)
-				PlayBallVsBall(tickResult.MaxBallsCollPower);
+			if (tickResult.MaxBallsCollPower > Fixed64.Zero)
+				PlayBallVsBall(tickResult.MaxBallsCollPower.ToFloat());
 
-			if (tickResult.MaxWallsCollPower > 0)
-				PlayBallVsWall(tickResult.MaxWallsCollPower);
+			if (tickResult.MaxWallsCollPower > Fixed64.Zero)
+				PlayBallVsWall(tickResult.MaxWallsCollPower.ToFloat());
 
-			if (tickResult.MaxPocketedPower > 0)
-				PlayBallPocketed(tickResult.MaxPocketedPower);
+			if (tickResult.MaxPocketedPower > Fixed64.Zero)
+				PlayBallPocketed(tickResult.MaxPocketedPower.ToFloat());
 		}
 
         private void PlayBallVsBall(float power)

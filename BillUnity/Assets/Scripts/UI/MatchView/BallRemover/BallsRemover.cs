@@ -24,7 +24,7 @@ namespace Kborod.UI.Screens.Table.BallsRemove
         [Inject] private MatchServices _matchServices;
         private MatchBase _match => _matchServices.Match;
 
-        private float maxPathDistance => pathCreator.path.length - ballsOnPathCount * Config.BALL_DIAM_PX * Config.MODEL_COORD_TO_WORLD_KOEF;
+        private float maxPathDistance => pathCreator.path.length - ballsOnPathCount * Config.BALL_DIAM_PX.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF;
 
         //массив с забитыми шарами (элементы массива - экземпляры класса RemovedBall)
         private List<RemovedBall> removedBalls = new List<RemovedBall>();
@@ -76,7 +76,7 @@ namespace Kborod.UI.Screens.Table.BallsRemove
 				removedBall.ChangeMoveVector(RemoveState.STATE_TO_POCKET_POINT);
 			}
             removedBalls.Add(removedBall);
-			UpdateBall(removedBall, b.RemoveDeltaTime);
+			UpdateBall(removedBall, b.RemoveDeltaTime.ToFloat());
             TryStartCoroutine();
 		}
 
@@ -107,10 +107,10 @@ namespace Kborod.UI.Screens.Table.BallsRemove
 			}
 			else if (removedBall.state == RemoveState.STATE_TO_POCKET_POINT)
 			{
-				if (Vector2.Distance(removedBall.ball.v.p0.ToVector2(), removedBall.pocket.pRemove.ToVector2()) > removedBall.ball.v.len* (deltaTime / Config.SPEED_UPDATE_DELTA )  )
+                if (Vector2.Distance(removedBall.ball.v.p0.ToVector2(), removedBall.pocket.pRemove.ToVector2()) > removedBall.ball.v.len.ToFloat() * deltaTime / Config.SPEED_UPDATE_DELTA.ToFloat() )
 				{
-					removedBall.ball.v.p0.x += removedBall.ball.v.vx* (deltaTime / Config.SPEED_UPDATE_DELTA );
-					removedBall.ball.v.p0.y += removedBall.ball.v.vy* (deltaTime / Config.SPEED_UPDATE_DELTA );
+					removedBall.ball.v.p0.x += removedBall.ball.v.vx* (Fixed64.FromFloat(deltaTime) / Config.SPEED_UPDATE_DELTA );
+					removedBall.ball.v.p0.y += removedBall.ball.v.vy* (Fixed64.FromFloat(deltaTime) / Config.SPEED_UPDATE_DELTA );
 					removedBall.ball.v.updatePointsFromComponents();
 					removedBall.ball.v.makeVector();
 				}
@@ -125,10 +125,10 @@ namespace Kborod.UI.Screens.Table.BallsRemove
 			}
             else if (removedBall.state == RemoveState.STATE_FROM_POCKET)
             {
-                if (Vector2.Distance(removedBall.ball.v.p0.ToVector2(), removedBall.pocket.pRemove.ToVector2()) < Config.POCKET_RAD_PX * 3)
+                if (Vector2.Distance(removedBall.ball.v.p0.ToVector2(), removedBall.pocket.pRemove.ToVector2()) < Config.POCKET_RAD_PX.ToFloat() * 3)
                 {
-                    removedBall.ball.v.p0.x += removedBall.ball.v.vx * (deltaTime / Config.SPEED_UPDATE_DELTA);
-                    removedBall.ball.v.p0.y += removedBall.ball.v.vy * (deltaTime / Config.SPEED_UPDATE_DELTA);
+                    removedBall.ball.v.p0.x += removedBall.ball.v.vx * (Fixed64.FromFloat(deltaTime) / Config.SPEED_UPDATE_DELTA);
+                    removedBall.ball.v.p0.y += removedBall.ball.v.vy * (Fixed64.FromFloat(deltaTime) / Config.SPEED_UPDATE_DELTA);
                     removedBall.ball.v.updatePointsFromComponents();
                 }
                 else
@@ -158,15 +158,15 @@ namespace Kborod.UI.Screens.Table.BallsRemove
                     return;
                 }
 
-                removedBall.currPathDis += (BallSpeed * deltaTime / Config.SPEED_UPDATE_DELTA) * Config.MODEL_COORD_TO_WORLD_KOEF;
+                removedBall.currPathDis += (BallSpeed * deltaTime / Config.SPEED_UPDATE_DELTA.ToFloat()) * Config.MODEL_COORD_TO_WORLD_KOEF;
                 if (removedBall.currPathDis > removedBall.maxPathDis) removedBall.currPathDis = removedBall.maxPathDis;
                 Vector2 p = GetPathPointInModelCoord(removedBall.currPathDis);
                 var moveVector = p - removedBall.ball.v.p0.ToVector2();
                 moveVector.Normalize();
                 moveVector = moveVector * BallSpeed;
                 removedBall.ball.v.p0 = p.ToPoint();
-                removedBall.ball.v.vx = moveVector.x;
-                removedBall.ball.v.vy = moveVector.y;
+                removedBall.ball.v.vx = Fixed64.FromDouble(moveVector.x);
+                removedBall.ball.v.vy = Fixed64.FromDouble(moveVector.y);
                 removedBall.ball.v.updatePointsFromComponents();
                 removedBall.ball.vVertSpin.vx = removedBall.ball.v.vx;
                 removedBall.ball.vVertSpin.vy = removedBall.ball.v.vy;
@@ -199,7 +199,7 @@ namespace Kborod.UI.Screens.Table.BallsRemove
                 return false;
 
             removedBall.currPathDis = 0;
-            removedBall.maxPathDis = pathCreator.path.length - ballsOnPathCount * Config.BALL_DIAM_PX * Config.MODEL_COORD_TO_WORLD_KOEF;
+            removedBall.maxPathDis = pathCreator.path.length - ballsOnPathCount * Config.BALL_DIAM_PX.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF;
             removedBall.removeNumber = ballsOnPathCount;
             ballsOnPathCount++;
             return true;

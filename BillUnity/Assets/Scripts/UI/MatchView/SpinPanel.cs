@@ -19,8 +19,8 @@ namespace Kborod.UI.Screens.SpinUI
         private MatchBase _match => _matchServices.Match;
         private MyInput _myShotInput => _matchServices.MyInput;
 
-        private float _spinX => _match.AimInfo.SpinX;
-        private float _spinY => _match.AimInfo.SpinY;
+        private float _spinX => _match.AimInfo.SpinXraw;
+        private float _spinY => _match.AimInfo.SpinYraw;
 
         private float ballRadius;
         private float maxSpin = 1f;

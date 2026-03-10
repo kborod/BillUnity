@@ -45,8 +45,8 @@ namespace Kborod.UI.Screens
             bTmp.ChangeNumber(info.CueBall.Value);
             bTmp.v.p0.x = _engine.Balls[info.CueBall.Value].v.p0.x;
             bTmp.v.p0.y = _engine.Balls[info.CueBall.Value].v.p0.y;
-            bTmp.v.vx = info.DirectionX;
-            bTmp.v.vy = info.DirectionY;
+            bTmp.v.vx = new Fixed64(info.DirectionXraw);
+            bTmp.v.vy = new Fixed64(info.DirectionYraw);
 
             bTmp.v.updatePointsFromComponents();
             bTmp.v.makeVector();

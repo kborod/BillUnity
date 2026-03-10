@@ -85,6 +85,6 @@ namespace Kborod.MatchManagement.Control
 
             _match.MakeShot(info, GetCuePower());
         }
-        private float GetCuePower() => 300;
+        private int GetCuePower() => 300;
     }
 }

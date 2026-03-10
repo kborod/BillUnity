@@ -7,7 +7,7 @@ namespace Kborod.UI.Screens.Table.BallsMove
 {
     public class MoveIcon : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
     {
-        public event Action PointerDownEvent;
+        public event Action<Vector2> PointerDownEvent;
         public event Action PointerUpEvent;
         public event Action<Vector2> DragEvent;
 
@@ -26,7 +26,7 @@ namespace Kborod.UI.Screens.Table.BallsMove
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            PointerDownEvent?.Invoke();
+            PointerDownEvent?.Invoke(eventData.position);
         }
 
         public void OnDrag(PointerEventData eventData)

@@ -1,6 +1,6 @@
 using System;
 
-public readonly struct Fixed64 : IComparable<Fixed64>, IEquatable<Fixed64>
+public readonly struct Fixed64Dub : IComparable<Fixed64Dub>, IEquatable<Fixed64Dub>
 {
     const int FRACTIONAL_BITS = 32;
     const long ONE = 1L << FRACTIONAL_BITS;
@@ -8,30 +8,30 @@ public readonly struct Fixed64 : IComparable<Fixed64>, IEquatable<Fixed64>
 
     public readonly long Raw;
 
-    public Fixed64(long raw)
+    public Fixed64Dub(long raw)
     {
         Raw = raw;
     }
 
     // ---------------- constants ----------------
 
-    public static readonly Fixed64 Zero = new Fixed64(0);
-    public static readonly Fixed64 One = new Fixed64(ONE);
-    public static readonly Fixed64 Half = new Fixed64(ONE >> 1);
-    public static readonly Fixed64 Two = new Fixed64(ONE << 1);
-    public static readonly Fixed64 Three = FromInt(3);
-    public static readonly Fixed64 Four = FromInt(4);
-    public static readonly Fixed64 Five = FromInt(5);
+    public static readonly Fixed64Dub Zero = new Fixed64Dub(0);
+    public static readonly Fixed64Dub One = new Fixed64Dub(ONE);
+    public static readonly Fixed64Dub Half = new Fixed64Dub(ONE >> 1);
+    public static readonly Fixed64Dub Two = new Fixed64Dub(ONE << 1);
+    public static readonly Fixed64Dub Three = FromInt(3);
+    public static readonly Fixed64Dub Four = FromInt(4);
+    public static readonly Fixed64Dub Five = FromInt(5);
 
-    public static readonly Fixed64 Pi = FromDouble(3.14159265358979323846);
-    public static readonly Fixed64 TwoPi = FromDouble(6.28318530717958647692);
-    public static readonly Fixed64 PiHalf = FromDouble(1.5707963267948966);
+    public static readonly Fixed64Dub Pi = FromDouble(3.14159265358979323846);
+    public static readonly Fixed64Dub TwoPi = FromDouble(6.28318530717958647692);
+    public static readonly Fixed64Dub PiHalf = FromDouble(1.5707963267948966);
 
     // ---------------- conversion ----------------
 
-    public static Fixed64 FromInt(int v)
+    public static Fixed64Dub FromInt(int v)
     {
-        return new Fixed64((long)v << FRACTIONAL_BITS);
+        return new Fixed64Dub((long)v << FRACTIONAL_BITS);
     }
 
     public int ToInt()
@@ -39,10 +39,9 @@ public readonly struct Fixed64 : IComparable<Fixed64>, IEquatable<Fixed64>
         return (int)(Raw >> FRACTIONAL_BITS);
     }
 
-    public static Fixed64 FromFloat(float v)
+    public static Fixed64Dub FromFloat(float v)
     {
-        return new Fixed64((long)MathF.Round(v * ONE));
-        //return new Fixed64((long)(v * ONE));
+        return new Fixed64Dub((long)(v * ONE));
     }
 
     public float ToFloat()
@@ -50,10 +49,9 @@ public readonly struct Fixed64 : IComparable<Fixed64>, IEquatable<Fixed64>
         return (float)Raw / ONE;
     }
 
-    public static Fixed64 FromDouble(double v)
+    public static Fixed64Dub FromDouble(double v)
     {
-        return new Fixed64((long)Math.Round(v * ONE));
-        //return new Fixed64((long)(v * ONE));
+        return new Fixed64Dub((long)(v * ONE));
     }
 
     public double ToDouble()
@@ -63,75 +61,50 @@ public readonly struct Fixed64 : IComparable<Fixed64>, IEquatable<Fixed64>
 
     // ---------------- operators ----------------
 
-    public static Fixed64 operator +(Fixed64 a, Fixed64 b)
-        => new Fixed64(a.Raw + b.Raw);
+    public static Fixed64Dub operator +(Fixed64Dub a, Fixed64Dub b)
+        => new Fixed64Dub(a.Raw + b.Raw);
 
-    public static Fixed64 operator -(Fixed64 a, Fixed64 b)
-        => new Fixed64(a.Raw - b.Raw);
+    public static Fixed64Dub operator -(Fixed64Dub a, Fixed64Dub b)
+        => new Fixed64Dub(a.Raw - b.Raw);
 
-    public static Fixed64 operator -(Fixed64 v)
-        => new Fixed64(-v.Raw);
+    public static Fixed64Dub operator -(Fixed64Dub v)
+        => new Fixed64Dub(-v.Raw);
 
-    public static bool operator >(Fixed64 a, Fixed64 b) => a.Raw > b.Raw;
-    public static bool operator <(Fixed64 a, Fixed64 b) => a.Raw < b.Raw;
-    public static bool operator >=(Fixed64 a, Fixed64 b) => a.Raw >= b.Raw;
-    public static bool operator <=(Fixed64 a, Fixed64 b) => a.Raw <= b.Raw;
-    public static bool operator ==(Fixed64 a, Fixed64 b) => a.Raw == b.Raw;
-    public static bool operator !=(Fixed64 a, Fixed64 b) => a.Raw != b.Raw;
+    public static bool operator >(Fixed64Dub a, Fixed64Dub b) => a.Raw > b.Raw;
+    public static bool operator <(Fixed64Dub a, Fixed64Dub b) => a.Raw < b.Raw;
+    public static bool operator >=(Fixed64Dub a, Fixed64Dub b) => a.Raw >= b.Raw;
+    public static bool operator <=(Fixed64Dub a, Fixed64Dub b) => a.Raw <= b.Raw;
+    public static bool operator ==(Fixed64Dub a, Fixed64Dub b) => a.Raw == b.Raw;
+    public static bool operator !=(Fixed64Dub a, Fixed64Dub b) => a.Raw != b.Raw;
 
     // ---------------- safe multiply ----------------
 
-    public static Fixed64 operator *(Fixed64 a, Fixed64 b)
+    public static Fixed64Dub operator *(Fixed64Dub a, Fixed64Dub b)
     {
-        long aRaw = a.Raw;
-        long bRaw = b.Raw;
+        long ah = a.Raw >> 32;
+        long al = a.Raw & 0xffffffff;
 
-        ulong aLo = (uint)aRaw;
-        long aHi = aRaw >> 32;
+        long bh = b.Raw >> 32;
+        long bl = b.Raw & 0xffffffff;
 
-        ulong bLo = (uint)bRaw;
-        long bHi = bRaw >> 32;
+        long hi = ah * bh;
+        long mid1 = ah * bl;
+        long mid2 = al * bh;
+        long lo = al * bl;
 
-        ulong lo = aLo * bLo;
-        long mid1 = aHi * (long)bLo;
-        long mid2 = (long)aLo * bHi;
-        long hi = aHi * bHi;
+        long mid = mid1 + mid2;
 
         long result =
             (hi << 32) +
-            mid1 +
-            mid2 +
-            (long)(lo >> 32);
+            mid +
+            (lo >> 32);
 
-        return new Fixed64(result);
+        return new Fixed64Dub(result);
     }
-
-    //public static Fixed64 operator *(Fixed64 a, Fixed64 b)
-    //{
-    //    long ah = a.Raw >> 32;
-    //    long al = a.Raw & 0xffffffff;
-
-    //    long bh = b.Raw >> 32;
-    //    long bl = b.Raw & 0xffffffff;
-
-    //    long hi = ah * bh;
-    //    long mid1 = ah * bl;
-    //    long mid2 = al * bh;
-    //    long lo = al * bl;
-
-    //    long mid = mid1 + mid2;
-
-    //    long result =
-    //        (hi << 32) +
-    //        mid +
-    //        (lo >> 32);
-
-    //    return new Fixed64(result);
-    //}
 
     // ---------------- division ----------------
 
-    public static Fixed64 operator /(Fixed64 a, Fixed64 b)
+    public static Fixed64Dub operator /(Fixed64Dub a, Fixed64Dub b)
     {
         if (b.Raw == 0)
             throw new DivideByZeroException();
@@ -146,7 +119,7 @@ public readonly struct Fixed64 : IComparable<Fixed64>, IEquatable<Fixed64>
         long signed = (long)result;
         if (negative) signed = -signed;
 
-        return new Fixed64(signed);
+        return new Fixed64Dub(signed);
     }
 
     static ulong Div128By64(ulong a, ulong b)
@@ -177,35 +150,35 @@ public readonly struct Fixed64 : IComparable<Fixed64>, IEquatable<Fixed64>
 
     // ---------------- math helpers ----------------
 
-    public static Fixed64 Abs(Fixed64 v)
+    public static Fixed64Dub Abs(Fixed64Dub v)
     {
-        return v.Raw < 0 ? new Fixed64(-v.Raw) : v;
+        return v.Raw < 0 ? new Fixed64Dub(-v.Raw) : v;
     }
 
-    public static Fixed64 Min(Fixed64 a, Fixed64 b)
+    public static Fixed64Dub Min(Fixed64Dub a, Fixed64Dub b)
     {
         return a.Raw < b.Raw ? a : b;
     }
 
-    public static Fixed64 Max(Fixed64 a, Fixed64 b)
+    public static Fixed64Dub Max(Fixed64Dub a, Fixed64Dub b)
     {
         return a.Raw > b.Raw ? a : b;
     }
 
-    public static Fixed64 Clamp(Fixed64 v, Fixed64 min, Fixed64 max)
+    public static Fixed64Dub Clamp(Fixed64Dub v, Fixed64Dub min, Fixed64Dub max)
     {
         if (v < min) return min;
         if (v > max) return max;
         return v;
     }
 
-    public static Fixed64 Lerp(Fixed64 a, Fixed64 b, Fixed64 t)
+    public static Fixed64Dub Lerp(Fixed64Dub a, Fixed64Dub b, Fixed64Dub t)
     {
         return a + (b - a) * t;
     }
 
     // ---------------- deterministic sqrt ----------------
-    public static Fixed64 Sqrt(Fixed64 x)
+    public static Fixed64Dub Sqrt(Fixed64Dub x)
     {
         if (x.Raw <= 0)
             return Zero;
@@ -238,7 +211,7 @@ public readonly struct Fixed64 : IComparable<Fixed64>, IEquatable<Fixed64>
             }
         }
 
-        return new Fixed64((long)root);
+        return new Fixed64Dub((long)root);
     }
 
     static int LeadingZeroCount(ulong x)
@@ -276,7 +249,7 @@ public readonly struct Fixed64 : IComparable<Fixed64>, IEquatable<Fixed64>
         return lut;
     }
 
-    public static Fixed64 Sin(Fixed64 angle)
+    public static Fixed64Dub Sin(Fixed64Dub angle)
     {
         long raw = angle.Raw % TwoPi.Raw;
 
@@ -285,24 +258,24 @@ public readonly struct Fixed64 : IComparable<Fixed64>, IEquatable<Fixed64>
 
         int index = (int)((raw * LUT_SIZE) / TwoPi.Raw);
 
-        return new Fixed64(sinLut[index]);
+        return new Fixed64Dub(sinLut[index]);
     }
 
-    public static Fixed64 Cos(Fixed64 angle)
+    public static Fixed64Dub Cos(Fixed64Dub angle)
     {
         return Sin(angle + PiHalf);
     }
 
     // ---------------- misc ----------------
 
-    public int CompareTo(Fixed64 other)
+    public int CompareTo(Fixed64Dub other)
         => Raw.CompareTo(other.Raw);
 
-    public bool Equals(Fixed64 other)
+    public bool Equals(Fixed64Dub other)
         => Raw == other.Raw;
 
     public override bool Equals(object obj)
-        => obj is Fixed64 f && f.Raw == Raw;
+        => obj is Fixed64Dub f && f.Raw == Raw;
 
     public override int GetHashCode()
         => Raw.GetHashCode();
@@ -310,7 +283,6 @@ public readonly struct Fixed64 : IComparable<Fixed64>, IEquatable<Fixed64>
     public override string ToString()
         => ToDouble().ToString();
 
-    public static Fixed64 MaxValue
-        //=> new Fixed64(long.MaxValue >> 1);
-        => FromInt(16777216);
+    public static Fixed64Dub MaxValue
+        => new Fixed64Dub(long.MaxValue >> 1);
 }

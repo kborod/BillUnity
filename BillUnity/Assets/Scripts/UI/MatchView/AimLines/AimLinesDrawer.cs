@@ -24,19 +24,19 @@ namespace Kborod.UI.Screens
         public void Show(AimObject aimData, bool isBlocked)
         {
             gameObject.SetActive(true);
-            collisionPosition.localPosition = ballsRoot.TransformPoint(new Vector2(aimData.AimBallX, aimData.AimBallY) * Config.MODEL_COORD_TO_WORLD_KOEF);
+            collisionPosition.localPosition = ballsRoot.TransformPoint(new Vector2(aimData.AimBallX.ToFloat(), aimData.AimBallY.ToFloat()) * Config.MODEL_COORD_TO_WORLD_KOEF);
             collisionIcon.sprite = isBlocked ? collisionSpriteBlock : collisionSpriteNormal;
 
             lineToCollision.gameObject.SetActive(true);
             lineToCollisionShadow.gameObject.SetActive(true);
             lineToCollision.positionCount =lineToCollisionShadow.positionCount = 2;
             var p0 = new Vector3(
-                aimData.AimBallX0 * Config.MODEL_COORD_TO_WORLD_KOEF, 
-                aimData.AimBallY0 * Config.MODEL_COORD_TO_WORLD_KOEF,
+                aimData.AimBallX0.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF, 
+                aimData.AimBallY0.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF,
                 LINES_Z);
             var p1 = new Vector3(
-                aimData.AimBallX * Config.MODEL_COORD_TO_WORLD_KOEF, 
-                aimData.AimBallY * Config.MODEL_COORD_TO_WORLD_KOEF,
+                aimData.AimBallX.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF, 
+                aimData.AimBallY.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF,
                 LINES_Z);
             lineToCollision.SetPosition(0, ballsRoot.TransformPoint(p0));
             lineToCollision.SetPosition(1, ballsRoot.TransformPoint(p1));
@@ -56,12 +56,12 @@ namespace Kborod.UI.Screens
                 lineFromCollisionShadow.gameObject.SetActive(true);
                 lineFromCollision.positionCount = lineFromCollisionShadow.positionCount = 2;
                 p0 = new Vector3(
-                    aimData.AimBallX * Config.MODEL_COORD_TO_WORLD_KOEF, 
-                    aimData.AimBallY * Config.MODEL_COORD_TO_WORLD_KOEF, 
+                    aimData.AimBallX.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF, 
+                    aimData.AimBallY.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF, 
                     LINES_Z);
                 p1 = new Vector3(
-                    (aimData.AimBallX * Config.MODEL_COORD_TO_WORLD_KOEF + aimData.AimBallBounceVx * bounceLinesLength),
-                    (aimData.AimBallY * Config.MODEL_COORD_TO_WORLD_KOEF + aimData.AimBallBounceVy * bounceLinesLength),
+                    (aimData.AimBallX.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF + aimData.AimBallBounceVx.ToFloat() * bounceLinesLength),
+                    (aimData.AimBallY.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF + aimData.AimBallBounceVy.ToFloat() * bounceLinesLength),
                     LINES_Z);
                 lineFromCollision.SetPosition(0, ballsRoot.TransformPoint(p0));
                 lineFromCollision.SetPosition(1, ballsRoot.TransformPoint(p1));
@@ -72,12 +72,12 @@ namespace Kborod.UI.Screens
                 lineFromAimBallShadow.gameObject.SetActive(true);
                 lineFromAimBall.positionCount = lineFromAimBallShadow.positionCount = 2;
                 p0 = new Vector3(
-                    aimData.CollBallX0 * Config.MODEL_COORD_TO_WORLD_KOEF, 
-                    aimData.CollBallY0 * Config.MODEL_COORD_TO_WORLD_KOEF, 
+                    aimData.CollBallX0.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF, 
+                    aimData.CollBallY0.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF, 
                     LINES_Z);
                 p1 = new Vector3(
-                    (aimData.CollBallX0 * Config.MODEL_COORD_TO_WORLD_KOEF + aimData.CollBallBounceVx * bounceLinesLength), 
-                    (aimData.CollBallY0 * Config.MODEL_COORD_TO_WORLD_KOEF + aimData.CollBallBounceVy * bounceLinesLength),
+                    (aimData.CollBallX0.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF + aimData.CollBallBounceVx.ToFloat() * bounceLinesLength), 
+                    (aimData.CollBallY0.ToFloat() * Config.MODEL_COORD_TO_WORLD_KOEF + aimData.CollBallBounceVy.ToFloat() * bounceLinesLength),
                     LINES_Z);
                 lineFromAimBall.SetPosition(0, ballsRoot.TransformPoint(p0));
                 lineFromAimBall.SetPosition(1, ballsRoot.TransformPoint(p1));

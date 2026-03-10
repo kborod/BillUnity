@@ -2,7 +2,6 @@
 using Kborod.BilliardCore;
 using System;
 using UnityEngine;
-using Zenject;
 
 namespace Kborod.MatchManagement
 {
@@ -18,9 +17,16 @@ namespace Kborod.MatchManagement
             _engine = engine;
         }
 
-        public async UniTaskVoid MakeShot(int ballNumber, float directionX, float directionY, float spinX, float spinY)
+        public async UniTaskVoid MakeShot(AimInfo aimInfo, int cuePower)
         {
-            _engine.MakeShot(directionX, directionY, ballNumber, spinX, spinY);
+            _engine.MakeShot(
+                new Fixed64(aimInfo.DirectionXraw) * new Fixed64(aimInfo.PowerRaw) * Fixed64.FromInt(cuePower),
+                new Fixed64(aimInfo.DirectionYraw) * new Fixed64(aimInfo.PowerRaw) * Fixed64.FromInt(cuePower),
+                aimInfo.CueBall.Value,
+                new Fixed64(aimInfo.SpinXraw),
+                new Fixed64(aimInfo.SpinYraw));
+
+            var sumMs = 0f;
 
             while (true)
             {
@@ -35,6 +41,11 @@ namespace Kborod.MatchManagement
                         break;
                     }
                 }
+
+                sumMs += deltaMS;
+                if (sumMs > 1000 * 60)
+                    throw new Exception("Infinity cycle detected");
+
                 await UniTask.NextFrame();
             }
         }

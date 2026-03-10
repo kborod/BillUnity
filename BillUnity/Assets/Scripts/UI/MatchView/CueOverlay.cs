@@ -68,7 +68,7 @@ namespace Kborod.UI.Screens
 
             cueHolder.transform.localPosition = ballPosition;
 
-            float angle = Mathf.Atan2(info.DirectionY, info.DirectionX) * Mathf.Rad2Deg;
+            float angle = Mathf.Atan2(info.DirectionYraw, info.DirectionXraw) * Mathf.Rad2Deg;
             cueHolder.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
             cue.transform.localPosition = new Vector3(CUE_MIN_X, 0, -1.5f);

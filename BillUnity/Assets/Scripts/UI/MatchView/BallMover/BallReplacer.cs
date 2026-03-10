@@ -77,9 +77,9 @@ namespace Kborod.UI.Screens.Table.BallsMove
             icon.Hide();
         }
 
-        private void PointerDownHandler()
+        private void PointerDownHandler(Vector2 pointerWorldPosition)
         {
-            _myShotInput.MoveCueBall(null, null);
+            MoveCueball(pointerWorldPosition);
         }
 
         private void PointerUpHandler()
@@ -88,6 +88,11 @@ namespace Kborod.UI.Screens.Table.BallsMove
         }
 
         private void DragHandler(Vector2 pointerWorldPosition)
+        {
+            MoveCueball(pointerWorldPosition);
+        }
+
+        private void MoveCueball(Vector2 pointerWorldPosition)
         {
             Vector2 worldPoint = tableCamera.ScreenToWorldPoint(pointerWorldPosition);
             Vector2 modelPoint = ballsRoot.InverseTransformPoint(worldPoint) / Config.MODEL_COORD_TO_WORLD_KOEF;
@@ -99,23 +104,6 @@ namespace Kborod.UI.Screens.Table.BallsMove
         {
             var worldBallPosition = ballsRoot.TransformPoint(_engine.Balls[_ballNum].v.p0.ToVector2() * Config.MODEL_COORD_TO_WORLD_KOEF);
             icon.transform.position = tableCamera.WorldToScreenPoint(worldBallPosition);
-        }
-
-        private void RefreshPanel()
-        {
-            panel.gameObject.SetActive(false);
-
-            //var posLefBottomWorld = ballsRoot.TransformPoint(Config.leftBorderX * Config.MODEL_COORD_TO_WORLD_KOEF, Config.bottomBorderY * Config.MODEL_COORD_TO_WORLD_KOEF, 0);
-            //var posRightTopWorld = ballsRoot.TransformPoint((onlyKitchen ? Config.headLineX : Config.rightBorderX) * Config.MODEL_COORD_TO_WORLD_KOEF, Config.topBorderY * Config.MODEL_COORD_TO_WORLD_KOEF, 0);
-
-            //var posLefBottomScreenPoint = tableCamera.WorldToScreenPoint(posLefBottomWorld);
-            //var posRightTopScreenPoint = tableCamera.WorldToScreenPoint(posRightTopWorld);
-
-            //RectTransformUtility.ScreenPointToLocalPointInRectangle(panel.parent.transform as RectTransform, posLefBottomScreenPoint, null, out var posLefBottomLocalPoint);
-            //RectTransformUtility.ScreenPointToLocalPointInRectangle(panel.parent.transform as RectTransform, posRightTopScreenPoint, null, out var posRightTopLocalPoint);
-
-            //panel.sizeDelta = posRightTopLocalPoint - posLefBottomLocalPoint;
-            ////panel.anchoredPosition = (posRightTopLocalPoint + posLefBottomLocalPoint) / 2;
         }
     }
 }

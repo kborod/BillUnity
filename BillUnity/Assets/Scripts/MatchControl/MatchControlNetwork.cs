@@ -143,8 +143,7 @@ namespace Kborod.MatchManagement.Control
 
 
         //TODO BORODIN разобраться
-        private float GetMyCuePower() => 300;
-        private float GetMyCueId() => 1;
-        private float GetOppCuePower() => 300;
+        private int GetMyCuePower() => 300;
+        private int GetOppCuePower() => 300;
     }
 }
