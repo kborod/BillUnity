@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using System;
 using System.Threading;
+using UnityEngine;
 
 namespace Kborod.Utils
 {
@@ -18,6 +19,8 @@ namespace Kborod.Utils
             cts?.Cancel();
             cts = new CancellationTokenSource();
 
+            Debug.Log("CTS created");
+
             try
             {
                 int count = 0;
@@ -34,6 +37,9 @@ namespace Kborod.Utils
                 CompleteCallback?.Invoke();
             }
             catch (OperationCanceledException) { }
+
+            cts = null;
+            Debug.Log("CTS is null");
         }
 
         public void Stop() => cts?.Cancel();
@@ -43,5 +49,7 @@ namespace Kborod.Utils
             Stop();
             cts?.Dispose();
         }
+
+        public bool IsWorking => cts != null;
     }
 }

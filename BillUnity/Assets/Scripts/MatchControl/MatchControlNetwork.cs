@@ -6,7 +6,6 @@ using Kborod.Services.ServerCommunication.AsyncServerMessaging;
 using Kborod.Services.ServerTime;
 using Kborod.SharedDto.AsyncServerMessaging.Messages;
 using Kborod.Utils;
-using System;
 using UnityEngine;
 using Zenject;
 
@@ -19,7 +18,7 @@ namespace Kborod.MatchManagement.Control
         [Inject] private IMessagingService _messagingService;
         [Inject] private TimeService _timeService;
 
-        private readonly TimeSpan SendAimMinPeriodSec = TimeSpan.FromSeconds(1.5f);
+        private readonly float SendAimMinPeriodSec = 1f;
 
         private MatchBase _match => _matchServices.Match;
         private MyInput _myInput => _matchServices.MyInput;
@@ -28,8 +27,8 @@ namespace Kborod.MatchManagement.Control
         private UniTimer _aimSendTimer = new UniTimer();
 
         private bool _isMyTurn => _match.TurningPlayer.Id == _accountModel.Id;
-        private long _lastAimSentTime;
-        private bool _aimSendTimerWorking;
+
+        private AimPlayer _aimPlayer = new AimPlayer();
 
         public void Setup(StartMatchData startMatchData)
         {
@@ -62,14 +61,18 @@ namespace Kborod.MatchManagement.Control
 
         private void OppAimInfoReceived(AimInfoResponseDto dto)
         {
-            if (!_isMyTurn && _match.State == MatchState.PrepeareTurn)
-                _match.ChangeAimInfo(dto.AimInfoData.AimInfo);
+            if (_isMyTurn || _match.State != MatchState.PrepeareTurn)
+                return;
+
+            _ = _aimPlayer.Play(dto.AimInfoData.AimInfo, _match, SendAimMinPeriodSec, false);
         }
 
-        private void OppMakeShotReceived(MakeShotResponseDto dto)
+        private async void OppMakeShotReceived(MakeShotResponseDto dto)
         {
-            if (!_isMyTurn && _match.State == MatchState.PrepeareTurn)
-                _match.MakeShot(dto.MakeShotData.AimInfo, GetOppCuePower());
+            if (_isMyTurn || _match.State != MatchState.PrepeareTurn)
+                return;
+            await _aimPlayer.Play(dto.MakeShotData.AimInfo, _match, SendAimMinPeriodSec, true);
+            _match.MakeShot(dto.MakeShotData.AimInfo, GetOppCuePower());
         }
 
         private void ShotCompletedHandler(RulesShotResult data)
@@ -91,16 +94,17 @@ namespace Kborod.MatchManagement.Control
             _match.ChangeAimInfo(aimInfo);
         }
 
-        public void MyMakeShotReceived(AimInfo aimInfo)
+        public async void MyMakeShotReceived(AimInfo aimInfo)
         {
             if (!_isMyTurn || _match.State != MatchState.PrepeareTurn)
                 return;
 
             _turnTimer.Stop();
-            _aimSendTimer.Stop();
-            _aimSendTimerWorking = false;
 
             _messagingService.SendRequest(new MakeShotDto(new MakeShotData(_match.Id, aimInfo)));
+
+            await _aimPlayer.Play(aimInfo, _match, SendAimMinPeriodSec, true);
+
             _match.MakeShot(aimInfo, GetMyCuePower());
         }
 
@@ -122,23 +126,15 @@ namespace Kborod.MatchManagement.Control
 
         private void TrySendAim()
         {
-            var nextSendTimeSeconds = TimeSpan.FromSeconds(_lastAimSentTime) + SendAimMinPeriodSec;
-            if (nextSendTimeSeconds < _timeService.CurrTimestampTimeSpan)
+            if (!_aimSendTimer.IsWorking)
             {
-                SendAim();
-            }
-            else if(!_aimSendTimerWorking)
-            {
-                _aimSendTimer.Start((float)(nextSendTimeSeconds - _timeService.CurrTimestampTimeSpan).TotalSeconds, SendAim).Forget();
-                _aimSendTimerWorking = true;
+                _aimSendTimer.Start(SendAimMinPeriodSec, SendAim).Forget();
             }
         }
 
         private void SendAim()
         {
             _messagingService.SendRequest(new AimInfoDto(new AimInfoData(_match.Id, _myInput.CurrentAimInfo)));
-            _lastAimSentTime = _timeService.CurrTimestamp;
-            _aimSendTimerWorking = false;
         }
 
 

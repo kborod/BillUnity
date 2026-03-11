@@ -11,7 +11,8 @@ namespace Kborod.MatchManagement.Control
         [Inject] private MatchServices _matchServices;
         [Inject] private AppProcessor _appProcessor;
 
-        private MatchBase _match => _matchServices.Match;
+        private MatchBase _match => _matchServices.Match; 
+        private AimPlayer _aimPlayer = new AimPlayer();
 
         public long EndTurnTime => long.MaxValue;
 
@@ -62,10 +63,11 @@ namespace Kborod.MatchManagement.Control
             StartTurn();
         }
 
-        private void MatchStateChangedHandler(MatchState state)
+        private async void MatchStateChangedHandler(MatchState state)
         {
             if (state == MatchState.Over)
             {
+                await UniTask.Delay(2000);
                 Dispose();
                 _appProcessor.MainMenu().Forget();
             }
@@ -78,11 +80,12 @@ namespace Kborod.MatchManagement.Control
             _match.ChangeAimInfo(info);
         }
 
-        private void ShotMade(AimInfo info)
+        private async void ShotMade(AimInfo info)
         {
             if (_matchServices.Match.State != MatchState.PrepeareTurn)
                 return;
 
+            await _aimPlayer.Play(info, _match, 1f, true);
             _match.MakeShot(info, GetCuePower());
         }
         private int GetCuePower() => 300;

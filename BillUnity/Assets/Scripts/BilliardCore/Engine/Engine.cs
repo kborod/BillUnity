@@ -70,65 +70,83 @@ namespace Kborod.BilliardCore
                 .ToList();
         }
 
-
         /// <summary>
-		/// Переместить шар с проверкой. Если новая координата за пределами стола или дома, то перемещается внутрь стола.
-		/// Если шар соприкосается с другим шаром, то возвращает false и оставляет старые координаты. Иначе устанавливает
-		/// новые координаты и возвращает true. 
+        /// Вовзращает координаты перемещения с Clamp-ом в координаты стола (дома).
         /// </summary>
-        /// <returns>Если позиция не корректна, то возвращает false, иначе true</returns>
-        public bool ReplaceBall(int ballNum, Fixed64 posX, Fixed64 posY, bool onlyKitchen, bool correctionAllowed)
+        /// <returns>Если позиция не корректна и correctionAllowed == false, то возвращает false и старые координаты, иначе true и новые кординаты</returns>
+        public (bool result, Fixed64 x, Fixed64 y) GetReplacedPosition(int ballNum, Fixed64 posX, Fixed64 posY, bool onlyKitchen, bool correctionAllowed)
 		{
 			// TODO Добавить алгоритм выталкивания шара из кучи других шаров
-			var tmpX = posX;
-			var tmpY = posY;
+			var currPosX = Balls[ballNum].v.p0.x;
+			var currPosY = Balls[ballNum].v.p0.y;
 			if (posX < Config.leftBorderX + Config.BALL_RAD_PX)
 			{
-				if (!correctionAllowed) return false;
-				tmpX = Config.leftBorderX + Config.BALL_RAD_PX + Fixed64.FromDouble(0.01);
+				if (!correctionAllowed) return (false, currPosX, currPosY);
+                posX = Config.leftBorderX + Config.BALL_RAD_PX + Fixed64.FromDouble(0.01);
 			}
 			if (onlyKitchen)
 			{
 				if (posX > Config.headLineX - Config.BALL_RAD_PX)
 				{
-                    if (!correctionAllowed) return false;
-                    tmpX = Config.headLineX - Config.BALL_RAD_PX - Fixed64.FromDouble(0.01);
+					if (!correctionAllowed) return (false, currPosX, currPosY);
+					posX = Config.headLineX - Config.BALL_RAD_PX - Fixed64.FromDouble(0.01);
 				}
 			}
 			else
 			{
 				if (posX > Config.rightBorderX - Config.BALL_RAD_PX)
-                {
-                    if (!correctionAllowed) return false;
-                    tmpX = Config.rightBorderX - Config.BALL_RAD_PX - Fixed64.FromDouble(0.01); 
+				{
+					if (!correctionAllowed) return (false, currPosX, currPosY);
+                    posX = Config.rightBorderX - Config.BALL_RAD_PX - Fixed64.FromDouble(0.01);
 				}
 			}
 			if (posY > Config.topBorderY - Config.BALL_RAD_PX)
 			{
-                if (!correctionAllowed) return false;
-                tmpY = Config.topBorderY - Config.BALL_RAD_PX - Fixed64.FromDouble(0.01);
+				if (!correctionAllowed) return (false, currPosX, currPosY);
+                posY = Config.topBorderY - Config.BALL_RAD_PX - Fixed64.FromDouble(0.01);
 			}
 			if (posY < Config.bottomBorderY + Config.BALL_RAD_PX)
-            {
-                if (!correctionAllowed) return false;
-                tmpY = Config.bottomBorderY + Config.BALL_RAD_PX + Fixed64.FromDouble(0.01);
+			{
+				if (!correctionAllowed) return (false, currPosX, currPosY);
+                posY = Config.bottomBorderY + Config.BALL_RAD_PX + Fixed64.FromDouble(0.01);
 			}
 
-			foreach (var ball in Balls)
-			{
-				if (ball.Number == ballNum || ball.IsRemoved == true) continue;
-				vc.p0.x = tmpX;
-				vc.p0.y = tmpY;
-				vc.p1.x = ball.v.p0.x;
-				vc.p1.y = ball.v.p0.y;
-				vc.updateComponentsFromPoints();
-				vc.makeVector();
+			if (IsCollisionWithOtherBalls(ballNum, posX, posY))
+				return (false, currPosX, currPosY);
 
-				if (Config.BALL_DIAM_PX - vc.len >= -Fixed64.FromDouble(0.01))
-                    return false;
+            return (true, posX, posY);
+
+			bool IsCollisionWithOtherBalls(int ballNum, Fixed64 x, Fixed64 y)
+			{
+                foreach (var ball in Balls)
+                {
+                    if (ball.Number == ballNum || ball.IsRemoved == true) continue;
+                    vc.p0.x = x;
+                    vc.p0.y = y;
+                    vc.p1.x = ball.v.p0.x;
+                    vc.p1.y = ball.v.p0.y;
+                    vc.updateComponentsFromPoints();
+                    vc.makeVector();
+
+                    if (Config.BALL_DIAM_PX - vc.len >= -Fixed64.FromDouble(0.01))
+                        return true;
+                }
+
+				return false;
             }
-            Balls[ballNum].SetPosition(tmpX, tmpY);
-            return true;
+        }
+
+
+		/// <summary>
+		/// Переместить шар с проверкой.
+		/// </summary>
+		/// <returns>Если позиция не корректна, то возвращает false, иначе true</returns>
+		public bool ReplaceBall(int ballNum, Fixed64 posX, Fixed64 posY, bool onlyKitchen, bool correctionAllowed)
+		{
+			var replaceResult = GetReplacedPosition(ballNum, posX, posY, onlyKitchen, correctionAllowed);
+			if (replaceResult.result == true)
+				Balls[ballNum].SetPosition(replaceResult.x, replaceResult.y);
+            return replaceResult.Item1 == true;
 		}
 
         /// <summary>

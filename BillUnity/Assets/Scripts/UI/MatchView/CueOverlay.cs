@@ -14,7 +14,7 @@ namespace Kborod.UI.Screens
         [SerializeField] private Transform ballsRoot;
 
         private const float CUE_MIN_X = -0.35f;
-        private const float CUE_MAX_X = -1.2f;
+        private const float CUE_MAX_X = -1.8f;
 
         [Inject] private MatchServices _matchServices;
         private IEngineForUI _engine => _matchServices.EngineForUI;
@@ -71,7 +71,7 @@ namespace Kborod.UI.Screens
             float angle = Mathf.Atan2(info.DirectionYraw, info.DirectionXraw) * Mathf.Rad2Deg;
             cueHolder.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
-            cue.transform.localPosition = new Vector3(CUE_MIN_X, 0, -1.5f);
+            cue.transform.localPosition = new Vector3(Mathf.Lerp(CUE_MIN_X, CUE_MAX_X, new Fixed64(_match.AimInfo.PowerRaw).ToFloat()), 0, -1.5f);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Kborod.BilliardCore
 
         public Fixed64 X => v.p0.x;
 
-        public Fixed64 Y => v.p0.x;
+        public Fixed64 Y => v.p0.y;
 
 
 

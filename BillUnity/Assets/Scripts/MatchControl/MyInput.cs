@@ -2,7 +2,6 @@ using Kborod.BilliardCore;
 using Kborod.DomainModel;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Kborod.MatchManagement
 {
@@ -67,8 +66,14 @@ namespace Kborod.MatchManagement
 
         public void MoveCueBall(float? x, float? y)
         {
-            _aimInfo.CueBallXraw = Fixed64.FromDouble(x.Value).Raw;
-            _aimInfo.CueBallYraw = Fixed64.FromDouble(y.Value).Raw;
+            var replacedPosition = _match.EngineForUI.GetReplacedPosition(
+                _match.TurnSettings.CanMoveBall.Value, 
+                Fixed64.FromFloat(x.Value), 
+                Fixed64.FromFloat(y.Value), 
+                _match.TurnSettings.MoveOnlyInKitchen, 
+                true);
+            _aimInfo.CueBallXraw = replacedPosition.x.Raw;
+            _aimInfo.CueBallYraw = replacedPosition.y.Raw;
             _aimInfo.IsBallMovingNow = true;
             AimInfoChanged?.Invoke(_aimInfo);
         }

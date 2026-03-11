@@ -112,7 +112,7 @@ namespace Kborod.MatchManagement
 
         private void ReplaceBallFromAim()
         {
-            if (_aimInfo.CueBall.HasValue && _aimInfo.CueBallXraw.HasValue && _aimInfo.CueBallYraw != null)
+            if (_aimInfo.CueBall.HasValue && _aimInfo.CueBallXraw.HasValue && _aimInfo.CueBallYraw.HasValue)
                 Engine.ReplaceBall(
                     _aimInfo.CueBall.Value,
                     new Fixed64(_aimInfo.CueBallXraw.Value),
