@@ -1,10 +1,8 @@
 ﻿using Cysharp.Threading.Tasks;
 using Kborod.BilliardCore;
-using Kborod.BilliardCore.Enums;
 using Kborod.BilliardCore.Rules;
 using Kborod.Loader;
-using Kborod.Services.UIScreenManager;
-using Kborod.UI.Screens;
+using Kborod.Services.ServerTime;
 using Zenject;
 
 namespace Kborod.MatchManagement.Control
@@ -13,12 +11,10 @@ namespace Kborod.MatchManagement.Control
     {
         [Inject] private MatchServices _matchServices;
         [Inject] private AppProcessor _appProcessor;
-        [Inject] private ScreensHelper _screensHelper;
+        [Inject] private TimeService _timeService;
 
         private MatchBase _match => _matchServices.Match; 
         private AimPlayer _aimPlayer = new AimPlayer();
-
-        public long EndTurnTime => long.MaxValue;
 
         public void Init()
         {

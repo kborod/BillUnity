@@ -34,6 +34,8 @@ namespace Kborod.UI.Screens.Table
 
         private void PlayCueBallHitted(float power)
         {
+            if (power == 0)
+                return;
             if (power < 0.3)
                 _soundService.PlaySound(SoundType.BallShot3, 0.5f + 0.5f * (power * 3.33f));
             else if (power < 0.5)

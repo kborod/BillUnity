@@ -6,10 +6,8 @@ using Kborod.DomainModel;
 using Kborod.Loader;
 using Kborod.Services.ServerCommunication.AsyncServerMessaging;
 using Kborod.Services.ServerTime;
-using Kborod.Services.UIScreenManager;
 using Kborod.Services.UIScreenManager.LoadOverlay;
 using Kborod.SharedDto.AsyncServerMessaging.Messages;
-using Kborod.UI.Screens;
 using Kborod.Utils;
 using UnityEngine;
 using Zenject;
@@ -23,7 +21,6 @@ namespace Kborod.MatchManagement.Control
         [Inject] private IMessagingService _messagingService;
         [Inject] private TimeService _timeService;
         [Inject] private LoadingOverlay _loadingOverlay;
-        [Inject] private ScreensHelper _screensHelper;
         [Inject] private AppProcessor _appProcessor;
 
         private readonly float SendAimMinPeriodSec = 1f;
@@ -72,6 +69,7 @@ namespace Kborod.MatchManagement.Control
         {
             if (_isMyTurn)
             {
+                var delta = _timeService.CurrTimestamp - dto.StartTurnData.TurnEndTimestamp;
                 var turnSecondsLeft = dto.StartTurnData.TurnEndTimestamp - _timeService.CurrTimestamp;
                 _turnTimer.Start(turnSecondsLeft, TurnTimeIsOver).Forget();
             }
