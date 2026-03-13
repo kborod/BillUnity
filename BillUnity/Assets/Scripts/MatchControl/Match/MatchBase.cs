@@ -1,6 +1,7 @@
 ﻿using Kborod.BilliardCore;
 using Kborod.BilliardCore.Enums;
 using Kborod.BilliardCore.Rules;
+using Kborod.SharedDto;
 using System;
 using UnityEngine;
 
@@ -78,6 +79,8 @@ namespace Kborod.MatchManagement
             ReplaceBallFromAim();
             AimInfoReceived?.Invoke(info);
         }
+
+        public abstract int GetScore(string playerId);
 
         protected virtual void ShotTickCompletedHandler(ShotTickResult tickResult)
         {

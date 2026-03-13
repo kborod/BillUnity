@@ -1,17 +1,13 @@
 using Cysharp.Threading.Tasks;
 using Kborod.Services.UIScreenManager.Transitions;
+using UnityEngine;
 
 namespace Kborod.Services.UIScreenManager
 {
 
     public class TransitionManager
     {
-        public bool TransitionNow { get; private set; }
-
-        public async UniTask WaitCurrentTransition()
-        {
-            await UniTask.WaitUntil(() => !TransitionNow);
-        }
+        public bool IsWorkingNow { get; private set; }
 
         public async UniTask SwitchScreen(ITransitionable prevOrNull, ITransitionable nextOrNull)
         {
@@ -20,12 +16,20 @@ namespace Kborod.Services.UIScreenManager
 
         public async UniTask SwitchScreen(ITransition prevOrNull, ITransition nextOrNull)
         {
-            TransitionNow = true;
+            IsWorkingNow = true;
+
             if (nextOrNull != null)
                 await nextOrNull.Show(prevOrNull);
             else
                 await prevOrNull.Hide();
-            TransitionNow = false;
+
+            IsWorkingNow = false;
+        }
+
+        public async UniTask WaitCurrentWork()
+        {
+            if (IsWorkingNow)
+                await UniTask.WaitUntil(() => !IsWorkingNow);
         }
     }
 }

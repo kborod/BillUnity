@@ -9,6 +9,7 @@ namespace Kborod.MatchManagement
     {
         public event Action<AimInfo> AimInfoChanged;
         public event Action<AimInfo> ShotMade;
+        public event Action WantLeave;
 
         public bool CanIManageTurningPlayer => _canManagePlayers.Contains(_match.TurningPlayer.Id);
         public int? CurrentCueBallOrNull => _aimInfo.CueBall;
@@ -89,6 +90,11 @@ namespace Kborod.MatchManagement
             _aimInfo.SpinXraw = Fixed64.FromDouble(spinX).Raw;
             _aimInfo.SpinYraw = Fixed64.FromDouble(spinY).Raw;
             AimInfoChanged?.Invoke(_aimInfo);
+        }
+
+        public void Leave()
+        {
+            WantLeave?.Invoke();
         }
 
         private void CueChangedHandler()

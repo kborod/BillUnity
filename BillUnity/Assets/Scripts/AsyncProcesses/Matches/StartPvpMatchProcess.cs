@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using Kborod.BilliardCore;
-using Kborod.BilliardCore.Enums;
 using Kborod.DomainModel;
 using Kborod.MatchManagement;
 using Kborod.MatchManagement.Control;
@@ -11,7 +10,7 @@ using Zenject;
 
 namespace Kborod.AsyncProcesses
 {
-    public class InitPvpMatchProcess
+    public class StartPvpMatchProcess
     {
         [Inject] private ScreensHelper _screensHelper;
         [Inject] private DiContainer _diContainer;
@@ -20,33 +19,25 @@ namespace Kborod.AsyncProcesses
         [Inject] private CuesModel _cuesModel;
 
 
-        public async UniTask<Result> Run(GameType gameType, BetType betType)
+        public async UniTaskVoid Run(StartMatchData startData)
         {
-            await _screensHelper.ClearAll();
-
-            var searchOpponentResult = await _diContainer.Instantiate<SearchPvpOpponentProcess>().Run(gameType, betType);
-
-            if (searchOpponentResult.IsSuccess == false)
-                return Result.Fail(searchOpponentResult.Error);
-
-            StartMatchData startData = searchOpponentResult.Value.StartMatchData;
 
             var match = new MatchPoolEight();
             match.Init(
                 startData.MatchId, 
                 startData.BallsPosition,
-                new PoolEightPlayer(_accoundModel.Id, _accoundModel.Name),
-                new PoolEightPlayer(startData.Opponent.Id, startData.Opponent.Username),
+                new PoolEightPlayer(_accoundModel.GetProfile()),
+                new PoolEightPlayer(startData.Opponent),
                 startData.TurningPlayerId);
 
             _matchServices.Setup(match, _cuesModel, new List<string>() { _accoundModel.Id });
 
-            await new OpenSceneProcess("TableScene").Run(); 
-            
+            await new OpenSceneProcess("TableScene").Run();
+
+            await _screensHelper.ClearAll();
+
             var matchControl = _diContainer.Instantiate<MatchControlNetwork>();
             matchControl.Setup(startData);
-
-            return Result.Ok();
         }
     }
 }

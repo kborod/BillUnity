@@ -31,8 +31,7 @@ namespace Kborod.Services.UIScreenManager
 
         public async UniTask WaitAllCurrentWork()
         {
-            await ScreensManager.WaitCurrentWork();
-            await ModalsManager.WaitCurrentWork();
+            await UniTask.WhenAll(ScreensManager.WaitCurrentWork(), ModalsManager.WaitCurrentWork());
         }
 
     }

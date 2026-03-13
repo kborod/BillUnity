@@ -8,7 +8,7 @@ using Zenject;
 
 namespace Kborod.UI.Screens
 {
-    public class ChooseSpinPopup : MonoBehaviour
+    public class ChooseSpinModal : MonoBehaviour
     {
         [SerializeField] private Button closeButton;
         [SerializeField] private PointerEventsWrapper ball;

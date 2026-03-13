@@ -1,13 +1,19 @@
 using Kborod.BilliardCore.Enums;
+using Kborod.SharedDto;
 
 namespace Kborod.MatchManagement
 {
     public class PoolEightPlayer : Player
     {
-        public PoolBallType BallType = PoolBallType.None;
+        public PoolBallType BallType { get; private set; } = PoolBallType.None;
 
-        public PoolEightPlayer(string id, string name) : base(id, name)
+        public PoolEightPlayer(UserProfile profile) : base(profile)
         {
+        }
+
+        public void SetBallType(PoolBallType ballType)
+        {
+            BallType = ballType;
         }
     }
 }

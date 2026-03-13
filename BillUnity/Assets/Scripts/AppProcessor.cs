@@ -1,6 +1,9 @@
 using Cysharp.Threading.Tasks;
 using Kborod.AsyncProcesses;
+using Kborod.BilliardCore;
 using Kborod.BilliardCore.Enums;
+using Kborod.MatchManagement.Control;
+using Kborod.SharedDto;
 using Zenject;
 
 namespace Kborod.Loader
@@ -15,29 +18,50 @@ namespace Kborod.Loader
         {
             await InitApp();
 
-            //await TestWindow();
+            //TestWindow();
             //return;
-            //await TestLoginByTags();
+            
+            await TestLoginByTags();
             //await Login();
-            //await InitRealTimeMsgs();
-            await MainMenu();
+            
+            await InitRealTimeMsgs();
+            
+            MainMenu();
         }
 
-        public async UniTask MainMenu()
+        public void MainMenu()
         {
-            await _container.Instantiate<MainMenuProcess>().Run();
+            _container.Instantiate<MainMenuProcess>().Run().Forget();
         }
 
-        public async UniTask TrainingMatch()
+        public void StartTrainingMatch()
         {
-            await _container.Instantiate<InitTrainingMatchProcess>().Run();
+            _container.Instantiate<StartTrainingMatchProcess>().Run().Forget();
         }
 
-        public async UniTask PvpMatch(GameType gameType, BetType betType)
+        public async UniTaskVoid SearchAndStartPvpMatch(GameType gameType, BetType betType)
         {
-            var processResult = await _container.Instantiate<InitPvpMatchProcess>().Run(gameType, betType);
-            if (processResult.IsSuccess == false)
-                MainMenu().Forget();
+            var searchOpponentResult = await _container.Instantiate<SearchPvpOpponentProcess>().Run(gameType, betType);
+
+            if (searchOpponentResult.IsSuccess == false)
+                MainMenu();
+            else
+                StartPvpMatch(searchOpponentResult.Value.StartMatchData);
+        }
+
+        public void StartPvpMatch(StartMatchData startData)
+        {
+            _container.Instantiate<StartPvpMatchProcess>().Run(startData).Forget();
+        }
+
+        public void PvpMatchOver(MatchOverData matchOverData, UserProfile oppProfile)
+        {
+            _container.Instantiate<PvpMatchOverProcess>().Run(matchOverData, oppProfile).Forget();
+        }
+
+        private void TestWindow()
+        {
+            _container.Instantiate<TestWindowProcess>().Run().Forget();
         }
 
         private async UniTask InitApp()
@@ -62,11 +86,6 @@ namespace Kborod.Loader
             var result = await _container.Instantiate<TestLoginByMultiplayerTagsProcess>().LoginAndGetToken();
             if (result.IsSuccess == false)
                 throw new System.Exception("Login error");
-        }
-
-        private async UniTask TestWindow()
-        {
-            await _container.Instantiate<TestWindowProcess>().Run();
         }
     }
 }

@@ -1,5 +1,4 @@
-using System;
-using UnityEngine;
+using Kborod.SharedDto;
 
 namespace Kborod.DomainModel
 {
@@ -7,5 +6,6 @@ namespace Kborod.DomainModel
     {
         public abstract string Id { get; }
         public abstract string Name { get; }
+        public UserProfile GetProfile() => new UserProfile { Id = Id, Name = Name };
     }
 }

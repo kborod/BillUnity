@@ -3,6 +3,7 @@ using Kborod.BilliardCore.Enums;
 using Kborod.BilliardCore.Rules;
 using Kborod.BilliardCore.Rules.PoolEight;
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace Kborod.MatchManagement
@@ -44,6 +45,16 @@ namespace Kborod.MatchManagement
             CalculateShot(aimInfo, cuePower);
 
             base.MakeShot(aimInfo, cuePower);
+        }
+
+        public override int GetScore(string playerId)
+        {
+            var ballType = GetPlayer(playerId).BallType;
+            if (ballType == PoolBallType.None)
+                return 0;
+            return Engine.Balls
+                .Where(b => b.Number.GetPoolBallType() == ballType && b.IsRemoved)
+                .Count();
         }
 
         protected override void ShotCompletedHandler(ShotResult shotResult)
@@ -88,8 +99,8 @@ namespace Kborod.MatchManagement
                 return;
 
             var player = GetPlayer(playerId);
-            player.BallType = selectedBallType;
-            GetOpponentOf(player).BallType = player.BallType.GetOpposite();
+            player.SetBallType(selectedBallType);
+            GetOpponentOf(player).SetBallType(player.BallType.GetOpposite());
 
             BallTypesSelected?.Invoke();
         }

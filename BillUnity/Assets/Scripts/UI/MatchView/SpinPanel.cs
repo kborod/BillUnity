@@ -12,7 +12,7 @@ namespace Kborod.UI.Screens.SpinUI
         [SerializeField] private Button button;
         [SerializeField] private RectTransform ball;
         [SerializeField] private RectTransform point;
-        [SerializeField] private ChooseSpinPopup popup;
+        [SerializeField] private ChooseSpinModal popup;
 
 
         [Inject] private MatchServices _matchServices;

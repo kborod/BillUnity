@@ -1,29 +1,29 @@
 using Cysharp.Threading.Tasks;
-using Kborod.BilliardCore;
 using Kborod.DomainModel;
 using Kborod.MatchManagement;
 using Kborod.MatchManagement.Control;
 using Kborod.Services.UIScreenManager;
-using System;
+using Kborod.SharedDto;
 using System.Collections.Generic;
 using Zenject;
 
 namespace Kborod.AsyncProcesses
 {
-    public class InitTrainingMatchProcess
+    public class StartTrainingMatchProcess
     {
         [Inject] private CuesModel _cuesModel;
         [Inject] private ScreensHelper _screensHelper;
         [Inject] private MatchServices _matchServices;
         [Inject] private DiContainer _diContainer;
+        [Inject] private AccountModel _accountModel;
         
-        public async UniTask Run()
+        public async UniTaskVoid Run()
         {
-            await _screensHelper.ClearAll();
+            //await _screensHelper.ClearAll();
 
             var matchId = "TestMatch";
-            var player1Id = "Player1Id";
-            var player2Id = "Player2Id";
+            var myProfile = _accountModel.GetProfile();
+            var opponentProfile = new UserProfile { Id = "player2Id", Name = "Player2", Avatar = 1 };
             var ballsPosition = 1;
 
 
@@ -31,11 +31,11 @@ namespace Kborod.AsyncProcesses
             match.Init(
                 matchId,
                 ballsPosition,
-                new PoolEightPlayer(player1Id, "Player1"),
-                new PoolEightPlayer(player2Id, "Player2"),
-                player1Id);
+                new PoolEightPlayer(myProfile),
+                new PoolEightPlayer(opponentProfile),
+                myProfile.Id);
 
-            _matchServices.Setup(match, _cuesModel, new List<string>() { player1Id, player2Id });
+            _matchServices.Setup(match, _cuesModel, new List<string>() { myProfile.Id, opponentProfile.Id });
 
             var matchControl = _diContainer.Instantiate<MatchControlLocal>();
             matchControl.Init();

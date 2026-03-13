@@ -7,8 +7,10 @@ namespace Kborod.Services.Sound
         public event Action SoundSettingsChanged;
 
         public float GetSoundVolume0_1(SoundTag tag);
-        
-        
         public void SetSoundVolume0_1(SoundTag tag, float volume);
+
+        public bool GetMuteState();
+        public void SetMuteState(bool mute);
+
     }
 }

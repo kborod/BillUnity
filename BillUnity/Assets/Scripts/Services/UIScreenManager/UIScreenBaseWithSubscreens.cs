@@ -19,7 +19,7 @@ namespace Kborod.Services.UIScreenManager
             }
             else
             {
-                await _transitionManager.WaitCurrentTransition();
+                await _transitionManager.WaitCurrentWork();
                 _ = _transitionManager.SwitchScreen(fromScreen, to);
             }
             _currSubscreen = to;

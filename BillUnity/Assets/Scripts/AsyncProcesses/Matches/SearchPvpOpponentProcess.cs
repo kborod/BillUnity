@@ -51,8 +51,8 @@ namespace Kborod.MatchManagement.Control
 
         private void SearchCancelledReceivedHandler(SearchCancelledResponseDto response)
         {
-            _matchStartedTcs.TrySetResult(Result<MatchStartedResponseDto>.Fail("Search cancelled"));
             Dispose();
+            _matchStartedTcs.TrySetResult(Result<MatchStartedResponseDto>.Fail("Search cancelled"));
         }
 
 

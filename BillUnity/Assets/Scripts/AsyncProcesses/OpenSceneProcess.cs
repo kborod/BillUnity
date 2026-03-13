@@ -15,9 +15,6 @@ namespace Kborod.AsyncProcesses
 
         public async UniTask Run()
         {
-            if (SceneManager.GetActiveScene().name == _sceneName)
-                return;
-
             try
             {
                 await SceneManager.LoadSceneAsync(_sceneName);

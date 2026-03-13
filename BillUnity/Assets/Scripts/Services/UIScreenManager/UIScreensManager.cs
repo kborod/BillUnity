@@ -64,9 +64,7 @@ namespace Kborod.Services.UIScreenManager
 
         public async UniTask WaitCurrentWork()
         {
-            var transitionTask = UniTask.WaitUntil(() => !_transitionManager.TransitionNow);
-            var screenLoadTask = _screensLoader.WaitCurrentWork();
-            await UniTask.WhenAll(transitionTask, screenLoadTask);
+            await UniTask.WaitUntil(() => !_transitionManager.IsWorkingNow && !_screensLoader.IsWorkingNow);
         }
 
         public bool IsActiveScreensExist()

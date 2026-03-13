@@ -4,6 +4,7 @@
     {
         VolumeBackground,
         VolumeInterface,
+        VolumeMute,
 
         TokenData,
         TryLoadTokenFromCacheEnabled,

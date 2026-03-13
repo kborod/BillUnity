@@ -5,6 +5,9 @@
 ,,,
 ,EmptyString,,
 ,,,
+,DialogModal.OkButton,Ок,Ok
+,DialogModal.CancelButton,Отмена,Cancel
+,,,
 ,MatchMsg.P8_StrippedBallsSelected,Ваши шары полосатые!,Your balls are striped!
 ,MatchMsg.P8_SolidBallsSelected,Ваши шары сплошные!,Your balls are solid!
 ,,,
@@ -16,4 +19,10 @@
 ,FoulType.P8_CueBallPocketed,Фол - забит биток,Foul - the cue ball is scored
 ,FoulType.P8_WallsCollisionsRequired,Фол - после столкновения шаров должно быть касание с бортом!,"Foul - after the balls collide, there must be a touch with the board!"
 ,,,
-,Match.WinMessage,Победа!,Victory!
+,Match.WinMessage,Победа,Victory
+,Match.LoseMessage,Поражение,Defeat
+,,,
+,Match.LeaveMatchModalText,Покинуть матч? Будет засчитан проигрыш.,Leave the match? A loss will be counted.
+,,,
+,MatchResult.ToMenuButton,В меню,To menu
+,MatchResult.ReplayButton,Сыграть еще,Play again

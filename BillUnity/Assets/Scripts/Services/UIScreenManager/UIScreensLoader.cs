@@ -19,10 +19,10 @@ namespace Kborod.Services.UIScreenManager
         [Tooltip("It is better to select assemblies manually to speed up the search of screens classes")]
         [SerializeField] private string[] _assemblyNames;
 
+        public bool IsWorkingNow { get; private set; }
+
         private readonly Dictionary<Type, UIScreenAttribute> _declarations = new Dictionary<Type, UIScreenAttribute>();
         private readonly Dictionary<Type, UIScreenBase> _prefabs = new Dictionary<Type, UIScreenBase>();
-
-        private bool _loadingNow = false;
 
         public async UniTask Initialize()
         {
@@ -46,9 +46,9 @@ namespace Kborod.Services.UIScreenManager
             if (_prefabs.TryGetValue(type, out var result) == false)
             {
                 LoadingStarted?.Invoke();
-                _loadingNow = true;
+                IsWorkingNow = true;
                 result = await LoadPrefab(type, GetDeclaration(type).AddressableKey);
-                _loadingNow = false;
+                IsWorkingNow = false;
                 LoadingCompleted?.Invoke();
             }
             return result;
@@ -56,7 +56,8 @@ namespace Kborod.Services.UIScreenManager
 
         public async UniTask WaitCurrentWork()
         {
-            await UniTask.WaitUntil(() => !_loadingNow);
+            if (IsWorkingNow)
+                await UniTask.WaitUntil(() => !IsWorkingNow);
         }
 
         private async UniTask<UIScreenBase> LoadPrefab(Type type, string key)
@@ -117,14 +118,14 @@ namespace Kborod.Services.UIScreenManager
             var tasks = new List<UniTask>();
             foreach (var pair in needPreload)
                 tasks.Add(LoadPrefab(pair.Key, pair.Value.AddressableKey));
-            _loadingNow = true;
+            IsWorkingNow = true;
             await UniTask.WhenAll(tasks);
-            _loadingNow = false;
+            IsWorkingNow = false;
         }
 
         private async UniTask WaitCurrentLoading()
         {
-            await UniTask.WaitUntil(() => !_loadingNow);
+            await UniTask.WaitUntil(() => !IsWorkingNow);
         }
     }
 }

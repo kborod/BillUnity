@@ -1,10 +1,15 @@
 ﻿using Cysharp.Threading.Tasks;
 using Kborod.BilliardCore;
+using Kborod.BilliardCore.Enums;
 using Kborod.BilliardCore.Rules;
 using Kborod.DomainModel;
+using Kborod.Loader;
 using Kborod.Services.ServerCommunication.AsyncServerMessaging;
 using Kborod.Services.ServerTime;
+using Kborod.Services.UIScreenManager;
+using Kborod.Services.UIScreenManager.LoadOverlay;
 using Kborod.SharedDto.AsyncServerMessaging.Messages;
+using Kborod.UI.Screens;
 using Kborod.Utils;
 using UnityEngine;
 using Zenject;
@@ -17,6 +22,9 @@ namespace Kborod.MatchManagement.Control
         [Inject] private AccountModel _accountModel;
         [Inject] private IMessagingService _messagingService;
         [Inject] private TimeService _timeService;
+        [Inject] private LoadingOverlay _loadingOverlay;
+        [Inject] private ScreensHelper _screensHelper;
+        [Inject] private AppProcessor _appProcessor;
 
         private readonly float SendAimMinPeriodSec = 1f;
 
@@ -32,20 +40,32 @@ namespace Kborod.MatchManagement.Control
 
         public void Setup(StartMatchData startMatchData)
         {
-            _match.ShotCompleted += ShotCompletedHandler;
             _messagingService.Subscribe<StartTurnResponseDto>(StartTurnReceived);
             _messagingService.Subscribe<AimInfoResponseDto>(OppAimInfoReceived);
             _messagingService.Subscribe<MakeShotResponseDto>(OppMakeShotReceived);
+            _messagingService.Subscribe<MatchOverResponseDto>(MatchOverReceived);
+
+            _match.ShotCompleted += ShotCompletedHandler;
 
             _myInput.AimInfoChanged += MyAimInfoReceived;
             _myInput.ShotMade += MyMakeShotReceived;
+            _myInput.WantLeave += Leave;
 
             _messagingService.SendRequest(new MatchInitedDto(_match.Id));
         }
 
         public void Dispose()
         {
+            _messagingService.Unsubscribe<StartTurnResponseDto>(StartTurnReceived);
+            _messagingService.Unsubscribe<AimInfoResponseDto>(OppAimInfoReceived);
+            _messagingService.Unsubscribe<MakeShotResponseDto>(OppMakeShotReceived);
+            _messagingService.Unsubscribe<MatchOverResponseDto>(MatchOverReceived);
+
             _match.ShotCompleted -= ShotCompletedHandler;
+
+            _myInput.AimInfoChanged -= MyAimInfoReceived;
+            _myInput.ShotMade -= MyMakeShotReceived;
+            _myInput.WantLeave -= Leave;
         }
 
         private void StartTurnReceived(StartTurnResponseDto dto)
@@ -75,6 +95,15 @@ namespace Kborod.MatchManagement.Control
             _match.MakeShot(dto.MakeShotData.AimInfo, GetOppCuePower());
         }
 
+        private async void MatchOverReceived(MatchOverResponseDto dto)
+        {
+            _loadingOverlay.Hide();
+            _appProcessor.PvpMatchOver(
+                dto.MatchOverData,
+                _accountModel.Id == _match.Player1.Id ? _match.Player2.Profile : _match.Player1.Profile);
+            Dispose();
+        }
+
         private void ShotCompletedHandler(RulesShotResult data)
         {
             var syncInfo = new SynchronizationInfo
@@ -85,7 +114,7 @@ namespace Kborod.MatchManagement.Control
             _messagingService.SendRequest(new ShotResultDto(syncInfo));
         }
 
-        public void MyAimInfoReceived(AimInfo aimInfo)
+        private void MyAimInfoReceived(AimInfo aimInfo)
         {
             if (!_isMyTurn || _match.State != MatchState.PrepeareTurn)
                 return;
@@ -94,7 +123,7 @@ namespace Kborod.MatchManagement.Control
             _match.ChangeAimInfo(aimInfo);
         }
 
-        public async void MyMakeShotReceived(AimInfo aimInfo)
+        private async void MyMakeShotReceived(AimInfo aimInfo)
         {
             if (!_isMyTurn || _match.State != MatchState.PrepeareTurn)
                 return;
@@ -106,6 +135,12 @@ namespace Kborod.MatchManagement.Control
             await _aimPlayer.Play(aimInfo, _match, SendAimMinPeriodSec, true);
 
             _match.MakeShot(aimInfo, GetMyCuePower());
+        }
+
+        private void Leave()
+        {
+            _loadingOverlay.Show();
+            _messagingService.SendRequest(new LeaveMatchDto(_match.Id));
         }
 
         private void TurnTimeIsOver()

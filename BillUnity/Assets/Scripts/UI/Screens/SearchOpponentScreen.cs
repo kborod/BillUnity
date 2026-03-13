@@ -31,9 +31,9 @@ namespace Kborod.UI.Screens
             _cancelClickCallback = cancelClickCallback;
         }
 
-        public async UniTask ShowFoundOpponent(UserProfileDto oppProfile)
+        public async UniTask ShowFoundOpponent(UserProfile oppProfile)
         {
-            _foundOppText.text = $"Found opponent: {oppProfile.Username}";
+            _foundOppText.text = $"Found opponent: {oppProfile.Name}";
             await UniTask.Delay(TimeSpan.FromSeconds(3));
         }
 

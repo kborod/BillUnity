@@ -109,6 +109,7 @@ namespace Kborod.Services.ServerCommunication.AsyncServerMessaging.ReliableMessa
                 switch (r.ResponseType)
                 {
                     case ResponseType.ErrorResponse: RaiseResponseReceived(response.GetPayload<ErrorResponseDto>()); break;
+                    case ResponseType.ConfirmResponse: RaiseResponseReceived(response.GetPayload<ConfirmResponseDto>()); break;
                     case ResponseType.TestResponse: RaiseResponseReceived(response.GetPayload<TestResponseDto>()); break;
 
                     //Протокольные сообщения до сюда не дойдут, так как обрабатываются в ProtocolResponsesProcessor
@@ -126,6 +127,9 @@ namespace Kborod.Services.ServerCommunication.AsyncServerMessaging.ReliableMessa
                     case ResponseType.MakeShotResponse: RaiseResponseReceived(response.GetPayload<MakeShotResponseDto>()); break;
                     case ResponseType.StartTurnResponse: RaiseResponseReceived(response.GetPayload<StartTurnResponseDto>()); break;
                     case ResponseType.MatchOverResponse: RaiseResponseReceived(response.GetPayload<MatchOverResponseDto>()); break;
+                    case ResponseType.OppCancelRematchResponse: RaiseResponseReceived(response.GetPayload<OppCancelRematchResponseDto>()); break;
+                    case ResponseType.OppReadyRematchResponse: RaiseResponseReceived(response.GetPayload<OppReadyRematchResponseDto>()); break;
+                    case ResponseType.CancelRematchConfirmResponse: RaiseResponseReceived(response.GetPayload<CancelRematchConfirmResponseDto>()); break;
 
                     default: throw new NotImplementedException();
 

@@ -9,7 +9,7 @@ namespace Kborod.AsyncProcesses
     {
         [Inject] private ScreensHelper _screensHelper;
 
-        public async UniTask Run()
+        public async UniTaskVoid Run()
         {
             await new OpenSceneProcess("MainMenu").Run();
             await _screensHelper.ScreensManager.Open<MainMenuScreen>();

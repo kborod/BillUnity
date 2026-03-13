@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StretchedImagePrefab: {fileID: 7389206899870661565, guid: 33dc9d194565a6a41aeabc72558ef88d, type: 3}
   DefaultForScreens: 1
-  DefaultForModals: 2
+  DefaultForModals: 1

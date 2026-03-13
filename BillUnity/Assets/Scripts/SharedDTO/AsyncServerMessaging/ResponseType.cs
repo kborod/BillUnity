@@ -5,6 +5,7 @@ namespace Kborod.SharedDto.AsyncServerMessaging.Messages
     {
         TestResponse = 0,
         ErrorResponse = 1,
+        ConfirmResponse = 2,
 
         MessageReceivedResponse = 101,
         ResendLastRequestsResponse = 102,
@@ -19,5 +20,8 @@ namespace Kborod.SharedDto.AsyncServerMessaging.Messages
         MakeShotResponse = 205,
         StartTurnResponse = 206,
         MatchOverResponse = 207,
+        OppCancelRematchResponse = 208,
+        OppReadyRematchResponse = 209,
+        CancelRematchConfirmResponse = 210,
     }
 }

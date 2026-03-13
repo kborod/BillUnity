@@ -1,14 +1,17 @@
+﻿using Kborod.SharedDto;
+
 namespace Kborod.MatchManagement
 {
-    public class Player
+    public abstract class Player
     {
-        public string Id { get; private set; }
-        public string Name { get; private set; }
+        public string Id => Profile.Id;
+        public string Name => Profile.Name;
+        public int Avatar => Profile.Avatar;
+        public UserProfile Profile { get; private set; }
 
-        public Player(string id, string name)
+        protected Player(UserProfile profile)
         {
-            Id = id;
-            Name = name;
+            Profile = profile;
         }
     }
 }

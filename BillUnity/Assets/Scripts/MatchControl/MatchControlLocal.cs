@@ -1,7 +1,10 @@
 ﻿using Cysharp.Threading.Tasks;
 using Kborod.BilliardCore;
+using Kborod.BilliardCore.Enums;
 using Kborod.BilliardCore.Rules;
 using Kborod.Loader;
+using Kborod.Services.UIScreenManager;
+using Kborod.UI.Screens;
 using Zenject;
 
 namespace Kborod.MatchManagement.Control
@@ -10,6 +13,7 @@ namespace Kborod.MatchManagement.Control
     {
         [Inject] private MatchServices _matchServices;
         [Inject] private AppProcessor _appProcessor;
+        [Inject] private ScreensHelper _screensHelper;
 
         private MatchBase _match => _matchServices.Match; 
         private AimPlayer _aimPlayer = new AimPlayer();
@@ -20,7 +24,7 @@ namespace Kborod.MatchManagement.Control
         {
             _matchServices.MyInput.AimInfoChanged += AimChanged;
             _matchServices.MyInput.ShotMade += ShotMade;
-            _match.StateChanged += MatchStateChangedHandler;
+            _matchServices.MyInput.WantLeave += Leave;
             _match.ShotCompleted += MatchShotCompletedHandler;
 
             StartTurn();
@@ -42,9 +46,8 @@ namespace Kborod.MatchManagement.Control
         {
             _matchServices.MyInput.AimInfoChanged -= AimChanged;
             _matchServices.MyInput.ShotMade -= ShotMade;
-            _match.StateChanged -= MatchStateChangedHandler;
+            _matchServices.MyInput.WantLeave -= Leave;
             _match.ShotCompleted -= MatchShotCompletedHandler;
-
         }
 
         private void StartTurn()
@@ -58,18 +61,15 @@ namespace Kborod.MatchManagement.Control
         }
 
         
-        private void MatchShotCompletedHandler(RulesShotResult result)
+        private async void MatchShotCompletedHandler(RulesShotResult result)
         {
-            StartTurn();
-        }
-
-        private async void MatchStateChangedHandler(MatchState state)
-        {
-            if (state == MatchState.Over)
+            if (string.IsNullOrEmpty(result.WinUserIdOrNull) == false)
             {
-                await UniTask.Delay(2000);
-                Dispose();
-                _appProcessor.MainMenu().Forget();
+                MatchOver(result.WinUserIdOrNull);
+            }
+            else
+            {
+                StartTurn();
             }
         }
 
@@ -88,6 +88,32 @@ namespace Kborod.MatchManagement.Control
             await _aimPlayer.Play(info, _match, 1f, true);
             _match.MakeShot(info, GetCuePower());
         }
+
+        private void Leave()
+        {
+            Dispose();
+            _appProcessor.MainMenu();
+        }
+
+        private async void MatchOver(string winnerId)
+        {
+            await UniTask.Delay(1000);
+
+            _appProcessor.MainMenu();
+
+            //var matchResultScreen = await _screensHelper.OpenScreen<MatchResultScreen>();
+
+            //var loserId = winnerId == _match.Player1.Id ? _match.Player2.Id : _match.Player1.Id;
+            //var winnerScore = _match.GetScore(winnerId);
+            //var loserScore = _match.GetScore(loserId);
+
+            //matchResultScreen.Setup(_match.GameType, BetType.None, winnerId, winnerScore, loserScore,
+            //    new SharedDto.UserProfile { Id = _match.Player2.Id, Name = _match.Player2.Name },
+            //    () => _appProcessor.MainMenu(), () => _appProcessor.StartTrainingMatch());
+
+            Dispose();
+        }
+
         private int GetCuePower() => 300;
     }
 }

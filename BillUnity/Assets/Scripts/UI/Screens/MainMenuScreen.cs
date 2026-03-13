@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using Kborod.BilliardCore.Enums;
 using Kborod.Loader;
 using Kborod.Services.UIScreenManager;
@@ -25,12 +24,14 @@ namespace Kborod.UI.Screens
 
         private void OpenTrainingMatch()
         {
-             _appProcessor.TrainingMatch().Forget();
+            Release();
+             _appProcessor.StartTrainingMatch();
         }
 
         private void OpenPvpMatch()
         {
-            _appProcessor.PvpMatch(GameType.PoolEight, BetType.Table_1).Forget();
+            Release();
+            _appProcessor.SearchAndStartPvpMatch(GameType.PoolEight, BetType.Table_1).Forget();
         }
     }
 }
